@@ -7,7 +7,10 @@ import os
 OUT=Path(__file__).resolve().parent
 ROOT=Path(os.environ.get('REFORMDMD_ROOT',str(OUT.parents[1]/'ReFormFlow-main')))
 ROUND=ROOT/'logs/path-ratio-round1'
-preamble=(OUT.parent/'RTDMD_v30/RTDMD_SchemeA_Reorganized_Final_CN_v30.tex').read_text().split('\\title[')[0]
+preamble_path=OUT/'preamble_v31.tex'
+if not preamble_path.exists():
+    preamble_path.write_text((OUT.parent/'RTDMD_v30/RTDMD_SchemeA_Reorganized_Final_CN_v30.tex').read_text().split('\\title[')[0])
+preamble=preamble_path.read_text()
 preamble=preamble.replace('% v30: generated from actual saved PNG evaluation reports; self-contained source.', '% v31: Teacher/Student path-ratio repair; actual results only.')
 tex=preamble+r'''\title[保留路径比的 RTDMD]{保留教师/学生路径比的 RTDMD 修订}
 \subtitle{共同末端读出、显式前向后验与局部条件重要性重采样\\v31：方法边界、数值实现与单卡验证}

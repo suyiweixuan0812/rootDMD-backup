@@ -203,7 +203,8 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
         for title, seed, suffix, note in [
                 ('确定性完整 PickScore 测试：seed42', 42, 'pick2048-exact', '固定开发候选后的2048条完整测试；同推理噪声与四项评分模型。'),
                 ('保留提示词验证：138条唯一提示词', 42, 'holdout138-exact', '与开发集及 PickScore 训练/测试逐字去重；结果不用于重新选择参数。'),
-                ('确定性训练种子复核：seed43', 43, 'pick2048-exact', '已固定的方法重新训练；单提示词 bootstrap 区间不能代替训练种子不确定性。')]:
+                ('确定性训练种子复核：seed43', 43, 'pick2048-exact', '已固定的方法重新训练；单提示词 bootstrap 区间不能代替训练种子不确定性。'),
+                ('固定第三训练种子：seed44', 44, 'pick2048-exact', '本组仅由预先固定的剩余时间门槛触发；不依据前两组评分决定是否运行，也不再次调参。')]:
             active = cases
             table(title, [(LABELS[c], f'sd3-det-{c}-seed{seed}-{suffix}') for c in active], note)
     table('原路径版长训练确认：10000轮',

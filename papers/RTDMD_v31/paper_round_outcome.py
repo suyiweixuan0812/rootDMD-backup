@@ -10,7 +10,7 @@ def render(root):
     choice = json.loads(selected.read_text())
     best = choice['selected_case']
     rows, reports, groups, values, seeds = [], {}, [], [], []
-    for seed in [42, 43]:
+    for seed in [42, 43, 44]:
         tables = {}
         for case in ['dmd', 'dmd_fp32', best]:
             name = f'sd3-det-{case}-seed{seed}-pick2048-exact'
@@ -37,11 +37,11 @@ def render(root):
     quality_guards = all(t[best]['CLIP Score'] >= max(t['dmd']['CLIP Score'], t['dmd_fp32']['CLIP Score'])-.10
                          and t[best]['Aesthetic Score'] >= max(t['dmd']['Aesthetic Score'], t['dmd_fp32']['Aesthetic Score'])-.03
                          for _, t in seeds)
-    if len(seeds) == 2 and paired_wins and quality_guards:
-        conclusion = '两个已测训练种子均观察到 Pick/HPS 高于两种 DMD 对照；仍需更多种子和本细节版长训练确认。'
-    elif len(seeds) == 2 and paired_wins:
-        conclusion = '两个已测训练种子的 Pick/HPS 均上升，但 CLIP/Aesthetic 守门条件没有全部保持，尚未满足整体目标。'
-    elif len(seeds) == 2:
+    if len(seeds) >= 2 and paired_wins and quality_guards:
+        conclusion = f'{len(seeds)}个已测训练种子均观察到 Pick/HPS 高于两种 DMD 对照；仍需更多种子和本细节版长训练确认。'
+    elif len(seeds) >= 2 and paired_wins:
+        conclusion = f'{len(seeds)}个已测训练种子的 Pick/HPS 均上升，但 CLIP/Aesthetic 守门条件没有全部保持，尚未满足整体目标。'
+    elif len(seeds) >= 2:
         conclusion = '训练种子复核存在未胜出的对比，尚未建立两个偏好指标的稳定优势；不能只列较好的一次。'
     else:
         conclusion = '本页仅含一个完整训练种子；即使均值上升，也不能据此认定训练稳定性。'

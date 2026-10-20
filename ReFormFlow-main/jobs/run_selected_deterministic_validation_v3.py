@@ -69,7 +69,8 @@ def group(cases, seed, dataset, count, suffix):
     results = {}
     errors = []
     with ThreadPoolExecutor(max_workers=2) as pool:
-        work = {pool.submit(evaluate, c, seed, dataset, count, suffix): c for c in cases}
+        priority = ([cases[0], cases[2], cases[1], cases[3]] if len(cases) == 4 else cases)
+        work = {pool.submit(evaluate, c, seed, dataset, count, suffix): c for c in priority}
         for future in as_completed(work):
             case = work[future]
             try:
@@ -141,10 +142,18 @@ def main():
     if tests is None:
         return
     comparisons(tests, 'seed42')
-    for case in ['dmd', best]:
+    archive_results = []
+    for case in [best, 'dmd']:
         name = f'sd3-det-{case}-seed42-pick2048-exact'
         if not (R/'archived-images'/name/'image-storage-manifest.json').exists():
-            execute(['python', 'scripts/archive_path_round_images.py', '--run-dir', str(R/'runs'/name), '--name', name])
+            try:
+                execute(['python', 'scripts/archive_path_round_images.py', '--run-dir', str(R/'runs'/name), '--name', name])
+                archive_results.append(dict(run=name, status='ARCHIVED'))
+            except subprocess.CalledProcessError as exc:
+                archive_results.append(dict(run=name, status='ARCHIVE_FAILED_VALIDATION_CONTINUES', error=str(exc)))
+        else:
+            archive_results.append(dict(run=name, status='ARCHIVED_ALREADY'))
+    (R/'deterministic-image-archive-status.json').write_text(json.dumps(archive_results, indent=2))
     heldout = group(cases, 42, 'dataset/drawbench_path_holdout', 138, 'holdout138-exact')
     if heldout is None:
         return
@@ -154,7 +163,7 @@ def main():
         return
     while True:
         states = [state(f'sd3-det-{case}-seed43') for case in cases]
-        if all(s == 'COMPLETED_DETERMINISTIC_DEV64' for s in states):
+        if all(s == 'COMPLETED_DETERMINISTIC_DEV64' for s in states) and replication.poll() == 0:
             break
         if 'FAILED' in states or replication.poll() not in (None, 0):
             raise RuntimeError('Replication training failed or stopped within budget')
