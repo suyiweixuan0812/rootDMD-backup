@@ -1,0 +1,585 @@
+% !TEX program = xelatex
+% v30: generated from actual saved PNG evaluation reports; self-contained source.
+\documentclass[10pt,aspectratio=169]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\usepackage[fontset=none]{ctex}
+% Use two TeX-distributed fonts explicitly; no machine-specific Noto dependency.
+\setCJKmainfont{FandolSong-Regular.otf}[BoldFont=FandolSong-Bold.otf,AutoFakeSlant=.2]
+\setCJKsansfont{FandolSong-Regular.otf}[BoldFont=FandolSong-Bold.otf,AutoFakeSlant=.2]
+\setCJKmonofont{FandolSong-Regular.otf}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{booktabs,tabularx,array,multirow}
+\usepackage{graphicx,hyperref}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{equation number}[default]
+\setbeamerfont{frametitle}{size=\large}
+\setbeamersize{text margin left=7mm,text margin right=7mm}
+\setlength{\parskip}{2pt}
+\definecolor{deepblue}{RGB}{27,67,121}
+\definecolor{softblue}{RGB}{236,243,252}
+\definecolor{softgreen}{RGB}{235,247,241}
+\definecolor{softorange}{RGB}{252,243,233}
+\definecolor{deepgreen}{RGB}{32,105,80}
+\definecolor{deeporange}{RGB}{174,87,20}
+\setbeamercolor{block title}{fg=white,bg=deepblue}
+\setbeamercolor{block body}{bg=softblue,fg=black}
+\setbeamercolor{block title example}{fg=white,bg=deepgreen}
+\setbeamercolor{block body example}{bg=softgreen,fg=black}
+\setbeamercolor{block title alerted}{fg=white,bg=deeporange}
+\setbeamercolor{block body alerted}{bg=softorange,fg=black}
+\setbeamercolor{alerted text}{fg=deeporange}
+\newcommand{\E}{\mathbb E}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathcal N}
+\newcommand{\sg}{\operatorname{sg}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\KL}{\operatorname{KL}}
+\newcommand{\ESS}{\operatorname{ESS}}
+\newcommand{\dd}{\,\mathrm d}
+\newcommand{\takeaway}[1]{\begin{exampleblock}{本页结论}\small #1\end{exampleblock}}
+\title[方案 A 修订：PC-MH]{方案 A 修订：教师引导后验 MH\\与后验去噪一致性}
+\subtitle{RTDMD 条件均值估计、可验证的局部校正与单卡实验\\v30：基于 v29 的理论修订与实验更新}
+\author{组会讲解版}
+\date{2026 年 10 月 21 日}
+\hypersetup{pdftitle={RTDMD v30 posterior MH and posterior consistency},pdfauthor={YYPF}}
+\begin{document}
+\maketitle
+
+\section{目标、保留内容与需要修订的假设}
+\begin{frame}{v30 修改了什么，保留了什么}
+\small
+\begin{columns}[T,onlytextwidth]
+\column{.49\textwidth}
+\begin{block}{保留 v29 的研究目标}
+\begin{itemize}
+\item 当前 Student 定义 target；教师参与 proposal 引导。
+\item 在线估计条件均值，通过 Tweedie 关系获得 score。
+\item 不额外训练 Fake；使用 score gap 的 surrogate 更新。
+\item 推理仍为原 CPS 四步，不添加终端噪声。
+\end{itemize}
+\end{block}
+\column{.49\textwidth}
+\begin{alertblock}{明确改写的部分}
+\begin{itemize}
+\item 在真实生成随机变量空间定义 Bayes 后验。
+\item 全路径 IS 改为分块 MH；不使用奇异末步密度比。
+\item 明确同一查询点的 Student Jacobian。
+\item 新增去噪一致性正则，并报告主/敏感性两组实验。
+\end{itemize}
+\end{alertblock}
+\end{columns}
+\takeaway{v30 是方法修订版；不是对原 Pref 反向 CPS 全路径 IS 的严格复现。}
+\end{frame}
+
+\begin{frame}{RTDMD 的查询与目标 score}
+\small
+当前 Student 产生源 latent $X_{\rm src}$，独立加噪：
+\begin{equation}\label{eq:query}
+y=\alpha X_{\rm src}+\sigma\varepsilon,\qquad
+\alpha=1-\sigma,\quad \varepsilon\sim\N(0,I),\quad 0<\sigma<1.
+\end{equation}
+在固定条件 $c$ 下，所需条件均值与 score 为
+\begin{equation}\label{eq:tweedie}
+m_\theta(y)=\E_\theta[X_{\rm src}\mid y,c],\qquad
+s_{\theta,\sigma}(y)=\frac{\alpha m_\theta(y)-y}{\sigma^2}.
+\end{equation}
+\begin{block}{原 Fake 的作用}
+Fake 通过当前 Student 样本的去噪回归近似 $m_\theta(y)$ 或相应 score。
+省去 Fake 后，仍然必须估计\alert{这个前向加噪模型的条件均值}。
+\end{block}
+\takeaway{Tweedie 恒等式保留；本轮改变的是条件均值的构造与训练 surrogate。}
+\end{frame}
+
+\begin{frame}{源 latent 必须与实际训练采样器一致}
+\small
+\begin{equation}\label{eq:source-map}
+U=(Z,\xi_1,\ldots,\xi_{K-1},J)\sim P,\qquad
+X_{\rm src}=F_\theta(U,c).
+\end{equation}
+\begin{itemize}\itemsep4pt
+\item $Z,\xi_j$ 独立标准 Gaussian；$J$ 按原 DMD 的随机停止分布采样。
+\item $F_\theta$ 执行相同 SD3、sigma schedule、CPS 与单条件 Student 预测。
+\item 返回第 $J$ 个执行步的 \textbf{clean prediction}，不是噪声边界 $x_s$。
+\item 包括未使用的 $\xi_j$，使原始随机变量空间维数固定；它们被积分掉。
+\end{itemize}
+\begin{alertblock}{有限步训练分布与完整推理分布}
+训练源是随机停止的 clean prediction 混合分布；最终评估仍执行完整四步。
+两者采用原 DMD 的约定，但不能在理论中混用。
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{v29 的两个数学缺口}
+\small
+\begin{block}{一：CPS 的零方差末步}
+CPS 创新标准差 $\nu_k=s_{k-1}\sin(\eta\pi/2)$。当 $s_{k-1}=0$，
+$M^a_k(\dd x'\mid y)=\delta_{D_a(y)}(\dd x')$。
+若两模型输出不同，给定 $y$ 的终端条件核可互相奇异，不能继续代入 Gaussian 密度比。
+\end{block}
+\begin{block}{二：反向路径终点不自动等于前向后验}
+路径比可恢复\emph{所定义的反向 Student 路径律}；仍需另证它的终点条件律等于
+式\eqref{eq:query} 的 Bayes 后验。有限步网络本身不提供该保证。
+\end{block}
+\takeaway{本版将 $F_\theta$ 看作生成映射，直接定义前向后验；不补终端噪声，也不省略末步后伪称原目标。}
+\end{frame}
+
+\begin{frame}{原路径比恒等式仍成立，但结论应附带条件}
+\small
+对正方差的可计算反向核，设
+\begin{equation}
+R_a(\dd y_{0:K-1}\mid y_K)=\prod_{k=1}^{K}M_k^a(\dd y_{k-1}\mid y_k),\qquad
+\Lambda=\frac{\dd R_\theta}{\dd R_{\rm ref}}.
+\end{equation}
+若绝对连续、可积，则
+\begin{equation}
+\E_{R_{\rm ref}}[\Lambda Y_0\mid y_K]
+=\E_{R_\theta}[Y_0\mid y_K].
+\end{equation}
+\begin{alertblock}{需要补充的关键条件}
+右侧等于 $m_\theta(y_K)$，还要求 $R_\theta(Y_0\mid y_K)$ 正好是
+\emph{实际源分布与指定 Gaussian 前向观测}的反向条件律。
+\end{alertblock}
+\takeaway{原桥分布消元和路径比推导可作为条件性背景；不是本版后验正确性的证明。}
+\end{frame}
+
+\section{真实源后验与教师引导局部校正}
+\begin{frame}{在原始随机轨迹空间定义真正的 Bayes 后验}
+\small
+\begin{equation}\label{eq:posterior}
+\Pi_\theta(\dd U\mid y,c)
+=\frac{P(\dd U)L_\sigma(y\mid F_\theta(U,c))}
+{\int L_\sigma(y\mid F_\theta(V,c))P(\dd V)},
+\end{equation}
+其中对固定 $y,\sigma$，与 $U$ 无关的 Gaussian 常数可消去：
+\begin{equation}\label{eq:likelihood}
+\ell(U)\equiv\log L_\sigma(y\mid F_\theta(U,c))
+=-\frac{\|y-\alpha F_\theta(U,c)\|^2}{2\sigma^2}.
+\end{equation}
+\begin{equation}\label{eq:true-mean}
+m_\theta(y)=\int F_\theta(U,c)\Pi_\theta(\dd U\mid y,c).
+\end{equation}
+\takeaway{$F_\theta$ 无需可逆，也无需有图像空间密度；确定性末步没有额外核比。}
+\end{frame}
+
+\begin{frame}{为什么无条件 Source-IS 在高维退化}
+\small
+上一版从 $Q_y$ 采样 $U_i$，使用
+\begin{equation}
+\ell_i=-\frac{\|y-\alpha F_\theta(U_i)\|^2}{2\sigma^2}
++\log\frac{\dd P}{\dd Q_y}(U_i),\qquad
+\widetilde w_i=\operatorname{softmax}_i(\ell_i).
+\end{equation}
+\begin{itemize}\itemsep3pt
+\item 源 latent 为 $16\times64\times64=65536$ 维；误差必须逐坐标求和。
+\item 8 个近先验候选往往不能覆盖后验；小 $\sigma$ 还会放大失配。
+\item 教师估计的腐化噪声不保证等于 Student 的生成初始噪声。
+\end{itemize}
+\begin{alertblock}{已完成旧运行的定量证据}
+ESS 均值 $1.095/8$；96\% 更新 ESS$<2$；log-weight 跨度中位数 $1706.605$。
+减去最大 log-weight 只能稳定计算，不能恢复缺失的后验覆盖。
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{成对源轨迹提供后验平稳初始化}
+\small
+每轮固定当前 $\theta$，重新生成
+\begin{equation}
+U^\star\sim P,\qquad X^\star=F_\theta(U^\star,c),\qquad
+Y=\alpha X^\star+\sigma\varepsilon.
+\end{equation}
+联合律为 $P(\dd U)L_\sigma(\dd y\mid F_\theta(U,c))$。由 Bayes 公式，
+\begin{equation}\label{eq:paired-stationary}
+\mathcal L(U^\star\mid Y=y,c,\theta)=\Pi_\theta(\cdot\mid y,c).
+\end{equation}
+\begin{block}{成立条件}
+必须用\alert{同一次生成的真实轨迹}和其 Gaussian 观测；参数更新后重新生成。
+教师图像、旧参数轨迹或独立的另一条源轨迹不能直接替代。
+\end{block}
+\takeaway{一个条件后验样本不等于精确条件均值；平稳初始化不等于链样本相互独立。}
+\end{frame}
+
+\begin{frame}{教师引导的 Gaussian-reference 分块提议}
+\small
+教师仍在相同 $y,\sigma,c$ 上以原 CFG 预测 $v_{\rm ref}$，固定
+\begin{equation}
+h_y=\kappa\{y+(1-\sigma)v_{\rm ref}(y,\sigma,c)\},\qquad\kappa=.01.
+\end{equation}
+固定 $J$，选择一个实际使用的 Gaussian 变量块，再选坐标集合 $C$：
+\begin{equation}\label{eq:pcn}
+u'_C=\rho u_C+(1-\rho)h_C+\beta\zeta,\qquad
+\rho=\sqrt{1-\beta^2},\quad\zeta\sim\N(0,I).
+\end{equation}
+初始噪声 $Z$ 使用 $h_C=(h_y)_C$；CPS 创新使用 $h_C=0$。
+其他坐标保持不变。
+\begin{alertblock}{教师中心的含义}
+这是可校正的启发式提议中心，不是已证明的生成噪声反演，也不保证优于零中心提议。
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{接受比必须包含教师中心的校正项}
+\small
+提议对 $\N(h_C,I)$ 可逆，而真实先验对 $\N(0,I)$ 定义。
+故正反向提议比与先验比合并为
+\begin{equation}\label{eq:mh-accept}
+A(U,U')=\ell(U')-\ell(U)-h_y^\top(Z'-Z),\qquad
+a(U,U')=\min\{1,e^{A(U,U')}\}.
+\end{equation}
+\begin{itemize}\itemsep3pt
+\item 未变化的坐标对最后一项贡献为零；零中心创新块没有额外中心项。
+\item 活跃块的选择概率只依赖\alert{未改变的} $J$，正反向相同。
+\item $J$ 单独用均匀先验提议，保持 Gaussian 变量不变，接受比仅为似然差。
+\end{itemize}
+\takeaway{每个转移保持式\eqref{eq:posterior} 的后验不变；不能只按观测似然接受一个非零中心提议。}
+\end{frame}
+
+\begin{frame}{当前局部核：保持目标，也留下混合局限}
+\small
+\begin{equation}
+\beta=\operatorname{clip}\left(
+\frac{.25\sigma}{(1-\sigma)\sqrt{16}}\,b,\;10^{-4},\;.5\right),
+\qquad b\text{ 循环取 }(.5,1,2).
+\end{equation}
+\begin{itemize}\itemsep3pt
+\item 每次更新 8 个提议：7 次 Gaussian 分块更新，最后 1 次停止步提议。
+\item 块大小16；噪声相关尺度只依赖固定 $\sigma$，不按本链接受历史随意自适应。
+\item 最多提议 $7\times16=112$ 个连续坐标（可重复），远小于完整随机轨迹维数。
+\item BF16 网络、小噪声尖锐似然与局部更新可能共同限制移动；未单独做精度消融。
+\end{itemize}
+\takeaway{后验不变性与混合效率是两个问题；本轮正则化也不被宣称为解决链混合。}
+\end{frame}
+
+\begin{frame}{Rao--Blackwell 化接受／拒绝，得到在线均值}
+\small
+当前状态 $U_j$、提议 $U'_j$ 和接受概率 $a_j$ 给出
+\begin{equation}
+H_j=(1-a_j)F_\theta(U_j,c)+a_jF_\theta(U'_j,c),\qquad
+\widehat m=\frac1M\sum_{j=0}^{M-1}H_j.
+\end{equation}
+$H_j$ 是对接受随机数积分后的下一状态条件期望。
+由平稳初始化及不变核，理想连续算术模型下，
+\begin{equation}\label{eq:conditional-mean}
+\E[\widehat m\mid y,c,\sigma,\theta]=m_\theta(y).
+\end{equation}
+\begin{alertblock}{这条结论不包含什么}
+不表示一次估计精确，不表示8步已充分混合；浮点计算仍有数值近似。
+对任意非平稳初始化，也不能直接沿用式\eqref{eq:conditional-mean}。
+\end{alertblock}
+\end{frame}
+
+\section{同一观测点的更新与新增一致性正则}
+\begin{frame}{为什么要明确 Jacobian 的位置}
+\small
+上一版沿用生成源样本 Jacobian。成对轨迹均值估计与该源样本条件相关，
+一般不能将它们的期望乘开。例如 $X\mid y$ 的均值为 $m$、方差为 $v$，则
+\begin{equation}
+\E[X\cdot X\mid y]=m^2+v\ne m^2.
+\end{equation}
+本版按 v29 式(2)的一种明确解释，在同一查询点使用
+\begin{equation}\label{eq:denoiser}
+D_\theta(y)=y-\sigma v_\theta(y,\sigma,c),\qquad J_\theta D_\theta(y).
+\end{equation}
+给定 $y,c,\sigma,\theta$，这个 Jacobian 是确定的；查询、轨迹和目标均停止梯度。
+实现要求 Student 无正概率 Dropout。
+\takeaway{这不是原 DMD 源 Jacobian 的等价改写；实验收益尚需单独消融两种改动。}
+\end{frame}
+
+\begin{frame}{Posterior-MH 的基础 surrogate 与时间预条件}
+\small
+令教师 clean prediction $r=y-\sigma v_{\rm ref}$，定义
+\begin{equation}
+n_\theta(y)=\operatorname{mean}|D_\theta(y)-r|>0,\qquad
+G_\theta(y)=\frac{1}{d\,n_\theta(y)}\{J_\theta D_\theta(y)\}^\top.
+\end{equation}
+保留仓库 DMD 的 clean 差归一化形式，基础更新为
+\begin{equation}\label{eq:base-surrogate}
+\widehat g_0=G_\theta(y)(\widehat m-r).
+\end{equation}
+$r$ 是冻结教师的 CFG 网络预测，不是已经证明的精确后验均值；
+以下代数命题只要求给定观测后 $r$ 确定，不声称 CFG 目标的 score 精确。
+\begin{block}{与 Tweedie score 差的关系}
+真实 score 差还含 $\alpha/\sigma^2$。上述更新将其吸收于时间权重，
+另对状态相关的 $n_\theta$ 停止梯度；不是未指定时间权重下的等价 KL 梯度。
+\end{block}
+\takeaway{以下结论针对固定 $\theta,y$ 的裁剪前 surrogate 梯度，不是完整 KL 梯度或收敛定理。}
+\end{frame}
+
+\begin{frame}{v30 新增：后验去噪一致性}
+\small
+网络的 clean prediction 与其\emph{实际源分布}的条件均值不一定一致。
+在固定目标和归一化下，加入半梯度正则
+\begin{equation}\label{eq:consistency}
+\mathcal L_{\rm pc}=\frac{\|D_\theta(y)-\sg(\widehat m)\|^2}
+{2d\,\sg(n_\theta(y))}.
+\end{equation}
+其条件期望梯度为 $G_\theta(y)\{D_\theta(y)-m_\theta(y)\}$。
+和式\eqref{eq:base-surrogate} 合并得到
+\begin{equation}\label{eq:regularized}
+\widehat g_\lambda
+=G_\theta(y)\left\{(1-\lambda)\widehat m+\lambda D_\theta(y)-r\right\}.
+\end{equation}
+\takeaway{这是新增的 Student 后验一致性项，不是 v29 的 Fake 一致性正则 $\mathcal L_{\rm cons}$。
+本节 $\lambda$ 是正则强度，不是原稿的时间权重 $\lambda_t$。}
+\end{frame}
+
+\begin{frame}{新增命题：条件后验采样方差的精确缩放}
+\small
+\begin{block}{条件与结论}
+固定 $y,c,\sigma,\theta$；$G_\theta,D_\theta,r$ 确定，$\lambda$ 预先固定，
+后验均值估计二阶矩有限，归一化为正。则裁剪前
+\begin{equation}\label{eq:variance}
+\Cov(\widehat g_\lambda\mid y)
+=(1-\lambda)^2\Cov(\widehat g_0\mid y).
+\end{equation}
+\end{block}
+\begin{proof}[一行证明]
+将式\eqref{eq:regularized} 写成
+$(1-\lambda)G_\theta\widehat m+G_\theta(\lambda D_\theta-r)$；
+第二项给定观测后确定，取协方差即得。
+\end{proof}
+$\lambda=.25$ 时系数为 $.5625$；$\lambda=.50$ 时为 $.25$。
+\begin{alertblock}{严格限定}
+只缩放\alert{给定观测的后验估计噪声}；不等于总 SGD 方差、Adam 更新方差或图像指标的同幅改善。
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{期望更新也改变了：不是无代价的方差缩减}
+\small
+由式\eqref{eq:conditional-mean}，
+\begin{equation}\label{eq:expected-regularized}
+\E[\widehat g_\lambda\mid y]
+=G_\theta(y)\{m_\theta(y)-r\}
++\lambda G_\theta(y)\{D_\theta(y)-m_\theta(y)\}.
+\end{equation}
+\begin{itemize}\itemsep4pt
+\item 新增项正是去噪一致性修正；因此 $\lambda>0$ 是正则化扩展。
+\item 若同时 $m_\theta=r$、$D_\theta=m_\theta$，该目标点的两个项均为零。
+\item 不由此推出解唯一、参数稳定、KL 单调下降或全局收敛。
+\item 源分布随 $\theta$ 变化；本实现对采样数据和目标使用 stop-gradient。
+\end{itemize}
+\takeaway{方差命题与期望更新偏移必须同时报告，不能把它表述为保持原方法不变的无偏改进。}
+\end{frame}
+
+\begin{frame}{边界情形与本轮预先固定的实验}
+\small
+\begin{center}
+\begin{tabular}{cll}\toprule
+$\lambda$ & 更新中的向量 & 含义\\\midrule
+$0$ & $\widehat m-r$ & 上一版 Posterior-MH\\
+$.25$ & $.75\widehat m+.25D_\theta-r$ & 本轮主实验\\
+$.50$ & $.50\widehat m+.50D_\theta-r$ & 本轮敏感性实验\\
+$1$ & $D_\theta-r$ & 理论边界：后验项完全抵消\\\bottomrule
+\end{tabular}
+\end{center}
+\begin{alertblock}{实验选择规则}
+主实验 $.25$ 和敏感性 $.50$ 在最终测试评分前固定；两组均报告。
+不按最终2048条测试分数挑选一个强度，隐去另一组结果。
+\end{alertblock}
+\takeaway{$\lambda=1$ 不再保留后验均值的作用；不能把纯教师拟合的效果当成 MH 的贡献。}
+\end{frame}
+
+\begin{frame}{训练算法与实际实现的对应}
+\small
+\begin{enumerate}\itemsep4pt
+\item 用当前 $\theta$ 采样真实轨迹 $U^\star$，重放得到 $X^\star$；Gaussian 加噪得到 $y$。
+\item 教师在 $y$ 预测 $r,h_y$；固定 $\theta$，执行8次带校正的局部 MH，得到 $\widehat m$。
+\item Student 在\alert{同一固定 $y$}计算 $D_\theta(y)$；构造式\eqref{eq:regularized} 的停止梯度目标。
+\item 仅通过 $D_\theta(y)$ 反传；使用原学习率、优化器、梯度裁剪和 EMA。
+\item 原 DMD 每10外层轮一次生成器更新的日程保留；不执行 Fake 更新。
+\end{enumerate}
+\begin{block}{额外计算}
+一致性项通过向量合并实现，不增加网络前向次数。MH 候选仍然需要额外回放；
+训练计算量与 DMD 不相等，推理 NFE 保持4。
+\end{block}
+\end{frame}
+
+\section{实验协议、结果与诊断}
+\begin{frame}{公平比较：保持的参数与必要差异}
+\small
+\begin{columns}[T,onlytextwidth]
+\column{.49\textwidth}
+\begin{block}{共同设置}
+原 SD3-Medium；512；BF16 网络；LoRA rank32/alpha64；batch1；seed42；
+学习率 $3\times10^{-5}$；相同优化器、EMA、裁剪、CFG4.5；CPS $\eta=.9$；
+四步 $[1000,750,500,250]$；随机停止；相同提示词与评估种子。
+\end{block}
+\column{.49\textwidth}
+\begin{alertblock}{必须披露的差异}
+无 Fake 训练；同点 Jacobian；8次 MH、16坐标块及一致性系数。
+源/观测 Gaussian 先以FP32采样，旧DMD直接BF16采样。
+只保存末轮 EMA LoRA，未保存完整可恢复训练状态。
+\end{alertblock}
+\end{columns}
+\takeaway{相同外部配置与生成器更新数，不代表训练计算量相等；本轮没有启动16卡任务。}
+\end{frame}
+
+\begin{frame}{数据、评分与本轮资源使用}
+\small
+\begin{itemize}\itemsep5pt
+\item PickScore 训练提示词 25432 条；测试提示词 2048 条，原顺序、每条一张图。
+\item 1000外层轮，100次生成器更新；这不是默认长训练或收敛复现。
+\item 四项指标评分\alert{相同保存PNG}：CLIP、Aesthetic、PickScore、HPSv2.1。
+\item CLIP 与 HP 展示值乘100；Pick还原原始logit，Aesthetic不缩放。
+\item 两个新增实验共享同一A100并行运行；因此不比较它们与旧运行的墙钟速度。
+\item 完整图片暂存内存盘；权重、逐图分数、配置、报告保存在项目目录。
+\end{itemize}
+\takeaway{测试集用于最终报告；本轮正则强度预先固定。跨运行多次查看测试分数仍限制外部泛化结论。}
+\end{frame}
+
+\begin{frame}{完整2048条测试提示词：全部方法结果}
+\small
+\begin{center}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrr}\toprule
+Post-Train（均无奖励） & NFE & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HP$\uparrow$\\\midrule
+DMD & 4 & 25.5374 & 5.9152 & 20.3478 & 27.2742 \\
+Source-IS & 4 & 19.5789 & 4.5526 & 17.9098 & 16.0197 \\
+Posterior-MH & 4 & 25.4264 & 5.9660 & 20.5580 & 28.3938 \\
+PC-MH, $\lambda=.25$ & 4 & 26.1713 & 6.0386 & 20.8326 & 28.0147 \\
+PC-MH, $\lambda=.50$ & 4 & 26.2382 & 5.9494 & 20.7121 & 26.5751 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{block}{预先指定的主实验比较}
+预先指定的主实验相对 DMD：CLIP +0.6339；Aesthetic +0.1234；Pick +0.4848；HP +0.7405。\par 相对上一版 Posterior-MH：CLIP +0.7448；Aesthetic +0.0726；Pick +0.2746；HP -0.3790。
+\end{block}
+\begin{alertblock}{结论边界}
+一个训练种子、100次生成器更新。指标更高也不构成稳定优越性、理论正确性或充分收敛的证明。
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{本轮结果怎样支持下一步，而不是过度归因}
+\small
+\begin{itemize}\itemsep6pt
+\item 主实验 $\lambda=.25$ 相对 DMD 四项提高；相对上一版 MH，CLIP、Aesthetic、Pick 提高，但 HP 下降。
+\item 敏感性 $\lambda=.50$ 进一步提高 CLIP，但 HP 低于 DMD；说明正则强度存在指标之间的权衡。
+\item 选择规则保持不变：$.25$ 是预先指定的主实验；$.50$ 是敏感性实验，不改成事后最优方法。
+\item 这些观测支持继续检验一致性正则，但不能证明收益来自条件方差缩减，更不能证明 MH 的独立贡献。
+\end{itemize}
+\takeaway{先补独立验证集、多训练种子及0步MH消融；当前单次短跑不支持直接推断16卡长训练的收益。}
+\end{frame}
+
+\begin{frame}{链诊断：接受不等于实际移动，更不等于ESS}
+\small
+\begin{center}
+\begin{tabular}{lrrr}\toprule
+方法 & 平均接受率 & 实际图像移动率 & 无实际移动的更新比例\\\midrule
+Posterior-MH & 28.75\% & 25.75\% & 50.0\% \\
+PC-MH, $\lambda=.25$ & 33.50\% & 30.50\% & 44.0\% \\
+PC-MH, $\lambda=.50$ & 36.75\% & 33.75\% & 40.0\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}\itemsep4pt
+\item 上一版低于 $.5$ 的噪声段没有实际图像移动；全体50\%更新无图像移动。
+\item BF16舍入可能使原始噪声改变而输出图像不变；接受率会高于实际移动率。
+\item 一致性正则不改变 MH 的目标或核，不应被宣称为修复混合。
+\item 8次转移不足以可靠估计MCMC ESS；不把等权平均报告为 ESS$=8$。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{数学验证与代码证据}
+\small
+\begin{block}{20项测试通过}
+原6项：Gaussian密度比、解析后验/Tweedie、非可逆末步、维度求和等；
+MH8项：Hastings比、平稳性、随机停止、轨迹重放、相关Gaussian块、冻结诊断等；
+新增6项：$\lambda=0/1$边界、方差系数、期望方向改变、目标停止梯度、参数范围。
+\end{block}
+\begin{itemize}\itemsep4pt
+\item 实际代码、数据SHA256与配置均保存；旧DMD和上一版结果未覆盖。
+\item 完整逐图评分与提示词索引可核验，不只保存均值。
+\item 测试验证实现中的指定关系，不替代神经网络全局训练收敛分析。
+\end{itemize}
+\takeaway{论文数值表从实际评分JSON生成；缺失结果不会以估计数字填充。}
+\end{frame}
+
+\begin{frame}{当前仍缺少的消融与统计证据}
+\small
+\begin{enumerate}\itemsep5pt
+\item 0步MH：直接使用成对源样本，判断MH在同点Jacobian下的增量作用。
+\item 教师偏移设为0：判断当前 $\kappa=.01$ 是否改善采样而非仅由教师目标起作用。
+\item 分别改变后验估计、Jacobian及一致性项，避免把所有收益归给一个因素。
+\item 多个训练种子；独立验证提示词；等更新数和GPU小时两种成本比较。
+\item 对低噪声的BF16回放、块大小/步长、长链相关性进行独立诊断。
+\end{enumerate}
+\takeaway{本轮为有理论定义的实验修订；没有完成这些消融，因此不作完整因果归因。}
+\end{frame}
+
+\begin{frame}{扩大到16卡之前应完成什么}
+\small
+\begin{itemize}\itemsep5pt
+\item 优先将可用GPU用于独立种子与关键消融，避免只放大单次试跑。
+\item 先验证2--4卡同步、每卡独立轨迹随机数、梯度平均和EMA一致性。
+\item 补齐原始参数、优化器、调度器、EMA、随机数和数据位置的完整断点恢复。
+\item 正式16卡对照需匹配全局batch、生成器更新数、数据暴露量，并报告GPU小时。
+\end{itemize}
+\begin{alertblock}{当前代码能力}
+当前回放入口明确限制单卡batch1；导出的EMA LoRA不是完整训练恢复。
+16卡数据并行也不会自动改善每个观测的后验链混合。
+\end{alertblock}
+\end{frame}
+
+\appendix
+\section{附录：原CPS与路径比背景的适用边界}
+\begin{frame}{附录 A：原CPS生成映射保持不变}
+\small
+对RF速度 $v_\theta(y,s)$，令
+\begin{equation}
+D_\theta(y,s)=y-sv_\theta(y,s),\qquad
+\widehat\varepsilon=y+(1-s)v_\theta(y,s).
+\end{equation}
+CPS 从 $s$ 到 $t<s$：
+\begin{equation}
+x_t=(1-t)D_\theta(y,s)+t\cos(\eta\pi/2)\widehat\varepsilon
++t\sin(\eta\pi/2)\xi.
+\end{equation}
+$t=0$ 时得到确定性clean输出。该映射可以直接重放；不需要把最后一步当成有密度的Gaussian核。
+\takeaway{v30 不修改推理CPS、噪声强度或NFE；修改发生在在线估计和训练更新。}
+\end{frame}
+
+\begin{frame}{附录 B：正方差共同协方差核的比值}
+\small
+若两种辅助反向核确有共同正定协方差 $\Sigma_k$，且均值为 $\mu_a$，则
+\begin{equation}
+\log\frac{M_k^\theta(y'\mid y)}{M_k^{\rm ref}(y'\mid y)}
+=-\frac12\left[\|y'-\mu_\theta(y)\|_{\Sigma_k^{-1}}^2
+-\|y'-\mu_{\rm ref}(y)\|_{\Sigma_k^{-1}}^2\right].
+\end{equation}
+这是 v29 Gaussian核比与离散Girsanov型展开的代数起点。
+\begin{alertblock}{边界}
+协方差退化时不能直接套用；即使路径校正精确，也只恢复所定义辅助反向路径律。
+它是否对应真正前向后验仍需证明。本版MH不以此式作核心实现。
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{附录 C：一致性正则的实际surrogate实现}
+\small
+将所需向量合并为
+\begin{equation}
+b_\lambda=\sg\!\left[
+\frac{(1-\lambda)\widehat m+\lambda D_\theta(y)-r}{n_\theta(y)}\right],
+\quad
+\widetilde L_\lambda=\frac12\operatorname{MSE}\left(D_\theta(y),\sg[D_\theta(y)-b_\lambda]\right).
+\end{equation}
+\begin{itemize}\itemsep4pt
+\item 目标分支整体停止梯度；只更新Student同一点预测。
+\item 原代码的有限性处理、梯度裁剪和Adam继续沿用。
+\item 方差命题针对裁剪前；非线性裁剪和优化器之后不能直接套同一系数。
+\item $n_\theta=0$等退化点需要数值处理，理想命题假定正归一化。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{参考与可复现材料}
+\footnotesize
+\begin{itemize}\itemsep5pt
+\item 用户提供的 \texttt{RTDMD\_SchemeA\_Reorganized\_Final\_CN\_v29.tex}：v30的背景、符号和原始方案来源。
+\item Cotter, Roberts, Stuart, White. \emph{MCMC Methods for Functions}. Statistical Science, 2013.
+\url{https://arxiv.org/abs/1202.0709}
+\item Snyder et al. \emph{Obstacles to High-Dimensional Particle Filtering}. Monthly Weather Review, 2008.
+\url{https://doi.org/10.1175/2008MWR2529.1}
+\item 实验入口：\texttt{train\_rtdmd\_pcmh\_sd3.py}；正则模块：\texttt{posterior\_consistency.py}。
+\item 报告：\texttt{logs/rtdmd-pcmh/comparison-v30/}；逐图评分、参数差异、SHA256与存储说明随代码包提供。
+\end{itemize}
+\end{frame}
+\end{document}
