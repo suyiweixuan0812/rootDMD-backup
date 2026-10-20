@@ -52,7 +52,7 @@ seed42 的四项均值上升；seed43 的 Pick/HPS/Aesthetic 下降。
 \begin{itemize}\itemsep6pt
 \item 固定保存权重的推理可逐图复现；完整 DMD 重生成 PNG 与旧保存图逐字节相同。
 \item 同 seed 重训在第一次后向计算已出现微小梯度差异，发生在第一次评测之前；后续 BF16 轨迹放大差异。
-\item 长训练前1000轮与短训练的 LoRA 仅2/382张量逐位相同；不能据此宣称更改评测频率完全无影响。
+\item 长训练前1000轮与短训练的 LoRA 仅2/382张量逐位相同；差异已在首个反传出现，不能归因于评测频率。
 \item 启用确定性 CUDA 与固定 cuBLAS workspace 后，两次20轮小训练的 '''+str(r['equal_tensors'])+r'''/382 张量逐位相同。
 \item 这仅是小规模重复检查；后续新对照需让 DMD 与各方法同时使用相同设置，并继续记录完整训练重复性。
 \end{itemize}
