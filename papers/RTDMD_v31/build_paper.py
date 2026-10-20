@@ -196,7 +196,8 @@ M_a^{\rm BF16}(b\mid x)=\prod_d\left[
 \begin{equation}
 (H^*,J^*)\sim p_\theta(H,J),\quad y\sim L_\sigma(\cdot\mid F_\theta(H^*,J^*)),
 \end{equation}
-可知在固定 $y$ 后，$(H^*,J^*)$ 已服从所需后验。
+可知在固定 $y$ 后，$(H^*,J^*)$ 已服从所需后验。\par
+这依赖本轮的成对训练查询；不能给任意外部观测配一条任意参考后直接套用。
 \begin{block}{这项结论的条件}
 对\textbf{给定观测下参考本身的条件分布}取平均；不是给定一条任意轨迹就已精确。
 参数更新后必须重新生成参考；不能沿用旧参数轨迹并直接声称平稳初始化。
@@ -278,7 +279,7 @@ tex+=r'''
 
 \begin{frame}{Rao--Blackwell 的可证明收益与固定停止点的方差下界}
 \small
-在理想模型与正确平稳参考下，$X_A=F_\theta(E_A,J)$ 与 $X^*\mid y$ 同分布。
+在理想模型与正确平稳参考下，记 $F_i=F_\theta(E_i,J)$，$X_A$ 与 $X^*\mid y$ 同分布。
 \begin{equation}
 \Cov(X^*\mid y)-\Cov(\widehat m_C\mid y)
 =\E\!\left[\sum_i\bar w_i(F_i-\widehat m_C)(F_i-\widehat m_C)^\top\mid y\right]\succeq0.
@@ -408,10 +409,10 @@ def score_table(items):
         r=read_report(name)
         if r:
             vals=[r['table'][k] for k in ['CLIP Score','Aesthetic Score','Pick Score','HP Score']]
-            rows.append(label+' & '+ ' & '.join(f'{v:.4f}' for v in vals)+r' \\')
-        else:rows.append(label+r' & \multicolumn{4}{c}{运行中；不填推测值} \\')
-    return r'''\begin{tabular}{lrrrr}\toprule
-方法 & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+            rows.append('4 & '+label+' & '+ ' & '.join(f'{v:.4f}' for v in vals)+r' \\')
+        else:rows.append('4 & '+label+r' & \multicolumn{4}{c}{运行中；不填推测值} \\')
+    return r'''\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
 '''+ '\n'.join(rows)+r'\bottomrule\end{tabular}'
 
 dev_items=[('DMD','dmd-ema-dev64-exact'),
