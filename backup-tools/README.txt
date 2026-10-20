@@ -1,7 +1,8 @@
 GitHub target: suyiweixuan0812/rootDMD-backup (must be private)
 Repository root: /rootDMD
 Backup interval: 10 minutes after each run, using Supervisor.
-Target and dedicated SSH key are configured. GitHub deploy-key authorization and scheduler activation are pending.
+GitHub deploy key authorized; automatic backup managed by Supervisor (rootdmd-git-backup).
+Runs automatically while the server and Supervisor are running; stopped servers cannot back up.
 Supervisor config: /rootDMD/backup-tools/supervisor.conf
 Logs: /rootDMD/backup-tools/backup.log (rotated, excluded from Git).
 Last successful push: /rootDMD/.git/backup-last-success

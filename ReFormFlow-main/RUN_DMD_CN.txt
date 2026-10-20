@@ -1,5 +1,13 @@
 本次任务：原始 SD3-Medium + 标准 DMD + PickScore 提示词；训练不使用奖励。
 
+实际结果
+  已完成 1000 个外层迭代：fake_score 更新 1000 次、generator 更新 100 次。
+  完整 2048 条测试提示词均已生成图片并完成评分。
+  PickScore 原始均值 20.3477840363048，仓库归一化均值 0.7826070783194155。
+  训练指标均为有限值，进程正常退出，checkpoint-1000 已保存。
+  这是单卡 1000 轮试运行，未完成默认 100000 轮训练，不能视为论文完整复现或收敛证明。
+  最终评分文件：logs/dmd/sd3-medium-pickscore-no-reward-train/eval/step-1000/metrics.json。
+
 代码入口
   scripts/train_dmd_sd3.py：标准 DMD 和可选 AC-DMD。本次关闭 AC-DMD。
   config/dmd_sd3_pickscore.py：本次单卡运行配置。
