@@ -42,6 +42,9 @@ if reports[3][3]:
  primary=reports[3][3]['table'];base=reports[0][3]['table']
  delta='；'.join(f"{name} {primary[key]-base[key]:+.4f}" for name,key in [('CLIP','CLIP Score'),('Aesthetic','Aesthetic Score'),('Pick','Pick Score'),('HP','HP Score')])
  result_text='预先指定的主实验相对 DMD：'+delta+'。'
+ previous=reports[2][3]['table']
+ delta_mh='；'.join(f"{name} {primary[key]-previous[key]:+.4f}" for name,key in [('CLIP','CLIP Score'),('Aesthetic','Aesthetic Score'),('Pick','Pick Score'),('HP','HP Score')])
+ result_text+=r'\par 相对上一版 Posterior-MH：'+delta_mh+'。'
 else: result_text='主实验正在运行；当前版本仅展示已经完成的旧结果，新方法分数不作推测。'
 tex=r'''% !TEX program = xelatex
 % v30: generated from actual saved PNG evaluation reports; self-contained source.
@@ -51,9 +54,6 @@ tex=r'''% !TEX program = xelatex
 \usepackage[fontset=fandol]{ctex}
 \usepackage{amsmath,amssymb,bm,mathtools}
 \usepackage{booktabs,tabularx,array,multirow}
-\usepackage{tikz,pgfplots}
-\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric}
-\pgfplotsset{compat=1.17}
 \usepackage{graphicx,hyperref}
 \usefonttheme{professionalfonts}
 \setbeamertemplate{navigation symbols}{}
@@ -340,6 +340,8 @@ G_\theta(y)=\frac{1}{d\,n_\theta(y)}\{J_\theta D_\theta(y)\}^\top.
 \begin{equation}\label{eq:base-surrogate}
 \widehat g_0=G_\theta(y)(\widehat m-r).
 \end{equation}
+$r$ 是冻结教师的 CFG 网络预测，不是已经证明的精确后验均值；
+以下代数命题只要求给定观测后 $r$ 确定，不声称 CFG 目标的 score 精确。
 \begin{block}{与 Tweedie score 差的关系}
 真实 score 差还含 $\alpha/\sigma^2$。上述更新将其吸收于时间权重，
 另对状态相关的 $n_\theta$ 停止梯度；不是未指定时间权重下的等价 KL 梯度。
@@ -485,6 +487,17 @@ Post-Train（均无奖励） & NFE & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick
 \begin{alertblock}{结论边界}
 一个训练种子、100次生成器更新。指标更高也不构成稳定优越性、理论正确性或充分收敛的证明。
 \end{alertblock}
+\end{frame}
+
+\begin{frame}{本轮结果怎样支持下一步，而不是过度归因}
+\small
+\begin{itemize}\itemsep6pt
+\item 主实验 $\lambda=.25$ 相对 DMD 四项提高；相对上一版 MH，CLIP、Aesthetic、Pick 提高，但 HP 下降。
+\item 敏感性 $\lambda=.50$ 进一步提高 CLIP，但 HP 低于 DMD；说明正则强度存在指标之间的权衡。
+\item 选择规则保持不变：$.25$ 是预先指定的主实验；$.50$ 是敏感性实验，不改成事后最优方法。
+\item 这些观测支持继续检验一致性正则，但不能证明收益来自条件方差缩减，更不能证明 MH 的独立贡献。
+\end{itemize}
+\takeaway{先补独立验证集、多训练种子及0步MH消融；当前单次短跑不支持直接推断16卡长训练的收益。}
 \end{frame}
 
 \begin{frame}{链诊断：接受不等于实际移动，更不等于ESS}

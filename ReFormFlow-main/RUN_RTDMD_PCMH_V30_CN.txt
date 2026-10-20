@@ -1,0 +1,79 @@
+RTDMD v30：后验去噪一致性正则（PC-MH）
+=======================================
+
+本版在上一版 Posterior-MH 的基础上，只改变 Student 的 surrogate 损失。
+主实验 lambda=0.25、敏感性实验 lambda=0.50 在本轮最终测试评分前固定；两组都报告。
+原 DMD、失败的 Source-IS、上一版 Posterior-MH 的代码和结果保留，不覆盖。
+
+改动
+  flow_grpo/posterior_consistency.py：合并后验均值和同点去噪一致性的停止梯度更新。
+  scripts/train_rtdmd_pcmh_sd3.py：调用新损失；记录一致性误差和教师 clean 误差。
+  config/rtdmd_pcmh_pickscore.py：继承上一版配置，仅新增 lambda 与运行标识。
+  scripts/score_rtdmd_pcmh_images.py：原四指标、同一组保存PNG，新增方法标识与协议。
+  scripts/summarize_rtdmd_pcmh.py：五方法对照；协议/提示词/均值/参数差异/权重有限性/哈希审计。
+  jobs/run_rtdmd_pcmh_trial.sh：单个强度完整训练和评分，拒绝覆盖已有正式输出。
+  jobs/run_rtdmd_pcmh_v30.sh：两个强度共享一张80GB A100并行运行。
+  tests/test_posterior_consistency.py：6项新增数学边界与梯度验证；全部测试共20项。
+
+理论区别
+  固定 theta,y,c,sigma，D=D_theta(y)，r=y-sigma*v_ref，m_hat 为同一次后验均值估计。
+  G=J_D^T/(d*n)，n=mean|D-r|，目标和归一化停止梯度。
+  原更新：g_0=G(m_hat-r)。
+  本版：  g_lambda=G((1-lambda)*m_hat+lambda*D-r)
+                  =g_0+lambda*G(D-m_hat)。
+  新增的是 Student 后验去噪一致性，不是原 Fake 一致性正则的照搬。
+  条件协方差乘 (1-lambda)^2；但条件期望也增加 lambda*G(D-m_theta)。
+  因此这是改变期望更新的正则化扩展，不是保持原KL梯度不变的无代价降方差。
+  系数仅针对相同theta与观测下、裁剪前的后验估计随机性，不是总训练方差或指标提升比例。
+  lambda=1时后验项抵消，不能再把改进归因于MH；本轮没有训练该边界。
+
+保留与限制
+  仍用真实Student生成随机变量空间的后验、成对平稳初始化、教师引导分块MH、
+  接受比中心校正、Rao-Blackwell均值和同一观测点Jacobian。
+  一致性项不改变MH核，不修复低噪声混合，也不新增网络前向。
+  SD3-Medium、512、BF16、LoRA32/64、seed42、batch1、LR3e-5、优化器、EMA、
+  教师CFG4.5、CPS eta=.9、4步、训练/测试提示词等外部配置继续继承单卡DMD。
+  与DMD必要差异：不训练Fake、同点Jacobian、8次MH回放、FP32源/观测Gaussian和新正则。
+  1000外层轮仅100次生成器更新；与DMD等更新数不代表等训练算力。
+  两组共享一张A100，不比较墙钟速度。没有启动16卡。
+
+结果在哪里
+  /rootDMD/ReFormFlow-main/logs/rtdmd-pcmh/comparison-v30/RESULTS_CN.txt
+  同目录 comparison.csv：五方法四指标，NFE=4。
+  同目录 summary.json：完整协议审计、逐图配对分差、配置差异、移动诊断与权重检查。
+  同目录 source-manifest.json：实验启动时冻结的代码/数据SHA256、强度选择规则。
+  同目录 metrics-comparison.png 和 .pdf：四指标对比图。
+  两个run分别是：
+    logs/rtdmd-pcmh/sd3-medium-rtdmd-pcmh-lambda025-train
+    logs/rtdmd-pcmh/sd3-medium-rtdmd-pcmh-lambda050-train
+  每个run的 config.json、metrics.jsonl、status.txt 保存配置、训练记录、完成状态。
+  eval/step-1000/final-metrics.json、per-image-scores.json 保存协议、均值和逐图分数。
+  eval/step-1000/prompts-persistent.json 保存独立于内存盘的完整提示词元数据。
+  checkpoints/checkpoint-1000/lora/generator/ 保存末轮 EMA LoRA，仅用于推理。
+  权重不含完整优化器/EMA原始状态/RNG/数据位置，不能精确恢复中断训练。
+  /rootDMD/rtdmd-pcmh-lambda025.log、rtdmd-pcmh-lambda050.log 为完整日志。
+
+图片存储的实际限制
+  因根磁盘空间不足，新run的最终 rank-0 图片目录链接到：
+    /dev/shm/rtdmd-v30-images/lambda025/rank-0
+    /dev/shm/rtdmd-v30-images/lambda050/rank-0
+  完整PNG和它们的内存盘压缩包会在宿主机重启后丢失；需要长期保存时请先下载。
+  已持久保存逐图分数、提示词、配置、报告和EMA LoRA；结果包不包含全部4096张PNG。
+
+查看与复现
+  cd /rootDMD/ReFormFlow-main
+  source jobs/local_env.sh
+  cat logs/rtdmd-pcmh/comparison-v30/RESULTS_CN.txt
+  python scripts/summarize_rtdmd_pcmh.py
+  python -m unittest discover -s tests -v
+  新运行可用 bash jobs/run_rtdmd_pcmh_trial.sh 025 或 050。
+  已存在正式结果时入口拒绝覆盖；复制配置并改run_name/save_dir可另做种子实验。
+  本轮另有预建图片目录链接；新机器须提供足够磁盘，不会自动创建同样的内存盘链接。
+  所有四项评估模型需已缓存，脚本采用离线模式；SD3和评分模型不随代码包分发。
+  迁移机器时设置 REFORMDMD_ENV、HF_HOME、SD3_MODEL、REWARD_CKPT_PATH。
+
+论文
+  /rootDMD/papers/RTDMD_v30/RTDMD_SchemeA_Reorganized_Final_CN_v30.tex
+  同名 .pdf 为编译版；用 XeLaTeX/UTF-8 编译，字体使用TeX常见的Fandol。
+  build_paper.py 从实际评分报告生成数值表；paper-data-manifest.json 保存来源哈希。
+  这是基于v29的方案修订，不是原反向CPS全路径IS的严格复现或全局收敛证明。
