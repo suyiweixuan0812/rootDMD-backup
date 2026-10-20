@@ -61,3 +61,5 @@ tests/*
 !tests/test_path_is_variance.py
 
 !tests/test_query_time_weight.py
+
+!tests/test_bridged_path_is.py
