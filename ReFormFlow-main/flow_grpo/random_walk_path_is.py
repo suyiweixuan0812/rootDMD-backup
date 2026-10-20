@@ -15,9 +15,14 @@ from .conditional_path_is import ConditionalISResult
 
 @torch.no_grad()
 def conditional_random_walk_sweep(reference, stops, evaluate, *, num_particles=8,
-                                  auxiliary_scale=.003, block_size=None, generator=None):
+                                  auxiliary_scale=.003, block_size=None, generator=None,
+                                  bank_policy='uniform'):
     if num_particles < 2 or auxiliary_scale <= 0:
         raise ValueError('Need at least two particles and a positive scale')
+    if bank_policy not in {'uniform', 'last'}:
+        raise ValueError('Unknown innovation-bank policy')
+    if bank_policy == 'last' and block_size is None:
+        raise ValueError('Last-bank sampling requires an explicit coordinate block')
     batch = reference.shape[0]
     center = reference + auxiliary_scale * torch.randn(reference.shape, device=reference.device,
                                                        dtype=reference.dtype, generator=generator)
@@ -28,7 +33,8 @@ def conditional_random_walk_sweep(reference, stops, evaluate, *, num_particles=8
         dimension = reference[0, 0].numel()
         if not 1 <= block_size <= dimension:
             raise ValueError('Invalid coordinate block')
-        bank = (torch.rand(batch, device=reference.device, generator=generator)*(stops+1)).long()
+        bank = (stops.clone() if bank_policy == 'last' else
+                (torch.rand(batch, device=reference.device, generator=generator)*(stops+1)).long())
         offset = torch.randint(dimension, (batch,), device=reference.device, generator=generator)
         coords = (offset[:, None]+torch.arange(block_size, device=reference.device)) % dimension
         mask = torch.zeros_like(reference, dtype=torch.bool).flatten(2)
@@ -69,4 +75,5 @@ def conditional_random_walk_sweep(reference, stops, evaluate, *, num_particles=8
         path_is_observation_span=span(value.log_observation),
         path_is_teacher_base_weight_span=span(base_weight),
         path_is_gaussian_reference_correction_span=span(prior_correction),
+        path_is_last_innovation_only=float(bank_policy == 'last'),
         path_is_rb_removed_variance_trace_per_coordinate=float(variance)))

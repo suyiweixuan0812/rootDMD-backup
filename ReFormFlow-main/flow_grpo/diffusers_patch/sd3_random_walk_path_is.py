@@ -11,7 +11,7 @@ from .sd3_conditional_path_is import make_fields, sample_prefix
 def conditional_path_mean(observation, sigma, states, source, student, teacher, positive_sigmas,
                           eta, num_particles=8, num_sweeps=2, base_scale=.05, block_size=16,
                           high_noise_block_size=4096, high_noise_threshold=.9,
-                          max_innovation_radius=.5):
+                          max_innovation_radius=.5, bank_policy='uniform'):
     if source.shape[0] != 1:
         raise ValueError('Random-walk path comparison requires batch1')
     grid = [float(s) for s in positive_sigmas]
@@ -31,7 +31,8 @@ def conditional_path_mean(observation, sigma, states, source, student, teacher, 
     estimates, diagnostics = [], []
     for _ in range(num_sweeps):
         result = conditional_random_walk_sweep(reference, stops, evaluate,
-                 num_particles=num_particles, auxiliary_scale=scale, block_size=active)
+                 num_particles=num_particles, auxiliary_scale=scale, block_size=active,
+                 bank_policy=bank_policy)
         reference, stops = result.innovations, result.stops
         estimates.append(result.mean)
         diagnostics.append(result.diagnostics)

@@ -6,7 +6,8 @@ LABELS = {'dmd': 'DMD', 'dmd_fp32': 'DMD, FP32 query', 'base': 'Path-IS',
           'time': 'Path-IS + time', 'paired': 'One-source control',
           'paired_time': 'One-source + time', 'bridge': 'Bridge',
           'bridge_time': 'Bridge + time', 'adaptive_bridge': 'Past-KL bridge',
-          'adaptive_bridge_time': 'Past-KL + time'}
+          'adaptive_bridge_time': 'Past-KL + time', 'last':'Teacher, last block',
+          'last_time':'Teacher, last + time'}
 
 
 def render(root):
@@ -113,10 +114,38 @@ $\sigma$ & 块大小 & Teacher ESS & Bridge ESS & Bridge 比跨度 & RB 方差�
 \end{itemize}
 \end{frame}
 '''
-    tex += r'''\begin{frame}{新对照的选型与独立验证规则}
+    tex += r'''\begin{frame}{更小的改动：固定最后一个正方差创新块}
+\small
+纯 Teacher CPS 映射 $H=T_T(E)$ 与原权重 $w_{ST}(E)=\prod(M_S/M_T)L$ 保留。
+固定更早的创新，只更新最后正方差转移（$J=1$ 时更新初始创新）的一组坐标 $B$：
+\begin{align}
+\pi(E_B\mid E_{-B},y,J)&\propto\phi_B(E_B)w_{ST}(E),\\
+C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
+\end{align}
+\begin{equation}
+\log\widetilde w_i=\log w_{ST}(E_i)
+-\tfrac12\{\|E_{i,B}\|^2-\|E^*_{B}\|^2\}.
+\end{equation}
+两个对称辅助 Gaussian 密度相消；\textbf{标准 Gaussian 先验不能再省略}。
+包含正确条件参考的 i-SIR 保持原后验；没有桥接场、MH 接受率或新的末端噪声。
+\end{frame}
+
+\begin{frame}{最后正方差块：收益、局限与精确缓存}
 \small
 \begin{itemize}\itemsep5pt
-\item 十组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
+\item 早期创新的扰动会改变后续父状态和多个核比；固定这些父状态可避免这部分传播。
+\item 单独改对称辅助、仍随机选创新层时，四个 $J=4$ SD3 诊断池仍 ESS=1；保留此负结果。
+\item 固定最后层后，同组诊断 ESS 约6.25--7.51；更大半径2未带来一致方差收益，采用 $.5$。
+\item 更早前缀与 $J$ 不混合，因此只部分 Rao--Blackwell 化；不能把这一采样改善等同于完整后验方差已消除。
+\item 不变前缀的网络输出可缓存，但每次先逐张量检查父状态相同；模型每次参数更新后重新建缓存。
+\item 八个真实 SD3 查询池的 ESS、核比、移动和方差在缓存前后逐位一致；吞吐数字需另做隔离基准。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{新对照的选型与独立验证规则}
+\small
+\begin{itemize}\itemsep5pt
+\item 十二组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
 \item 同时匹配原 DMD 和 FP32 观测噪声 DMD；逐指标取两者较大值作为开发参考。
 \item Pick/HPS 均需上升，CLIP 不低于参考 $-.10$、Aesthetic 不低于 $-.03$；排序预先固定。
 \item 无粒子的成对源仅是归因对照，不能替代所请求的路径比方法。
@@ -146,7 +175,8 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
         groups.append(dict(title_contains=title, names=[name for _, name in completed]))
     for title, cases in [
             ('确定性开发集：对照与基线', ['dmd', 'dmd_fp32', 'base', 'paired', 'paired_time']),
-            ('确定性开发集：采样与时间细节', ['time', 'bridge', 'bridge_time', 'adaptive_bridge', 'adaptive_bridge_time'])]:
+            ('确定性开发集：采样与时间细节', ['time', 'bridge', 'bridge_time', 'adaptive_bridge', 'adaptive_bridge_time']),
+            ('确定性开发集：纯教师最后正方差块', ['last', 'last_time'])]:
         table(title, [(LABELS[c], f'sd3-det-{c}-seed42') for c in cases],
               r'仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。')
     selection = root / 'deterministic-selection.json'

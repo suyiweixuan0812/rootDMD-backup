@@ -52,3 +52,24 @@ def test_random_walk_block_leaves_other_coordinates_exact_and_bad_weight_is_dete
     biased = conditional_random_walk_sweep(ref, stops, wrong, num_particles=8,
                                           auxiliary_scale=.5, block_size=2)
     assert biased.mean.double().mean()-mu > .03
+
+
+def test_last_bank_preserves_earlier_innovations_and_correlated_target():
+    torch.manual_seed(85)
+    ref = torch.randn(4096, 3, 2, dtype=torch.float64)
+    ref[:, 1] = .6*ref[:, 0]+.8*ref[:, 1]
+    ref[:, 2] = .7*ref[:, 1]+(.51**.5)*ref[:, 2]
+    stops = torch.full((len(ref),), 2, dtype=torch.long)
+    def evaluate(e, j):
+        log_target = -.5*(e[:, 0].square().sum(1)+
+                         ((e[:, 1]-.6*e[:, 0])/.8).square().sum(1)+
+                         ((e[:, 2]-.7*e[:, 1])/(.51**.5)).square().sum(1))
+        ratio = log_target+.5*e.square().flatten(1).sum(1)
+        zero = torch.zeros_like(ratio)
+        return PathEvaluation(e[:, 2], ratio, ratio, zero, zero, zero)
+    result = conditional_random_walk_sweep(ref, stops, evaluate, auxiliary_scale=.3,
+                                           block_size=2, bank_policy='last')
+    assert torch.equal(result.innovations[:, :2], ref[:, :2])
+    assert abs(result.innovations[:, 2].var()-1) < .05
+    assert abs((result.innovations[:, 1]*result.innovations[:, 2]).mean()-.7) < .05
+    assert result.mean.double().var() < ref[:, 2].var()

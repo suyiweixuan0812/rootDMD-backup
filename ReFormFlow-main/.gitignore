@@ -66,3 +66,4 @@ tests/*
 
 !tests/test_adaptive_bridge.py
 !tests/test_random_walk_path_is.py
+!tests/test_last_innovation_cache.py
