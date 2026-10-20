@@ -23,6 +23,8 @@ def blocks(path, step, size):
             if not selected:
                 return {'updates': 0}
             value = {'updates': len(selected), 'gradient_clip_fraction': float(np.mean([x['generator/grad_norm'] > maximum for x in selected]))}
+            if 'path_is/total_mean_displacement_rms' in selected[0]:
+                value['logged_mean_displacement_rms_zero_fraction'] = float(np.mean([x['path_is/total_mean_displacement_rms']==0 for x in selected]))
             for k in keys:
                 if k in selected[0]:
                     value[k] = float(np.mean([x[k] for x in selected]))
@@ -54,7 +56,7 @@ def main():
     fig, axes = plt.subplots(2, 2, figsize=(10, 7), constrained_layout=True)
     for axis, key, label in zip(axes.flat,
             ['path_is/ess', 'path_is/path_ratio_span', 'path_is/frozen_update', 'gradient_clip_fraction'],
-            ['Candidate-pool ESS (N=8)', 'Path log-ratio span', 'Fully frozen update fraction', 'Gradient clipping fraction']):
+            ['Candidate-pool ESS (N=8)', 'Path log-ratio span', 'Reference unchanged in both sweeps', 'Gradient clipping fraction']):
         for name, items in values.items():
             data = [x for x in items if key in x]
             if data:

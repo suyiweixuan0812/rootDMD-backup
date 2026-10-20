@@ -43,9 +43,13 @@ def diagnostics(folder, report):
                 'path_is/actual_move_rate', 'path_is/frozen_update',
                 'path_is/total_mean_displacement_rms', 'path_is/path_ratio_span',
                 'path_is/observation_span']
-        return {'updates': len(selected), **{k: float(np.mean([r[k] for r in selected])) for k in keys}}
+        return {'updates': len(selected),
+                'reference_unchanged_both_sweeps_fraction': float(np.mean([r['path_is/frozen_update'] for r in selected])),
+                'logged_mean_displacement_rms_zero_fraction': float(np.mean([r['path_is/total_mean_displacement_rms']==0 for r in selected])),
+                **{k: float(np.mean([r[k] for r in selected])) for k in keys}}
     result = {'overall': summarize(updates), 'by_sigma': {},
               'all_reference_replays_exact': True,
+              'legacy_frozen_update_definition': 'Both resampled references unchanged; the Rao-Blackwell mean can still change. Logged mean RMS zero is reported separately.',
               'warning': 'Candidate-pool weight ESS is not the ESS of independent posterior samples.'}
     for lo, hi in [(0,.25),(.25,.5),(.5,.75),(.75,1)]:
         selected = [r for r in updates if lo <= r['path_is/sigma'] < hi]

@@ -485,13 +485,13 @@ for label,name in [('0','sd3-medium-path-is-train000'),('.25','sd3-medium-path-i
 tex+=r'''\begin{frame}{采样诊断：ESS、移动与冻结必须一起看}
 \small\centering
 \begin{tabular}{lrrr}\toprule
-$\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 整次更新冻结率\\\midrule
+$\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 参考链冻结率\\\midrule
 '''+ '\n'.join(rows)+r'''
 \bottomrule\end{tabular}
 \par\raggedright\vspace{5pt}
 \begin{itemize}\itemsep5pt
 \item ESS 为局部候选池权重 ESS；两个条件更新取均值，不是 MCMC 时间序列 ESS。
-\item 实际移动率要求加权抽中的 Student 读出发生变化；整次冻结指两次都未移动。
+\item 实际移动率要求加权抽中的 Student 读出发生变化；参考链冻结指两次重采样均未移动；加权均值仍可能变化。
 \item 高噪声更易移动；低噪声可能集中于参考，仍须结合位移 RMS 与分噪声段表。
 \item BF16 参考重放逐次校验；相同候选的高权重 ESS 不代表新增独立信息。
 \end{itemize}
@@ -591,6 +591,10 @@ manifest['computed_values']=computed_values
 artifacts=['bridged-exact-geometry-diagnostics/diagnostics.json',
            'teacher-capped-geometry-diagnostics/diagnostics.json',
            'deterministic-cohort-plan.json','adaptive-bridge-extension-plan.json',
+           'last-innovation-extension-plan.json','last-innovation-cache-audit.json',
+           'teacher-last-innovation-geometry-diagnostics/diagnostics.json',
+           'teacher-last-innovation-radius2-diagnostics/diagnostics.json',
+           'training-drift-long/training-drift.json',
            'deterministic-selection.json','deterministic-validation-plan.json']
 manifest['source_artifacts']={str(ROUND/name):hashlib.sha256((ROUND/name).read_bytes()).hexdigest()
                               for name in artifacts if (ROUND/name).exists()}

@@ -192,4 +192,29 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
     table('原路径版长训练确认：10000轮',
           [('DMD', 'dmd-seed42-10000-pick2048'), ('Path-IS', 'path-is-seed42-10000-pick2048')],
           r'原先固定的 $\lambda=.10$、Teacher-only、无时间权重；双方10000轮/1000次生成器更新。此组 CUDA 后向未启用新确定性设置，不能与新队列混为同组。')
+    drift = root/'training-drift-long/training-drift.json'
+    if drift.exists():
+        data = json.loads(drift.read_text())
+        assert data['outer_steps'] == 10000
+        baseline = data['methods']['DMD']
+        candidate = data['methods']['Path-IS']
+        lines = []
+        for i in [0, 2, 4, 7, 9]:
+            a, b = baseline[i], candidate[i]
+            vals = [str(b['outer_step_end']), f'{b["path_is/ess"]:.2f}',
+                    f'{b["path_is/path_ratio_span"]:.1f}', f'{100*b["path_is/frozen_update"]:.0f}',
+                    f'{100*a["gradient_clip_fraction"]:.0f}', f'{100*b["gradient_clip_fraction"]:.0f}']
+            lines.append(' & '.join(vals) + r' \\')
+            computed.extend(dict(title_contains='长训练中的提议漂移', value=v, source=str(drift)) for v in vals[1:])
+        tex += r'''\begin{frame}{长训练中的提议漂移：直接来自训练日志}
+\scriptsize\centering
+Teacher-only 原路径版；每行统计截至所列轮次的最近1000轮（100次生成器更新）。
+\begin{tabular}{rrrrrr}\toprule
+截至轮次 & ESS/8 & 路径比跨度 & 链冻结\% & DMD裁剪\% & Path裁剪\%\\\midrule
+''' + '\n'.join(lines) + r'''
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+固定 Teacher 提议随 Student 更新逐渐失配，是后续桥接与最后正方差块消融的动机。
+链冻结指两次参考重采样均未移动，加权均值仍可能变化。分噪声/停止点诊断另存；总平均 ESS 不代表所有层均有效。此表不是图像质量或全局收敛证明。
+\end{frame}
+'''
     return tex, reports, groups, computed

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T04:40:52.583840+08:00",
+  "updated_at": "2026-10-21T04:51:01.406490+08:00",
   "jobs": {
     "ocr": {
       "job_id": "t-20261021011436-d5rtf",
@@ -51,7 +51,8 @@
           "nfe": "Generator transformer forward passes per image; excludes training and scoring",
           "comparability": "Scores require the same prompts, model versions, preprocessing and scales for comparison"
         }
-      }
+      },
+      "query_error": "RuntimeError: Cloud status query failed"
     },
     "geneval": {
       "job_id": "t-20261021011501-rlmj5",
@@ -65,8 +66,8 @@
         "HoldingEndTime": "",
         "RetriedTimes": 0
       },
-      "step": 5663,
-      "generator_step": 566
+      "step": 6711,
+      "generator_step": 671
     }
   }
 }
