@@ -479,7 +479,7 @@ HPS & +0.6124 & [+0.5252, +0.6982] \\
 \begin{frame}{采样诊断：ESS、移动与冻结必须一起看}
 \small\centering
 \begin{tabular}{lrrr}\toprule
-$\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 整次更新冻结率\\\midrule
+$\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 参考链冻结率\\\midrule
 $0$ & 2.66 & 26.0\% & 66.0\% \\
 $.25$ & 2.86 & 30.5\% & 58.0\% \\
 $.10$ & 2.93 & 30.0\% & 57.0\% \\
@@ -488,7 +488,7 @@ $.5(1-\sigma)$ & 2.90 & 29.5\% & 59.0\% \\
 \par\raggedright\vspace{5pt}
 \begin{itemize}\itemsep5pt
 \item ESS 为局部候选池权重 ESS；两个条件更新取均值，不是 MCMC 时间序列 ESS。
-\item 实际移动率要求加权抽中的 Student 读出发生变化；整次冻结指两次都未移动。
+\item 实际移动率要求加权抽中的 Student 读出发生变化；参考链冻结指两次重采样均未移动；加权均值仍可能变化。
 \item 高噪声更易移动；低噪声可能集中于参考，仍须结合位移 RMS 与分噪声段表。
 \item BF16 参考重放逐次校验；相同候选的高权重 ESS 不代表新增独立信息。
 \end{itemize}
@@ -585,6 +585,7 @@ D_\theta(y,\sigma)&=y-\sigma v_\theta(y,\sigma),\qquad J_\theta D=-\sigma J_\the
 \item latent 各坐标的差异进入完整平方范数；维度和路径长度都可能放大失配。
 \item 合理权重与正确后验并不保证有限候选池中有足够多的有效新候选。
 \item 必须同时报告候选 ESS、实际读出移动、重复值及加权候选方差。
+\item CFG4.5 Teacher clean 值沿用 DMD 的学习参考；未证明它等于 Teacher 四步 CPS 源的精确条件均值。
 \end{itemize}
 \end{frame}
 
@@ -655,10 +656,38 @@ $\sigma$ & 块大小 & Teacher ESS & Bridge ESS & Bridge 比跨度 & RB 方差�
 \item 低噪声仍可能冻结。采样改善与最终 PickScore/HPS 必须分开验证。
 \end{itemize}
 \end{frame}
+\begin{frame}{更小的改动：固定最后一个正方差创新块}
+\small
+纯 Teacher CPS 映射 $H=T_T(E)$ 与原权重 $w_{ST}(E)=\prod(M_S/M_T)L$ 保留。
+固定更早的创新，只更新最后正方差转移（$J=1$ 时更新初始创新）的一组坐标 $B$：
+\begin{align}
+\pi(E_B\mid E_{-B},y,J)&\propto\phi_B(E_B)w_{ST}(E),\\
+C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
+\end{align}
+\begin{equation}
+\log\widetilde w_i=\log w_{ST}(E_i)
+-\tfrac12\{\|E_{i,B}\|^2-\|E^*_{B}\|^2\}.
+\end{equation}
+两个对称辅助 Gaussian 密度相消；\textbf{标准 Gaussian 先验不能再省略}。
+包含正确条件参考的 i-SIR 保持原后验；没有桥接场、MH 接受率或新的末端噪声。
+\end{frame}
+
+\begin{frame}{最后正方差块：收益、局限与精确缓存}
+\small
+\begin{itemize}\itemsep5pt
+\item 早期创新的扰动会改变后续父状态和多个核比；固定这些父状态可避免这部分传播。
+\item 单独改对称辅助、仍随机选创新层时，四个 $J=4$ SD3 诊断池仍 ESS=1；保留此负结果。
+\item 固定最后层后，同组诊断 ESS 约6.25--7.51；更大半径2未带来一致方差收益，采用 $.5$。
+\item 更早前缀与 $J$ 不混合，因此只部分 Rao--Blackwell 化；不能把这一采样改善等同于完整后验方差已消除。
+\item 不变前缀的网络输出可缓存，但每次先逐张量检查父状态相同；模型每次参数更新后重新建缓存。
+\item 八个真实 SD3 查询池的 ESS、核比、移动和方差在缓存前后逐位一致；吞吐数字需另做隔离基准。
+\end{itemize}
+\end{frame}
+
 \begin{frame}{新对照的选型与独立验证规则}
 \small
 \begin{itemize}\itemsep5pt
-\item 十组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
+\item 十二组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
 \item 同时匹配原 DMD 和 FP32 观测噪声 DMD；逐指标取两者较大值作为开发参考。
 \item Pick/HPS 均需上升，CLIP 不低于参考 $-.10$、Aesthetic 不低于 $-.03$；排序预先固定。
 \item 无粒子的成对源仅是归因对照，不能替代所请求的路径比方法。
@@ -671,6 +700,8 @@ $\sigma$ & 块大小 & Teacher ESS & Bridge ESS & Bridge 比跨度 & RB 方差�
 \begin{tabular}{clrrrr}\toprule
 NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
 4 & DMD & 25.5532 & 5.4187 & 21.0938 & 24.8702 \\
+4 & DMD, FP32 query & 25.3443 & 5.4192 & 21.2014 & 25.6207 \\
+4 & Path-IS & 25.9538 & 5.4955 & 21.3902 & 26.1820 \\
 \bottomrule\end{tabular}\par\raggedright\vspace{6pt}
 仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。
 \end{frame}

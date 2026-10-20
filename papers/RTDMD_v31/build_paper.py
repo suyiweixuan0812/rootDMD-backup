@@ -428,7 +428,7 @@ tex+=r'''\begin{frame}{独立开发集：DrawBench64，不能冒充最终 PickSc
 '''+score_table(dev_items)+r'''
 \par\raggedright\vspace{4pt}
 原 PickScore 训练、seed42、NFE=4；其余外部配置相同。
-两组附加正则细节在前两组开发成绩之后提出，尚未使用本轮最终测试成绩选择。
+两组附加正则细节在前两组开发成绩之后提出，尚未使用首轮完整测试成绩选择。
 \begin{alertblock}{解读}
 优先两项偏好指标共同提升，同时检查 CLIP/Aesthetic；单项更高不能代表全部目标更好。
 采样器不变的 $\lambda$ 消融用于区分正则收益，不能把所有增益都归因于 ESS。
@@ -440,12 +440,12 @@ selection=json.loads(selection_file.read_text()) if selection_file.exists() else
 final_items=[('DMD','dmd-ema-pick2048-exact')]
 if selection:
     final_items += [(selection['paper_label'], selection['final_evaluation_run'])]
-else:final_items += [('本轮最终候选','FINAL_NOT_SELECTED')]
-tex+=r'''\begin{frame}{完整测试：同 2048 条 PickScore 提示词}
+else:final_items += [('首轮开发候选','FINAL_NOT_SELECTED')]
+tex+=r'''\begin{frame}{首轮完整测试：同 2048 条 PickScore 提示词}
 \small\centering
 '''+score_table(final_items)+r'''
 \par\raggedright\vspace{5pt}
-相同保存 PNG 评分协议；推理 NFE=4。最终候选在开发集上选择，选择记录随结果保存。
+相同保存 PNG 评分协议；推理 NFE=4。首轮候选在开发集上选择，选择记录随结果保存。
 此前 Source-IS、MH、PC-MH 的数值属于旧方法，不列入本版主方法成绩。
 \begin{alertblock}{结论的证据范围}
 若某项下降，原样报告。单次训练不能证明普遍优于 DMD；提示词区间也不能替代多训练种子。
@@ -575,12 +575,18 @@ tex=tex.replace(r'\begin{frame}{仍未被实验或理论解决的边界}',bridge
 added_reports.update(bridge_reports)
 added_groups.extend(bridge_groups)
 computed_values.extend(bridge_values)
+from paper_round_outcome import render as render_outcome
+outcome,outcome_reports,outcome_groups,outcome_values=render_outcome(ROUND)
+tex=tex.replace(r'\maketitle',r'\maketitle'+'\n'+outcome,1)
+added_reports.update(outcome_reports)
+added_groups.extend(outcome_groups)
+computed_values.extend(outcome_values)
 (OUT/'RTDMD_SchemeA_Reorganized_Final_CN_v31.tex').write_text(tex)
 print('v31 frames:',tex.count('\\begin{frame}'),'plus title')
 
 manifest={'reports':{name:str(ROUND/'evidence'/name/'final-metrics.json') for _,name in dev_items+final_items},
  'report_sha256':{name:hashlib.sha256((ROUND/'evidence'/name/'final-metrics.json').read_bytes()).hexdigest() for _,name in dev_items+final_items if (ROUND/'evidence'/name/'final-metrics.json').exists()},
- 'validation_table_groups':[{'title_contains':'独立开发集','names':[n for _,n in dev_items]},{'title_contains':'完整测试：同','names':[n for _,n in final_items]}],
+ 'validation_table_groups':[{'title_contains':'独立开发集','names':[n for _,n in dev_items]},{'title_contains':'首轮完整测试：同','names':[n for _,n in final_items]}],
  'selection':selection,'source_sha256':hashlib.sha256(tex.encode()).hexdigest()}
 (OUT/'paper-data-manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False))
 

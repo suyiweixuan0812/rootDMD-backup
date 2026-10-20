@@ -29,6 +29,23 @@ def render(root):
 \end{itemize}
 \end{frame}
 
+\begin{frame}{为什么直接增加少量粒子难以解决高维失配}
+\small
+连续单步等协方差 Gaussian 的精确计算：令
+$a=\|\mu_S-\mu_T\|^2/\nu^2$，$W=M_S/M_T$，则
+\begin{align}
+\log W\mid M_T&\sim\N(-a/2,a),\\
+\E_{M_T}[W]&=1,\quad \E_{M_T}[W^2]=e^a,
+\quad\mathrm{CV}^2(W)=e^a-1.
+\end{align}
+\begin{itemize}\itemsep5pt
+\item 小的逐坐标均值差也会累加到 $a$；权重方差可迅速增长。
+\item 这是固定父状态的理想单步公式，不是非线性整条 BF16 路径的闭式 ESS 公式。
+\item 把8粒子增加几倍不保证覆盖目标高概率区域；16张卡也不会自动修复提议失配。
+\item 后续两条细节路线：修正提议以减小失配，或固定更多上下文只做可控的条件平均。
+\end{itemize}
+\end{frame}
+
 \begin{frame}{保留路径比主线的扩展：显式修正桥接提议}
 \small
 Teacher-only 版本保留为 $\gamma=0$ 基线。可选改进使用同一正方差 CPS 核：
@@ -187,7 +204,7 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
                 ('确定性完整 PickScore 测试：seed42', 42, 'pick2048-exact', '固定开发候选后的2048条完整测试；同推理噪声与四项评分模型。'),
                 ('保留提示词验证：138条唯一提示词', 42, 'holdout138-exact', '与开发集及 PickScore 训练/测试逐字去重；结果不用于重新选择参数。'),
                 ('确定性训练种子复核：seed43', 43, 'pick2048-exact', '已固定的方法重新训练；单提示词 bootstrap 区间不能代替训练种子不确定性。')]:
-            active = cases if seed == 42 else cases[:3]
+            active = cases
             table(title, [(LABELS[c], f'sd3-det-{c}-seed{seed}-{suffix}') for c in active], note)
     table('原路径版长训练确认：10000轮',
           [('DMD', 'dmd-seed42-10000-pick2048'), ('Path-IS', 'path-is-seed42-10000-pick2048')],

@@ -97,7 +97,8 @@ def main():
     # Freeze the replication plan before any new candidate test/holdout score.
     plan = dict(frozen_utc=datetime.now(timezone.utc).isoformat(), selected_case=best,
                 selected_file_sha256=hashlib.sha256(selected.read_bytes()).hexdigest(),
-                seed42_full_and_holdout_cases=cases, seed43_replication_cases=['dmd', 'dmd_fp32', best],
+                seed42_full_and_holdout_cases=cases, seed43_replication_cases=['dmd', 'dmd_fp32', best, control],
+                seed43_control_launch='After one of the first three training children exits; at most three concurrent training models plus one evaluation pipeline',
                 seed43_selection_role='None: independent training replication of the already selected method',
                 heldout_role='Reserved 138 unique DrawBench prompts; never used to select or retune',
                 deadline_utc='2026-10-21T01:20:00+00:00')
@@ -120,12 +121,29 @@ def main():
                                      start_new_session=True)
             log.close()
             children.append((case, child))
+    def launch_control_if_capacity():
+        if any(case == control for case, _ in children):
+            return
+        status = ROUND/'evidence'/f'sd3-det-{control}-seed43'/'status.txt'
+        if status.exists() and status.read_text().strip() == 'COMPLETED_DETERMINISTIC_DEV64':
+            return
+        if not children or not any(child.poll() is not None for _, child in children):
+            return
+        if DEADLINE-time.time() < 3600:
+            return
+        with (Path('/rootDMD')/f'path-is-det-{control}-seed43.log').open('w') as stream:
+            command = ['timeout', '--signal=TERM', '--kill-after=30s', str(int(DEADLINE-time.time()-180)),
+                       'bash', 'jobs/run_deterministic_comparison_trial_v3.sh', control, '43']
+            child = subprocess.Popen(command, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT,
+                                     start_new_session=True)
+        children.append((control, child))
     reports = []
     for case in cases:
         result = evaluate(case, 42, 'dataset/pickscore', 2048, 'pick2048-exact')
         if result is None:
             return
         reports.append(result)
+        launch_control_if_capacity()
     compare(reports[0], reports[1:], 'comparison-deterministic-seed42')
     compare(reports[1], reports[2:], 'comparison-deterministic-fp32-seed42')
     compare(reports[3], [reports[2]], 'comparison-deterministic-particle-vs-paired')
@@ -135,9 +153,11 @@ def main():
         if result is None:
             return
         heldout.append(result)
+        launch_control_if_capacity()
     compare(heldout[0], heldout[1:], 'comparison-deterministic-holdout138')
     replication = []
-    for case in ['dmd', 'dmd_fp32', best]:
+    for case in ['dmd', 'dmd_fp32', best, control]:
+        launch_control_if_capacity()
         status = ROUND / 'evidence' / f'sd3-det-{case}-seed43' / 'status.txt'
         while not status.exists() or status.read_text().strip() != 'COMPLETED_DETERMINISTIC_DEV64':
             if status.exists() and status.read_text().strip() == 'FAILED':
@@ -148,6 +168,9 @@ def main():
             if not children:
                 record('SEED43_NOT_LAUNCHED_BUDGET', case=case)
                 return
+            if case == control and not any(name == control for name, _ in children):
+                record('SEED43_CONTROL_NOT_LAUNCHED_WITHIN_BUDGET', case=case)
+                return
             time.sleep(10)
         persist(case, 43)
         result = evaluate(case, 43, 'dataset/pickscore', 2048, 'pick2048-exact')
@@ -156,6 +179,7 @@ def main():
         replication.append(result)
     compare(replication[0], replication[1:], 'comparison-deterministic-seed43')
     compare(replication[1], replication[2:], 'comparison-deterministic-fp32-seed43')
+    compare(replication[3], [replication[2]], 'comparison-deterministic-particle-vs-paired-seed43')
     record('ALL_PLANNED_VALIDATION_COMPLETED', selected_case=best,
            seed42_reports=reports, holdout_reports=heldout, seed43_reports=replication)
 

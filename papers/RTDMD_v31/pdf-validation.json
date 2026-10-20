@@ -1,5 +1,5 @@
 {
-  "page_count": 44,
+  "page_count": 46,
   "all_pages_rendered": true,
   "numeric_values_verified": [
     {
@@ -241,13 +241,53 @@
       "run": "sd3-det-dmd-seed42",
       "metric": "HP Score",
       "rendered_value": "24.8702"
+    },
+    {
+      "run": "sd3-det-dmd_fp32-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "25.3443"
+    },
+    {
+      "run": "sd3-det-dmd_fp32-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4192"
+    },
+    {
+      "run": "sd3-det-dmd_fp32-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.2014"
+    },
+    {
+      "run": "sd3-det-dmd_fp32-seed42",
+      "metric": "HP Score",
+      "rendered_value": "25.6207"
+    },
+    {
+      "run": "sd3-det-base-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "25.9538"
+    },
+    {
+      "run": "sd3-det-base-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4955"
+    },
+    {
+      "run": "sd3-det-base-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.3902"
+    },
+    {
+      "run": "sd3-det-base-seed42",
+      "metric": "HP Score",
+      "rendered_value": "26.1820"
     }
   ],
   "source_complete": true,
   "outside_page_text": [],
   "replacement_character_pages": [],
-  "pdf_sha256": "fe405bef29db712c568cdf8d45e9dad74e72b939d1330cf0a97b427db29462bf",
-  "tex_sha256": "da4280b2711a53547d92364aad923a0535e509923dc7bedf6bd31ec71a70c41b",
+  "pdf_sha256": "6ca71f398cf7490439bda544831cc6e2fef923c1072e2678da258df19ecef144",
+  "tex_sha256": "0082f24137ab2500a0e1843cc35413b7f14f85dcfb2e3f973d2be87684f04e49",
   "preview_directory": "/dev/shm/rtdmd-v31-pdf-preview",
   "visual_review": "Pending review of rendered pages"
 }

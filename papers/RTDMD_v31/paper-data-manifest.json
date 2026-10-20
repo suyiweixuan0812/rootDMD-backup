@@ -9,7 +9,9 @@
     "path-is-selected-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-selected-pick2048-exact/final-metrics.json",
     "dmd-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-seed43-pick2048-exact/final-metrics.json",
     "path-is-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed43-pick2048-exact/final-metrics.json",
-    "sd3-det-dmd-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42/final-metrics.json"
+    "sd3-det-dmd-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42/final-metrics.json",
+    "sd3-det-dmd_fp32-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42/final-metrics.json",
+    "sd3-det-base-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-base-seed42/final-metrics.json"
   },
   "report_sha256": {
     "dmd-ema-dev64-exact": "1971f7320167e81e50b2ec68be633445f61abe7c4532d86234bade180705e440",
@@ -21,7 +23,9 @@
     "path-is-selected-pick2048-exact": "a8e0cd1719e08de2abd6e30011c1325a26827df3ecb3ff733e00a322385d06d9",
     "dmd-seed43-pick2048-exact": "c95ce848ce0298cc93f2e14c6a0f20484fbf76cba91d964278cda1da029c1e7c",
     "path-is-seed43-pick2048-exact": "cc5e7260269f1cc0d1a4b879f598f2189d02ebce8f80cccf024bb8573de5067a",
-    "sd3-det-dmd-seed42": "166f55fdd8dfaa5640ba5c0fd6f50509f52f2ab981c63f2352b4205aa5bd70b2"
+    "sd3-det-dmd-seed42": "166f55fdd8dfaa5640ba5c0fd6f50509f52f2ab981c63f2352b4205aa5bd70b2",
+    "sd3-det-dmd_fp32-seed42": "b5429a3e142a750ad8b70d55c6af56070474c48ebeb1783d0199572ea67c30bf",
+    "sd3-det-base-seed42": "58fc460c5881ac3d3be43a379e8c7e8343ebcfa6501c18eb342adc223c01c7e3"
   },
   "validation_table_groups": [
     {
@@ -53,7 +57,9 @@
     {
       "title_contains": "确定性开发集：对照与基线",
       "names": [
-        "sd3-det-dmd-seed42"
+        "sd3-det-dmd-seed42",
+        "sd3-det-dmd_fp32-seed42",
+        "sd3-det-base-seed42"
       ]
     }
   ],
@@ -131,7 +137,7 @@
       1500
     ]
   },
-  "source_sha256": "da4280b2711a53547d92364aad923a0535e509923dc7bedf6bd31ec71a70c41b",
+  "source_sha256": "0082f24137ab2500a0e1843cc35413b7f14f85dcfb2e3f973d2be87684f04e49",
   "computed_values": [
     {
       "title_contains": "两组训练种子",
@@ -217,7 +223,11 @@
   "source_artifacts": {
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json": "9759e249cbd9c8e4d0f6f36a9787d60ab270118da8009dde521aafe9c5c3fb95",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-capped-geometry-diagnostics/diagnostics.json": "a64b1c04901f1f08d824709a075dba554fdf49417eeaf72850cda36fe12cb8a6",
-    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-cohort-plan.json": "22072060483647f3730f3a806225b1e681bacc2d61ba94108f7cc68111680b92",
-    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/adaptive-bridge-extension-plan.json": "aec8314416ac3475006ab074f0a7aeb191477e9631035d346da06071e715ae42"
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-cohort-plan.json": "dbce77f7b528ea927b6af301ff162ba38322aa9ad10f5f852f7ee0b5acac6b0f",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/adaptive-bridge-extension-plan.json": "aec8314416ac3475006ab074f0a7aeb191477e9631035d346da06071e715ae42",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-innovation-extension-plan.json": "0ce9f3947af1a0025537071343a753c1073b08f5c747004a25090e4be56d4f28",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-innovation-cache-audit.json": "941e046601818f41b595d6ecc6f98114d59a9d640aecda8fe6aac90bc3d54b50",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-last-innovation-geometry-diagnostics/diagnostics.json": "575393f625058949e7b437393a42d8b7bdf9da17d212dbebb1aa5b5b75dfd3d5",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-last-innovation-radius2-diagnostics/diagnostics.json": "6036270f96377cec90e0542c08b9fe063fa980679c9b6d0d6bfbe0ae109cfd90"
   }
 }
