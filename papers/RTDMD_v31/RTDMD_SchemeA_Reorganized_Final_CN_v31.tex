@@ -229,7 +229,8 @@ M_a^{\rm BF16}(b\mid x)=\prod_d\left[
 \begin{equation}
 (H^*,J^*)\sim p_\theta(H,J),\quad y\sim L_\sigma(\cdot\mid F_\theta(H^*,J^*)),
 \end{equation}
-可知在固定 $y$ 后，$(H^*,J^*)$ 已服从所需后验。
+可知在固定 $y$ 后，$(H^*,J^*)$ 已服从所需后验。\par
+这依赖本轮的成对训练查询；不能给任意外部观测配一条任意参考后直接套用。
 \begin{block}{这项结论的条件}
 对\textbf{给定观测下参考本身的条件分布}取平均；不是给定一条任意轨迹就已精确。
 参数更新后必须重新生成参考；不能沿用旧参数轨迹并直接声称平稳初始化。
@@ -306,6 +307,26 @@ E_i\mid C&\overset{\rm iid}{\sim}\N(\rho C,\delta^2I),\qquad i=2,\ldots,N.
 \item 低噪声时退回参考可保持边缘正确，却几乎没有降方差收益。
 \end{itemize}
 \takeaway{不变性保证目标对应；混合、有效信息量与图像质量仍须通过真实实验评估。}
+\end{frame}
+
+\begin{frame}{Rao--Blackwell 的可证明收益与固定停止点的方差下界}
+\small
+在理想模型与正确平稳参考下，记 $F_i=F_\theta(E_i,J)$，$X_A$ 与 $X^*\mid y$ 同分布。
+\begin{equation}
+\Cov(X^*\mid y)-\Cov(\widehat m_C\mid y)
+=\E\!\left[\sum_i\bar w_i(F_i-\widehat m_C)(F_i-\widehat m_C)^\top\mid y\right]\succeq0.
+\end{equation}
+\begin{itemize}\itemsep4pt
+\item 与单个成对参考估计相比，条件加权平均的协方差不增加；多次平稳估计的平均也满足该上界。
+\item 该结论不保证优于任意独立 SNIS、任意其他链，也不等于图像质量一定更高。
+\item 候选读出全相同或权重集中于参考时，右端接近零；高权重 ESS 本身不足以证明降方差。
+\end{itemize}
+固定 $J$ 时仍有停止点之间的方差：
+\begin{equation}
+\Cov(\widehat m\mid y)\succeq
+\Cov\!\left(\E[X\mid J,y]\mid y\right).
+\end{equation}
+\takeaway{局部候选多样性决定真实降方差；固定 $J$ 与小坐标块也限制收益上限。}
 \end{frame}
 
 \begin{frame}{本轮局部粒子设置与 CFG 的区分}
@@ -411,13 +432,13 @@ G=\frac{[J_\theta D]^\top}{n_\theta(y)}.
 \begin{frame}{独立开发集：DrawBench64，不能冒充最终 PickScore 测试}
 \small
 \centering
-\begin{tabular}{lrrrr}\toprule
-方法 & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
-DMD & 26.0538 & 5.4373 & 21.1923 & 25.6088 \\
-Path-IS, $\lambda=0$ & 26.0650 & 5.4513 & 21.3578 & 26.4090 \\
-Path-IS, $\lambda=.25$ & 26.8296 & 5.4659 & 21.4786 & 25.7038 \\
-Path-IS, $\lambda=.10$ & \multicolumn{4}{c}{运行中；不填推测值} \\
-Path-IS, $\lambda=.5(1-\sigma)$ & \multicolumn{4}{c}{运行中；不填推测值} \\\bottomrule\end{tabular}
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & DMD & 26.0538 & 5.4373 & 21.1923 & 25.6088 \\
+4 & Path-IS, $\lambda=0$ & 26.0650 & 5.4513 & 21.3578 & 26.4090 \\
+4 & Path-IS, $\lambda=.25$ & 26.8296 & 5.4659 & 21.4786 & 25.7038 \\
+4 & Path-IS, $\lambda=.10$ & 25.9648 & 5.5291 & 21.4792 & 26.6251 \\
+4 & Path-IS, $\lambda=.5(1-\sigma)$ & 26.5994 & 5.4924 & 21.4137 & 25.9958 \\\bottomrule\end{tabular}
 \par\raggedright\vspace{4pt}
 原 PickScore 训练、seed42、NFE=4；其余外部配置相同。
 两组附加正则细节在前两组开发成绩之后提出，尚未使用本轮最终测试成绩选择。
@@ -428,10 +449,10 @@ Path-IS, $\lambda=.5(1-\sigma)$ & \multicolumn{4}{c}{运行中；不填推测值
 \end{frame}
 \begin{frame}{完整测试：同 2048 条 PickScore 提示词}
 \small\centering
-\begin{tabular}{lrrrr}\toprule
-方法 & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
-DMD & \multicolumn{4}{c}{运行中；不填推测值} \\
-本轮最终候选 & \multicolumn{4}{c}{运行中；不填推测值} \\\bottomrule\end{tabular}
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & DMD & 25.5374 & 5.9152 & 20.3478 & 27.2742 \\
+4 & Path-IS, $\lambda=.10$ & 25.6359 & 6.0100 & 20.6187 & 27.8866 \\\bottomrule\end{tabular}
 \par\raggedright\vspace{5pt}
 相同保存 PNG 评分协议；推理 NFE=4。最终候选在开发集上选择，选择记录随结果保存。
 此前 Source-IS、MH、PC-MH 的数值属于旧方法，不列入本版主方法成绩。
@@ -441,7 +462,12 @@ DMD & \multicolumn{4}{c}{运行中；不填推测值} \\
 \end{frame}
 \begin{frame}{成对差异与置信范围：对提示词抽样，不对训练种子}
 \small
-完整测试仍运行；区间只在逐图分数齐全并审计一致后生成。
+\centering\begin{tabular}{lrr}\toprule 指标 & 候选减 DMD & 提示词 bootstrap 95\%区间\\\midrule
+CLIP & +0.0985 & [-0.0354, +0.2295] \\
+Aesthetic & +0.0948 & [+0.0787, +0.1108] \\
+Pick & +0.2709 & [+0.2453, +0.2962] \\
+HPS & +0.6124 & [+0.5252, +0.6982] \\
+\bottomrule\end{tabular}\par\raggedright
 \vspace{5pt}
 \begin{itemize}\itemsep5pt
 \item 按相同提示词及索引配对，10000 次提示词 bootstrap。
@@ -456,8 +482,8 @@ DMD & \multicolumn{4}{c}{运行中；不填推测值} \\
 $\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 整次更新冻结率\\\midrule
 $0$ & 2.66 & 26.0\% & 66.0\% \\
 $.25$ & 2.86 & 30.5\% & 58.0\% \\
-$.10$ & \multicolumn{3}{c}{训练未完成} \\
-$.5(1-\sigma)$ & \multicolumn{3}{c}{训练未完成} \\
+$.10$ & 2.93 & 30.0\% & 57.0\% \\
+$.5(1-\sigma)$ & 2.90 & 29.5\% & 59.0\% \\
 \bottomrule\end{tabular}
 \par\raggedright\vspace{5pt}
 \begin{itemize}\itemsep5pt

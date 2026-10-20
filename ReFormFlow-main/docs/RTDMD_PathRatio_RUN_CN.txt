@@ -71,3 +71,11 @@ CLIP/HPS表中乘100；PickScore恢复raw logits（仓库内部值乘26）；Aes
 整体资源监测在/rootDMD/development-load-guard/resource-monitor.jsonl。
 需要提前停止时：删除/rootDMD/development-load-guard/enabled。
 保活负载不是科研进展，不计入模型性能或有效训练。
+
+7. 公开评分模型缓存恢复
+本轮为保存完整原始PNG，把公开PickScore模型缓存原样迁入RAM并保留旧路径链接；官方LFS SHA256已校验。
+训练产物与主实验原始PNG在持久盘。公开模型缓存属于可重新下载数据，不是训练结果。
+本机重启、RAM缓存丢失后，在联网环境先执行：
+ source /rootDMD/ReFormFlow-main/jobs/local_env.sh
+ python /rootDMD/ReFormFlow-main/jobs/restore_public_pickscore_cache.py
+其他既有SD3/CLIP/HPS的RAM模型也需按原环境下载脚本恢复；本轮未更改它们的权重。

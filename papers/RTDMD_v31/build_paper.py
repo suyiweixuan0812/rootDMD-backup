@@ -1,9 +1,11 @@
 """Build v31 from frozen reports. Missing final results remain explicitly pending."""
 from pathlib import Path
 import json
+import hashlib
+import os
 
 OUT=Path(__file__).resolve().parent
-ROOT=Path('/rootDMD/ReFormFlow-main')
+ROOT=Path(os.environ.get('REFORMDMD_ROOT',str(OUT.parents[1]/'ReFormFlow-main')))
 ROUND=ROOT/'logs/path-ratio-round1'
 preamble=(OUT.parent/'RTDMD_v30/RTDMD_SchemeA_Reorganized_Final_CN_v30.tex').read_text().split('\\title[')[0]
 preamble=preamble.replace('% v30: generated from actual saved PNG evaluation reports; self-contained source.', '% v31: Teacher/Student path-ratio repair; actual results only.')
@@ -566,3 +568,9 @@ $\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 整次更新冻结率\\\mid
 '''
 (OUT/'RTDMD_SchemeA_Reorganized_Final_CN_v31.tex').write_text(tex)
 print('v31 frames:',tex.count('\\begin{frame}'),'plus title')
+
+manifest={'reports':{name:str(ROUND/'evidence'/name/'final-metrics.json') for _,name in dev_items+final_items},
+ 'report_sha256':{name:hashlib.sha256((ROUND/'evidence'/name/'final-metrics.json').read_bytes()).hexdigest() for _,name in dev_items+final_items if (ROUND/'evidence'/name/'final-metrics.json').exists()},
+ 'validation_table_groups':[{'title_contains':'独立开发集','names':[n for _,n in dev_items]},{'title_contains':'完整测试：同','names':[n for _,n in final_items]}],
+ 'selection':selection,'source_sha256':hashlib.sha256(tex.encode()).hexdigest()}
+(OUT/'paper-data-manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False))

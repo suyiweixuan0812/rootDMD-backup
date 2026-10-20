@@ -1,0 +1,155 @@
+{
+  "page_count": 32,
+  "all_pages_rendered": true,
+  "numeric_values_verified": [
+    {
+      "run": "dmd-ema-dev64-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "26.0538"
+    },
+    {
+      "run": "dmd-ema-dev64-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4373"
+    },
+    {
+      "run": "dmd-ema-dev64-exact",
+      "metric": "Pick Score",
+      "rendered_value": "21.1923"
+    },
+    {
+      "run": "dmd-ema-dev64-exact",
+      "metric": "HP Score",
+      "rendered_value": "25.6088"
+    },
+    {
+      "run": "path-is000-ema-dev64-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "26.0650"
+    },
+    {
+      "run": "path-is000-ema-dev64-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4513"
+    },
+    {
+      "run": "path-is000-ema-dev64-exact",
+      "metric": "Pick Score",
+      "rendered_value": "21.3578"
+    },
+    {
+      "run": "path-is000-ema-dev64-exact",
+      "metric": "HP Score",
+      "rendered_value": "26.4090"
+    },
+    {
+      "run": "path-is025-ema-dev64-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "26.8296"
+    },
+    {
+      "run": "path-is025-ema-dev64-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4659"
+    },
+    {
+      "run": "path-is025-ema-dev64-exact",
+      "metric": "Pick Score",
+      "rendered_value": "21.4786"
+    },
+    {
+      "run": "path-is025-ema-dev64-exact",
+      "metric": "HP Score",
+      "rendered_value": "25.7038"
+    },
+    {
+      "run": "sd3-medium-path-is-train010",
+      "metric": "CLIP Score",
+      "rendered_value": "25.9648"
+    },
+    {
+      "run": "sd3-medium-path-is-train010",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.5291"
+    },
+    {
+      "run": "sd3-medium-path-is-train010",
+      "metric": "Pick Score",
+      "rendered_value": "21.4792"
+    },
+    {
+      "run": "sd3-medium-path-is-train010",
+      "metric": "HP Score",
+      "rendered_value": "26.6251"
+    },
+    {
+      "run": "sd3-medium-path-is-train_sigma",
+      "metric": "CLIP Score",
+      "rendered_value": "26.5994"
+    },
+    {
+      "run": "sd3-medium-path-is-train_sigma",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4924"
+    },
+    {
+      "run": "sd3-medium-path-is-train_sigma",
+      "metric": "Pick Score",
+      "rendered_value": "21.4137"
+    },
+    {
+      "run": "sd3-medium-path-is-train_sigma",
+      "metric": "HP Score",
+      "rendered_value": "25.9958"
+    },
+    {
+      "run": "dmd-ema-pick2048-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "25.5374"
+    },
+    {
+      "run": "dmd-ema-pick2048-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.9152"
+    },
+    {
+      "run": "dmd-ema-pick2048-exact",
+      "metric": "Pick Score",
+      "rendered_value": "20.3478"
+    },
+    {
+      "run": "dmd-ema-pick2048-exact",
+      "metric": "HP Score",
+      "rendered_value": "27.2742"
+    },
+    {
+      "run": "path-is-selected-pick2048-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "25.6359"
+    },
+    {
+      "run": "path-is-selected-pick2048-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "6.0100"
+    },
+    {
+      "run": "path-is-selected-pick2048-exact",
+      "metric": "Pick Score",
+      "rendered_value": "20.6187"
+    },
+    {
+      "run": "path-is-selected-pick2048-exact",
+      "metric": "HP Score",
+      "rendered_value": "27.8866"
+    }
+  ],
+  "source_complete": true,
+  "outside_page_text": [],
+  "replacement_character_pages": [],
+  "pdf_sha256": "efe873069ac4fcaf478e7721250d04e88ec0c388a0831b905ea7c78a6b51eae3",
+  "tex_sha256": "b1b44a5f47a5feb94d01da2b545683c4d85f01ab3554a49e072224d485fd6e09",
+  "preview_directory": "/dev/shm/rtdmd-v31-pdf-preview",
+  "visual_review": "All32 pages reviewed in contact sheets; posterior and variance proofs and final metric table checked at full size; no clipped content.",
+  "desktop_editor_compilation": "success",
+  "desktop_editor_checked_utc": "2026-10-20T18:58:51.999749+00:00"
+}

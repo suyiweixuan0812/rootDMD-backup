@@ -1,0 +1,114 @@
+{
+  "reports": {
+    "dmd-ema-dev64-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-ema-dev64-exact/final-metrics.json",
+    "path-is000-ema-dev64-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is000-ema-dev64-exact/final-metrics.json",
+    "path-is025-ema-dev64-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is025-ema-dev64-exact/final-metrics.json",
+    "sd3-medium-path-is-train010": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-medium-path-is-train010/final-metrics.json",
+    "sd3-medium-path-is-train_sigma": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-medium-path-is-train_sigma/final-metrics.json",
+    "dmd-ema-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-ema-pick2048-exact/final-metrics.json",
+    "path-is-selected-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-selected-pick2048-exact/final-metrics.json"
+  },
+  "report_sha256": {
+    "dmd-ema-dev64-exact": "1971f7320167e81e50b2ec68be633445f61abe7c4532d86234bade180705e440",
+    "path-is000-ema-dev64-exact": "1b0ae1f76820dad8d40679c312bfb3f50c79d2aa5490ca293002e1c89b584e37",
+    "path-is025-ema-dev64-exact": "0c08a4bd08bcbe76c22f1ef29e150ef5edb9ea1afef1ed5389d73ae0fd8d1cea",
+    "sd3-medium-path-is-train010": "46f85506018d29ec94ca5ec1d99b3618247ad8721ff92413a0f09625419f7125",
+    "sd3-medium-path-is-train_sigma": "5fc5b40a71ce2a11061f17b36e5f3ce1dac0ddec38d4641bc7ffce7304904171",
+    "dmd-ema-pick2048-exact": "143b804189ca28a6c8575eaa2e34b50b99b15f3e45031d28cc2804600c177bb6",
+    "path-is-selected-pick2048-exact": "a8e0cd1719e08de2abd6e30011c1325a26827df3ecb3ff733e00a322385d06d9"
+  },
+  "validation_table_groups": [
+    {
+      "title_contains": "独立开发集",
+      "names": [
+        "dmd-ema-dev64-exact",
+        "path-is000-ema-dev64-exact",
+        "path-is025-ema-dev64-exact",
+        "sd3-medium-path-is-train010",
+        "sd3-medium-path-is-train_sigma"
+      ]
+    },
+    {
+      "title_contains": "完整测试：同",
+      "names": [
+        "dmd-ema-pick2048-exact",
+        "path-is-selected-pick2048-exact"
+      ]
+    }
+  ],
+  "selection": {
+    "selected_utc": "2026-10-20T18:27:04.898220+00:00",
+    "selection_rule": "selection-rule.json",
+    "development_candidates": [
+      {
+        "preset": "train000",
+        "run": "sd3-medium-path-is-train000",
+        "deltas": {
+          "CLIP Score": 0.011109886690974236,
+          "Aesthetic Score": 0.013946957886219025,
+          "Pick Score": 0.16552727296948433,
+          "HP Score": 0.8001593640074134
+        },
+        "eligible": true,
+        "rank_min": 0.8276363648474216,
+        "rank_sum": 2.4279550928622484
+      },
+      {
+        "preset": "train025",
+        "run": "sd3-medium-path-is-train025",
+        "deltas": {
+          "CLIP Score": 0.7757996441796422,
+          "Aesthetic Score": 0.02853226661682129,
+          "Pick Score": 0.28630321100354195,
+          "HP Score": 0.09498368017375469
+        },
+        "eligible": true,
+        "rank_min": 0.18996736034750938,
+        "rank_sum": 1.6214834153652191
+      },
+      {
+        "preset": "train010",
+        "run": "sd3-medium-path-is-train010",
+        "deltas": {
+          "CLIP Score": -0.08904119022190571,
+          "Aesthetic Score": 0.09177764505147934,
+          "Pick Score": 0.2869402915239334,
+          "HP Score": 1.0162859922274947
+        },
+        "eligible": true,
+        "rank_min": 1.434701457619667,
+        "rank_sum": 3.4672734420746565
+      },
+      {
+        "preset": "train_sigma",
+        "run": "sd3-medium-path-is-train_sigma",
+        "deltas": {
+          "CLIP Score": 0.5455760983750224,
+          "Aesthetic Score": 0.0550854355096817,
+          "Pick Score": 0.22141039744019508,
+          "HP Score": 0.38693181704729795
+        },
+        "eligible": true,
+        "rank_min": 0.7738636340945959,
+        "rank_sum": 1.8809156212955713
+      }
+    ],
+    "selected_preset": "train010",
+    "selected_training_run": "sd3-medium-path-is-train010",
+    "paper_label": "Path-IS, $\\lambda=.10$",
+    "final_evaluation_run": "path-is-selected-pick2048-exact",
+    "selected_from_development_only": true,
+    "selected_before_any_candidate_final_test_score": true,
+    "fixed_sample_indices": [
+      0,
+      1,
+      2,
+      3,
+      100,
+      500,
+      1000,
+      1500
+    ]
+  },
+  "source_sha256": "b1b44a5f47a5feb94d01da2b545683c4d85f01ab3554a49e072224d485fd6e09"
+}
