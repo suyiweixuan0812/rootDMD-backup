@@ -15,7 +15,7 @@ import time
 from datetime import datetime
 
 
-def cpu_worker(index, stop):
+def cpu_worker(index, stop, duty):
     os.environ['OPENBLAS_NUM_THREADS']='1'
     os.environ['OMP_NUM_THREADS']='1'
     os.environ['MKL_NUM_THREADS']='1'
@@ -26,8 +26,12 @@ def cpu_worker(index, stop):
     b=rng.standard_normal((256,256),dtype=np.float32)
     out=np.empty_like(a)
     while not stop.is_set():
-        for _ in range(24): np.matmul(a,b,out=out)
+        started=time.monotonic()
+        active=.2*duty.value
+        while time.monotonic()-started<active and not stop.is_set():
+            for _ in range(8):np.matmul(a,b,out=out)
         if not np.isfinite(out[0,0]): raise FloatingPointError('Nonfinite keepalive matrix output')
+        stop.wait(max(0,.2-(time.monotonic()-started)))
 
 
 def cpu_snapshot():
@@ -72,6 +76,7 @@ def main():
     os.nice(10)
     context=mp.get_context('spawn')
     stop=context.Event()
+    duty=context.Value("d", 1.0)
     # Do not acquire Event locks in a signal handler interrupted inside wait().
     stopping=[False]
     signal.signal(signal.SIGTERM,lambda *_:stopping.__setitem__(0,True))
@@ -81,7 +86,7 @@ def main():
         allocated_cpus=os.cpu_count() or len(os.sched_getaffinity(0))
         count=max(1,math.ceil(allocated_cpus*args.cpu_fraction))
         for index in range(count):
-            worker=context.Process(target=cpu_worker,args=(index,stop))
+            worker=context.Process(target=cpu_worker,args=(index,stop,duty))
             worker.start()
             workers.append(worker)
         import torch
@@ -103,6 +108,10 @@ def main():
         previous_process=process_cpu_seconds([os.getpid()]+[w.pid for w in workers])
         previous_time=time.monotonic()
         last_log=0.
+        own_pids={os.getpid()}|{w.pid for w in workers}
+        previous_other_cpu=process_cpu_seconds(int(p.name) for p in Path('/proc').iterdir()
+            if p.name.isdigit() and int(p.name) not in own_pids)
+        previous_control_time=time.monotonic()
         matrices=None
         external=[]
         while not stopping[0] and enable.exists() and time.monotonic()<deadline:
@@ -123,6 +132,13 @@ def main():
                     torch.mm(matrices[0],matrices[1],out=matrices[2])
                     torch.cuda.synchronize()
                 stop.wait(.05)
+            control_time=time.monotonic()
+            other_cpu=process_cpu_seconds(int(p.name) for p in Path('/proc').iterdir()
+                if p.name.isdigit() and int(p.name) not in own_pids)
+            other_cores=max(0,(other_cpu-previous_other_cpu)/max(.01,control_time-previous_control_time))
+            desired=max(0,min(1,(args.cpu_fraction*allocated_cpus-other_cores)/count))
+            duty.value=.5*duty.value+.5*desired
+            previous_other_cpu,previous_control_time=other_cpu,control_time
             if time.monotonic()-last_log>=30:
                 current=cpu_snapshot()
                 usage=100*(1-(current[1]-previous[1])/max(1,current[0]-previous[0]))
@@ -134,7 +150,7 @@ def main():
                 gpu=subprocess.run(['nvidia-smi','--query-gpu=utilization.gpu,memory.used,temperature.gpu',
                     '--format=csv,noheader,nounits'],capture_output=True,text=True).stdout.strip()
                 row=dict(timestamp=time.time(),purpose='User-requested keepalive, not experiment progress',
-                    cpu_workers=count,allocated_cpus=allocated_cpus,cpu_host_system_percent=usage,
+                    cpu_workers=count,cpu_worker_duty=duty.value,external_cpu_cores=other_cores,allocated_cpus=allocated_cpus,cpu_host_system_percent=usage,
                     cpu_allocated_percent=allocated_usage,gpu_snapshot=gpu,own_gpu_host_pids=sorted(own_gpu_pids),
                     yielding_gpu_to=external,remaining_seconds=max(0,deadline-time.monotonic()))
                 with (args.directory/'utilization.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
