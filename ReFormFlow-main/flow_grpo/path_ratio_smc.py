@@ -127,7 +127,7 @@ def evaluate_teacher_path(innovations, stops, observation, sigma_observation,
         student=student.to(x.dtype)
         reads.append((x - s * student).to(sample.dtype))
         prefixes.append(cumulative)
-        if k + 1 == count:
+        if k == int(stops.max().item()):
             break  # Shared Student clean readout: NO terminal Gaussian ratio.
         t = grid[k + 1]
         teacher = teacher_velocity(sample, s).to(x.dtype)

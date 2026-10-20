@@ -28,6 +28,8 @@ def main():
     parser.add_argument('--smc-stages',type=int,default=16)
     parser.add_argument('--local',action='store_true')
     parser.add_argument('--micro-batch',type=int,default=8)
+    parser.add_argument('--block-size',type=int,default=0)
+    parser.add_argument('--source-stops',type=int,nargs='+')
     parser.add_argument('--local-scales',type=float,nargs='+',default=[.0003,.001,.003,.01])
     parser.add_argument('--output',type=Path,default=root/'logs/path-ratio-prototype/sd3-diagnostics')
     args=parser.parse_args()
@@ -78,6 +80,8 @@ def main():
         selected_embeds,selected_pooled=embeds[index:index+1],pooled[index:index+1]
         state=SourceState(torch.randn(shape,device='cuda'),torch.randn((3,)+shape,device='cuda'),
             torch.randint(1,5,(1,),device='cuda'))
+        if args.source_stops:
+            state=SourceState(state.z,state.noises,torch.tensor([args.source_stops[index%len(args.source_stops)]],device='cuda'))
         source=replay_source(transformer,state,selected_embeds,selected_pooled,tensor_sigmas,total,.9,torch.bfloat16)
         for sigma in [.25,.5,.75]:
             observation=(1-sigma)*source.float()+sigma*torch.randn_like(source,dtype=torch.float32)
@@ -101,10 +105,11 @@ def main():
                     error=float((replay.source.float()-source.float()).abs().max())
                     if error!=0:raise RuntimeError(f'Reference source replay mismatch: {error}')
                     for base_scale in args.local_scales:
-                        scale=min(.05,max(.00001,base_scale*sigma/(1-sigma)/math.sqrt(len(prefix))))
+                        denominator=math.sqrt(args.block_size or len(prefix))
+                        scale=min(.5,max(.00001,base_scale*sigma/(1-sigma)/denominator))
                         started=time.monotonic()
                         result=conditional_importance_sweep(lifted,j,evaluate,num_particles=args.particles,
-                            auxiliary_scale=scale,generator=generator)
+                            auxiliary_scale=scale,block_size=args.block_size or None,generator=generator)
                         torch.cuda.synchronize()
                         row=dict(prompt_index=index,prompt=prompt,sigma=sigma,proposal_cfg=cfg,
                             particles=args.particles,base_scale=base_scale,source_stop=len(prefix),

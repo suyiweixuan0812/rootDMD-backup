@@ -12,6 +12,7 @@ from pathlib import Path
 import signal
 import subprocess
 import time
+from datetime import datetime
 
 
 def cpu_worker(index, stop):
@@ -55,6 +56,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--hours',type=float,default=8)
     parser.add_argument('--cpu-fraction',type=float,default=.64)
+    parser.add_argument('--deadline-utc')
     parser.add_argument('--directory',type=Path,default=Path('/rootDMD/development-load-guard'))
     args=parser.parse_args()
     if not 0<args.cpu_fraction<=.8 or args.hours<=0: parser.error('Invalid bounded load request')
@@ -95,6 +97,8 @@ def main():
             raise RuntimeError(f'Cannot safely identify own host CUDA PID: {added}')
         own_gpu_pids=added|{os.getpid()}
         deadline=time.monotonic()+args.hours*3600
+        if args.deadline_utc:
+            deadline=min(deadline,time.monotonic()+max(0,datetime.fromisoformat(args.deadline_utc).timestamp()-time.time()))
         previous=cpu_snapshot()
         previous_process=process_cpu_seconds([os.getpid()]+[w.pid for w in workers])
         previous_time=time.monotonic()
@@ -115,10 +119,10 @@ def main():
                     matrices=(a,b,torch.empty_like(a))
                     del a,b
                 started=time.monotonic()
-                while time.monotonic()-started<.8 and not stopping[0]:
+                while time.monotonic()-started<4. and not stopping[0]:
                     torch.mm(matrices[0],matrices[1],out=matrices[2])
                     torch.cuda.synchronize()
-                stop.wait(.2)
+                stop.wait(.05)
             if time.monotonic()-last_log>=30:
                 current=cpu_snapshot()
                 usage=100*(1-(current[1]-previous[1])/max(1,current[0]-previous[0]))

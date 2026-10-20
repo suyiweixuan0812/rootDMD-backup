@@ -62,5 +62,21 @@ class ConditionalPathISTests(unittest.TestCase):
             auxiliary_scale=.001,generator=torch.Generator().manual_seed(9))
         self.assertGreater(float(result.mean.mean()),90.)
 
+    def test_block_kernel_preserves_gaussian_posterior(self):
+        g=torch.Generator().manual_seed(81024)
+        n=30000
+        e=.5+.4**.5*torch.randn(n,2,4,generator=g,dtype=torch.float64)
+        def evaluate(x,j):
+            source=x.flatten(1)
+            w=(-.5*(source-.5).square()/.4+.5*source.square()).sum(1)
+            z=torch.zeros_like(w)
+            return PathEvaluation(source,w,w,z,z,z)
+        result=conditional_importance_sweep(e,torch.ones(n,dtype=torch.long),evaluate,
+            num_particles=8,auxiliary_scale=.4,block_size=2,generator=g)
+        changed=(result.innovations!=e).flatten(1).sum(1)
+        self.assertTrue((changed<=2).all())
+        self.assertLess(abs(float(result.innovations.mean())-.5),.006)
+        self.assertLess(abs(float(result.innovations.var())-.4),.008)
+
 
 if __name__=='__main__':unittest.main()

@@ -47,20 +47,20 @@ def lift_student_prefix(states,positive_sigmas,eta,teacher_velocity,initial_mean
         raise ValueError('Need a batch1 actual prefix')
     count=len(positive_sigmas)
     innovations=torch.randn((1,count)+states[0].shape[1:],device=states[0].device,
-        dtype=torch.float32,generator=generator)
+        dtype=torch.float64,generator=generator)
     def inverse(value,mean,std):
         if value.dtype!=torch.bfloat16:
-            return ((value-mean)/std).float()
+            return ((value.double()-mean.double())/std)
         lo=.5*(value.double()+torch.nextafter(value,torch.full_like(value,-float('inf'))).double())
         hi=.5*(value.double()+torch.nextafter(value,torch.full_like(value,float('inf'))).double())
         lower=(lo-mean.double())/std
         upper=(hi-mean.double())/std
-        out=_truncated_normal(lower,upper,generator).float()
-        # Exclude cells shifted by the actual FP32 multiply/add roundoff.
+        out=_truncated_normal(lower,upper,generator)
+        # Use FP64 proposal innovations: FP32 cancellation can miss BF16 cells.
         for _ in range(16):
-            mismatch=(mean.float()+std*out).to(value.dtype)!=value
+            mismatch=(mean.double()+std*out).to(value.dtype)!=value
             if not mismatch.any():return out
-            out[mismatch]=_truncated_normal(lower[mismatch],upper[mismatch],generator).float()
+            out[mismatch]=_truncated_normal(lower[mismatch],upper[mismatch],generator)
         raise RuntimeError('Lift did not reproduce the BF16 prefix exactly')
     shift=torch.zeros_like(states[0],dtype=torch.float32) if initial_mean is None else initial_mean.float()
     innovations[:,0]=inverse(states[0],shift,1.)
@@ -82,7 +82,7 @@ class ConditionalISResult:
 
 @torch.no_grad()
 def conditional_importance_sweep(reference,stops,evaluate,*,num_particles=8,
-                                 auxiliary_scale=.003,generator=None):
+                                 auxiliary_scale=.003,block_size=None,generator=None):
     """Local conditional i-SIR; keep J fixed within each posterior-invariant sweep.
 
     Let phi be the standard Gaussian Teacher-innovation reference. With
@@ -100,6 +100,16 @@ def conditional_importance_sweep(reference,stops,evaluate,*,num_particles=8,
         dtype=reference.dtype,generator=generator)
     candidates=rho*center[:,None]+delta*torch.randn((batch,num_particles-1)+reference.shape[1:],
         device=reference.device,dtype=reference.dtype,generator=generator)
+    if block_size is not None:
+        dimension=reference[0,0].numel()
+        if not 1<=block_size<=dimension:raise ValueError('Invalid Gaussian-coordinate block')
+        bank=(torch.rand(batch,device=reference.device,generator=generator)*(stops+1)).long()
+        offset=torch.randint(dimension,(batch,),device=reference.device,generator=generator)
+        coords=(offset[:,None]+torch.arange(block_size,device=reference.device))%dimension
+        mask=torch.zeros_like(reference,dtype=torch.bool).flatten(2)
+        mask[torch.arange(batch,device=reference.device)[:,None],bank[:,None],coords]=True
+        mask=mask.reshape_as(reference)
+        candidates=torch.where(mask[:,None],candidates,reference[:,None])
     particles=torch.cat([reference[:,None],candidates],dim=1)
     particle_stops=stops[:,None].expand(batch,num_particles)
     evaluated=evaluate(particles.flatten(0,1),particle_stops.flatten())
@@ -122,6 +132,7 @@ def conditional_importance_sweep(reference,stops,evaluate,*,num_particles=8,
         path_is_log_weight_range=float((evaluated.log_weight.reshape(batch,num_particles).max(1).values
             -evaluated.log_weight.reshape(batch,num_particles).min(1).values).mean()),
         path_is_auxiliary_scale=delta,
+        path_is_block_size=(int(block_size) if block_size is not None else int(reference[0].numel())),
         path_is_path_ratio_span=float((evaluated.log_path_ratio.reshape(batch,num_particles).max(1).values
             -evaluated.log_path_ratio.reshape(batch,num_particles).min(1).values).mean()),
         path_is_observation_span=float((evaluated.log_observation.reshape(batch,num_particles).max(1).values
