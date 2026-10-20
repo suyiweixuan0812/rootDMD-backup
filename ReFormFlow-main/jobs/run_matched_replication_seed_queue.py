@@ -22,7 +22,7 @@ def record():
     path = r/f'deterministic-replication-seed{a.seed}-progress.json'
     pending = path.with_suffix('.pending')
     pending.write_text(json.dumps(dict(queued=queue, running=list(running), completed=completed,
-        failed=failed, max_parallel_trainers=2, utc=datetime.now(timezone.utc).isoformat()), indent=2))
+        failed=failed, max_parallel_trainers=1, utc=datetime.now(timezone.utc).isoformat()), indent=2))
     pending.replace(path)
 
 
@@ -38,7 +38,7 @@ while queue or running:
             subprocess.run(['python', 'scripts/persist_path_round_checkpoint.py', '--training-run',
                 f'sd3-det-{case}-seed{a.seed}', '--name', f'sd3-det-{case}-seed{a.seed}-ema1000'], cwd=root, check=True)
             completed.append(case)
-    while queue and len(running) < 2:
+    while queue and len(running) < 1:
         if deadline-time.time() < 2700:
             failed.extend(dict(case=case, reason='not launched: remaining training budget') for case in queue)
             queue.clear()

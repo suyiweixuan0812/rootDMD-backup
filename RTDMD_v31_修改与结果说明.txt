@@ -1,0 +1,55 @@
+RTDMD v31：本轮修改与结果说明
+生成时间：2026-10-20T22:58:02.346897+00:00
+
+一、保留与改动
+保留实际 Student/Teacher 路径核比、粒子加权条件均值、Tweedie 接口、无 Fake 训练和四步 Student 推理。
+1. 零方差末步：只在正方差前缀取核比，Teacher 与 Student 测度共同采用 Student clean 读出；不新增末端噪声。
+2. 后验对应：路径比显式乘实际前向加噪观测似然。提议改为生成器正噪声前缀，不能称为原稿查询点反向 rollout 的逐字复现。
+3. 条件参考：从本次 Student 成对源构造正确后验参考，以条件 i-SIR 和 Rao-Blackwell 均值替代独立高维 SNIS；仍属相关 MCMC。
+4. BF16 状态按 Gaussian 舍入单元质量计算比，提议创新用 FP64，并逐次检查共同读出重放。有限 RNG/算术仍是理想核的近似。
+5. 新增 lambda=.10 的一致性细节改变期望更新；可选 .30/sigma 时间权重改变 surrogate 时间加权，不能说原目标完全未改。
+7. 最后正方差块使用物理 Gaussian 坐标和直接 BF16 舍入，修复极小单元逆变换与两次舍入问题；通用创新实现配套正确的后验保护分区。
+8. 双查询选项固定源与时间，对两个独立观测的梯度取平均后只裁剪/更新一次；查询计算约加倍，有相同计算量无粒子对照。
+6. 同查询 Jacobian 避免与成对参考相关的源 Jacobian 问题；它是本文明确的 surrogate，不宣称等价于原 DMD 源梯度的完整 KL。
+
+本轮固定开发候选：bridge；开发守门状态：QUALIFIED_DEV_CANDIDATE
+所选细节改变提议为 Teacher/Student 桥接 Q；真实权重为 (Student/Teacher)*(Teacher/Q)*似然，即 Student/Q。
+这保留路径比框架，但已经不是纯 Teacher 提议；不能把分解中的 Teacher 因子描述成从未改变原方法。纯 Teacher-only 和最后创新块代码均保留。
+
+二、完整 PickScore2048：所有已完成的匹配训练种子
+对照 dmd；训练种子 []
+  候选减对照的均值：{"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
+  每个已测种子 Pick/HPS 都上升：False
+对照 dmd_fp32；训练种子 []
+  候选减对照的均值：{"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
+  每个已测种子 Pick/HPS 都上升：False
+对照 paired；训练种子 []
+  候选减对照的均值：{"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
+  每个已测种子 Pick/HPS 都上升：False
+
+更贴近原稿的纯Teacher版本：last；按同一Dev规则在纯Teacher版本内选出，主完整测试不回调选择。
+  对照 dmd；种子 []；均值差 {"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
+  对照 dmd_fp32；种子 []；均值差 {"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
+  对照 paired；种子 []；均值差 {"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
+
+三、公平性与结论边界
+共同配置审计覆盖模型、512分辨率、BF16、TF32、种子、CPS、随机停止、batch1、LoRA32/alpha64、优化器、LR3e-5、EMA.99及训练轮次。
+原 DMD 查询噪声继承 BF16，新路径版为 FP32；因此同时保留原 DMD 与 FP32 精度对照。相同 seed 不代表移除 Fake 后随机流逐次相同。
+主短训练为1000轮/100次生成器更新；另有原 Teacher-only 版本双方10000轮/1000更新的长训练，不能混作新细节版长训练成绩。
+Dev 为 DrawBench64（61唯一文本），另留138条唯一提示词与开发、PickScore训练/测试逐字去重；不使用保留集重新选参数。
+旧 seed42 上升、旧 seed43 下降的结果均保留；旧 MH/PCMH 是不同方法，不能冒充本轮路径比成绩。
+参考链两次未移动不等于加权均值不变；候选池权重 ESS 不等于独立后验样本 ESS。
+每项提示词 bootstrap 仅反映给定训练模型的提示词抽样误差，不代表训练种子稳定性。
+68项数学/数值测试通过；真实A100训练、原生FP32 LoRA和评分数值路径另有审计。
+当前入口明确限制单卡/batch1，建议先确认多种子收益与粒子额外贡献，再做2–4卡同步/批处理验证；不直接启动16卡。
+
+四、文件位置
+更新论文：/rootDMD/RTDMD_v31.tex 与 /rootDMD/RTDMD_v31.pdf
+完整方法说明：/rootDMD/ReFormFlow-main/docs/RTDMD_PathRatio_Repair_CN.txt
+所有已完成指标：/rootDMD/RTDMD_v31_results.csv
+逐图分数/配置/训练日志：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence
+原始FP32 EMA权重：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints
+完整PNG持久归档：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-images，具体哪些已保存以各 image-storage-manifest.json 为准。
+其余运行图片/未选权重在 runs 指向的内存盘，重启会丢；逐图分数和已归档权重不随内存盘丢失。
+公共PickScore、SD3和部分评分模型缓存也在内存盘；重启后按 dependency-fingerprints.json 及恢复说明重建。
+保活仅到本轮01:20 UTC截止，CPU统计按实际获配13核；保活负载不算算法训练收益。

@@ -77,17 +77,24 @@ def main():
     while True:
         main = validation.read(validation.PROGRESS)
         state = main.get('status', '')
-        # Seed43 evaluation starts only after its entire training/persistence
-        # queue exits. Two long trainers can then share the A100 with the two
-        # already bounded evaluators; do not overlap two training cohorts.
-        ready = (state == 'ALL_PLANNED_VALIDATION_COMPLETED' or
-                 (state == 'RUNNING_PARALLEL_EVALUATION' and main.get('seed') == 43
-                  and main.get('count') == 2048))
-        if ready:
-            break
         if state.startswith('FAILED') or state.startswith('BUDGET_STOP'):
             record('NOT_LAUNCHED_REQUIRED_VALIDATION_NOT_COMPLETE', main_status=state)
             return
+        # The one training slot can be reused after ALL required seed43
+        # checkpoints have been persisted, even while seed42 tests finish.
+        # Never overlap the required training queue or exceed two evaluators
+        # plus one trainer. This trigger depends on progress/time, not scores.
+        plan = validation.read(R/'deterministic-validation-plan.json')
+        replication = validation.read(R/'deterministic-replication-progress.json')
+        required = plan.get('seed43_replication_cases', [])
+        training_ready = (bool(required) and set(required) <= set(replication.get('completed', []))
+            and not replication.get('running') and not replication.get('queued')
+            and not replication.get('failed'))
+        ready = (state == 'ALL_PLANNED_VALIDATION_COMPLETED' or
+                 (state == 'RUNNING_PARALLEL_EVALUATION' and main.get('seed') == 43
+                  and main.get('count') == 2048) or training_ready)
+        if ready:
+            break
         if time.time() > D-4800:
             record('NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED')
             return
@@ -98,7 +105,7 @@ def main():
     choice = validation.read(R/'deterministic-selection.json')
     case = choice['pure_teacher_alternative']['case']
     record('RUNNING_FRESH_MATCHED_3000_TRAINING', faithful_case=case)
-    with ThreadPoolExecutor(max_workers=2) as pool:
+    with ThreadPoolExecutor(max_workers=1) as pool:
         futures = [pool.submit(train, c) for c in ['dmd', case]]
         names = [future.result() for future in futures]
     prefix = [audit_prefix(c, name) for c, name in zip(['dmd', case], names)]

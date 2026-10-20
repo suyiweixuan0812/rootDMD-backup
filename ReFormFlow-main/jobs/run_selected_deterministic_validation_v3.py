@@ -49,8 +49,22 @@ def archive_weights(case, seed):
 def evaluate(case, seed, dataset, count, suffix):
     training = f'sd3-det-{case}-seed{seed}'
     name = training+'-'+suffix
-    if state(name) == 'COMPLETED_UNCHANGED_CHECKPOINT_EVALUATION':
+    def audited():
+        report = read(R/'evidence'/name/'final-metrics.json')
+        return bool(report.get('protocol', {}).get('checkpoint_training_configuration'))
+    if state(name) == 'COMPLETED_UNCHANGED_CHECKPOINT_EVALUATION' and audited():
         return name
+    if (R/'runs'/name/'config.json').exists() or state(name) == 'CHECKPOINT_EVALUATION':
+        # A scheduling repair must not discard already generated PNGs or apply
+        # an additional EMA. The original evaluator continues in its own group.
+        while time.time() < D-180:
+            status = state(name)
+            if status == 'COMPLETED_UNCHANGED_CHECKPOINT_EVALUATION' and audited():
+                return name
+            if status == 'FAILED':
+                raise RuntimeError('Existing checkpoint evaluator failed: '+name)
+            time.sleep(5)
+        return None
     remaining = int(D-time.time()-180)
     if remaining < (1800 if count == 2048 else 420):
         return None
@@ -65,7 +79,7 @@ def evaluate(case, seed, dataset, count, suffix):
 
 def group(cases, seed, dataset, count, suffix):
     record('RUNNING_PARALLEL_EVALUATION', cases=cases, seed=seed, dataset=dataset, count=count,
-           max_parallel_evaluators=2, max_parallel_trainers=2)
+           max_parallel_evaluators=2, max_parallel_trainers=1)
     results = {}
     errors = []
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -137,7 +151,7 @@ def main():
         seed42_full_and_holdout_cases=cases, seed43_replication_cases=cases,
         pure_teacher_alternative=faithful,
         seed43_selection_role='Independent replication only; not selection or tuning',
-        max_parallel_training=2, max_parallel_evaluation=2,
+        max_parallel_training=1, max_parallel_evaluation=2,
         inference_protocol='Unchanged eval wrapper, batch, prompts, seed, NFE and scorers',
         heldout_role='138 reserved unique DrawBench prompts, never used to retune',
         deadline_utc='2026-10-21T01:20:00+00:00')

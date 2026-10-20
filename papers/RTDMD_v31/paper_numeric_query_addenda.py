@@ -19,6 +19,23 @@ U\mid x&\sim q_T(U)\,\mathbf1\{R_{\rm BF16}(U)=x\}/M_T(x),\\
 \end{itemize}
 \end{frame}
 
+\begin{frame}{第650轮定点复现：极小单元的数值消去}
+\small
+保留旧采样代码重新运行；失败前64次生成器更新的所有已记录数值逐值一致。
+第650轮捕获到一个异常坐标，状态与均值均有限：
+\begin{align}
+x&=0,\quad \mu_T=-0.02420189977,\quad \nu=0.74076625545,\\
+[\ell,u]&=[-4.5917748079,\,4.5917748079]\times10^{-41},\\
+\operatorname{FP64}((\ell-\mu_T)/\nu)
+&=\operatorname{FP64}((u-\mu_T)/\nu)=0.03267143932243376.
+\end{align}
+\begin{itemize}\itemsep5pt
+\item 数学单元非空，但标准化后的两个计算机端点重合，旧截断 Gaussian 检查因此报错。
+\item 物理坐标直接在原非空区间采样；两项修复版1000轮实验均完成，所有参考重放检查通过。
+\item 此处核验的是64次日志记录，不冒充全权重逐位比较；原始异常 JSON 与失败日志单独保存。
+\end{itemize}
+\end{frame}
+
 \begin{frame}{BF16 的第二个数值边界：避免连续两次舍入}
 \small
 CUDA 上直接执行 FP64 到 BF16 的类型转换，可能经过 FP32 中间值。

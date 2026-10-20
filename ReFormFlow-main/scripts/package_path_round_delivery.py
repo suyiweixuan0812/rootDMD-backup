@@ -18,6 +18,8 @@ for p in sorted((ROOT/'docs').glob('*PathRatio*')):add(p,'code/ReFormFlow-main/d
 # Raw numeric evidence is retained; checkpoints/PNGs are separate persistent artifacts.
 for p in sorted((R/'evidence').rglob('*')):
  if p.suffix in {'.json','.jsonl','.csv','.txt'}:add(p,'results/evidence/'+str(p.relative_to(R/'evidence')))
+for p in sorted((R/'failed-attempts').rglob('*')):
+ if p.suffix in {'.json','.jsonl','.txt','.py','.log'}:add(p,'results/failed-attempts/'+str(p.relative_to(R/'failed-attempts')))
 for p in sorted(R.glob('*')):
  if p.suffix in {'.json','.csv','.txt','.md'}:add(p,'results/'+p.name)
 for folder in ['common-training-audits','comparison-long','comparison-final','comparison-seed43','comparison-two-seeds','training-drift-long']:

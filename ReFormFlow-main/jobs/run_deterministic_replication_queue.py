@@ -18,11 +18,27 @@ queue = list(dict.fromkeys(['dmd', a.selected, 'dmd_fp32', a.control, *a.extra_c
 running, completed, failed = {}, [], []
 
 
+class ExistingTrial:
+    """Adopt a valid orphaned trial without replaying its optimizer steps."""
+    def __init__(self, case): self.case = case
+    def poll(self):
+        path = r/'evidence'/f'sd3-det-{self.case}-seed43'/'status.txt'
+        status = path.read_text().strip() if path.exists() else ''
+        return 0 if status == 'COMPLETED_DETERMINISTIC_DEV64' else 1 if status == 'FAILED' else None
+
+
+for case in list(queue):
+    path = r/'evidence'/f'sd3-det-{case}-seed43'/'status.txt'
+    if path.exists() and path.read_text().strip() == 'DETERMINISTIC_TRAINING_AND_DEV_SCORING':
+        running[case] = ExistingTrial(case)
+        queue.remove(case)
+
+
 def record():
     path = r/'deterministic-replication-progress.json'
     pending = path.with_suffix('.pending')
     pending.write_text(json.dumps(dict(queued=queue, running=list(running), completed=completed,
-        failed=failed, max_parallel_trainers=2, utc=datetime.now(timezone.utc).isoformat()), indent=2))
+        failed=failed, max_parallel_trainers=1, utc=datetime.now(timezone.utc).isoformat()), indent=2))
     pending.replace(path)
 
 
@@ -35,10 +51,15 @@ while queue or running:
         if code:
             failed.append(dict(case=case, returncode=code))
         else:
-            subprocess.run(['python', 'scripts/persist_path_round_checkpoint.py', '--training-run',
-                f'sd3-det-{case}-seed43', '--name', f'sd3-det-{case}-seed43-ema1000'], cwd=root, check=True)
+            archived = r/'archived-checkpoints'/f'sd3-det-{case}-seed43-ema1000/storage-manifest.json'
+            if not archived.exists():
+                subprocess.run(['python', 'scripts/persist_path_round_checkpoint.py', '--training-run',
+                    f'sd3-det-{case}-seed43', '--name', f'sd3-det-{case}-seed43-ema1000'], cwd=root, check=True)
             completed.append(case)
-    while queue and len(running) < 2:
+    if failed:
+        record()
+        raise SystemExit(1)
+    while queue and len(running) < 1:
         if deadline-time.time() < 2700:
             failed.extend(dict(case=case, reason='not launched: remaining training budget') for case in queue)
             queue.clear()

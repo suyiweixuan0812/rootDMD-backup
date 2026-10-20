@@ -1,0 +1,27 @@
+RTDMD v31：怎样找到与运行代码
+
+主训练入口：/rootDMD/ReFormFlow-main/scripts/train_rtdmd_path_is_bridge_sd3.py
+主配置：config/rtdmd_path_is_bridge.py:bridge
+原始DMD入口未替换：/rootDMD/ReFormFlow-main/scripts/train_dmd_sd3.py
+
+在现有开发机项目环境重新训练（run_name需始终唯一，避免覆盖）：
+cd /rootDMD/ReFormFlow-main
+source jobs/local_env.sh
+export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+python scripts/run_deterministic_training.py scripts/train_rtdmd_path_is_bridge_sd3.py --config=config/rtdmd_path_is_bridge.py:bridge --config.run_name=rtdmd-v31-user-repeat-seed42 --config.seed=42 --config.save_dir=logs/path-ratio-round1/runs --config.eval.dataset=dataset/drawbench --config.eval.num_prompts=8 --config.eval.final_num_prompts=64 --config.eval_freq=1000 --config.save_freq=1000
+
+保存的EMA权重可直接评测，不再做额外EMA运算：
+bash jobs/evaluate_loaded_path_checkpoint_v2.sh /rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints/sd3-det-bridge-seed42-ema1000/lora/generator rtdmd-v31-user-pick2048-seed42 dataset/pickscore 2048 RTDMD-v31
+
+已完成模型示例目录：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints/sd3-det-bridge-seed42-ema1000/lora/generator
+这些是推理EMA权重，未保存完整优化器/RNG状态，不能声称精确断点续训。
+
+论文TeX为展开后的独立源文件；可用XeLaTeX/Tectonic与Fandol字体编译。PDF已经实际编译和逐页验证。
+如果应用的PDF链接没有响应，可打开同目录TeX的LaTeX预览，或在开发机文件系统取回PDF/ZIP。
+代码补丁包需要现有ReFormFlow项目及对应模型/依赖；不包含大模型和凭据。完整版本/模型指纹见 dependency-fingerprints.json。
+本轮一次性队列写有固定截止时间；复现实验请使用上述训练入口，不照搬已过期的队列截止日期。
+
+更贴近原稿的纯Teacher选项：last
+入口：/rootDMD/ReFormFlow-main/scripts/train_rtdmd_path_is_last_sd3.py
+配置：config/rtdmd_path_is_last.py:last
+原生EMA目录：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints/sd3-det-last-seed42-ema1000/lora/generator
