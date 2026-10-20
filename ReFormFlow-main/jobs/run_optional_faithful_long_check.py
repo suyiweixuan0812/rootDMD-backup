@@ -75,8 +75,15 @@ def evaluate(name):
 def main():
     record('WAITING_FOR_REQUIRED_TWO_SEED_VALIDATION')
     while True:
-        state = validation.read(validation.PROGRESS).get('status', '')
-        if state == 'ALL_PLANNED_VALIDATION_COMPLETED':
+        main = validation.read(validation.PROGRESS)
+        state = main.get('status', '')
+        # Seed43 evaluation starts only after its entire training/persistence
+        # queue exits. Two long trainers can then share the A100 with the two
+        # already bounded evaluators; do not overlap two training cohorts.
+        ready = (state == 'ALL_PLANNED_VALIDATION_COMPLETED' or
+                 (state == 'RUNNING_PARALLEL_EVALUATION' and main.get('seed') == 43
+                  and main.get('count') == 2048))
+        if ready:
             break
         if state.startswith('FAILED') or state.startswith('BUDGET_STOP'):
             record('NOT_LAUNCHED_REQUIRED_VALIDATION_NOT_COMPLETE', main_status=state)
@@ -106,6 +113,18 @@ def main():
     validation.execute(['python', 'scripts/audit_path_training_parameters.py', '--baseline',
         str(R/'runs'/names[0]/'config.json'), '--candidate', str(R/'runs'/names[1]/'config.json'),
         '--output', str(R/'parameter-audit-optional-faithful-long.json')])
+    record('WAITING_FOR_MAIN_TEST_BEFORE_LONG_EVALUATION', faithful_case=case, training=names)
+    while True:
+        main_status = validation.read(validation.PROGRESS).get('status', '')
+        if main_status == 'ALL_PLANNED_VALIDATION_COMPLETED':
+            break
+        if main_status.startswith('FAILED') or main_status.startswith('BUDGET_STOP'):
+            record('BUDGET_STOP_MAIN_VALIDATION_NEEDS_ATTENTION', main_status=main_status, training=names, archived=archives)
+            return
+        if time.time() > D-1800:
+            record('BUDGET_STOP_BEFORE_LONG_TEST', training=names, archived=archives)
+            return
+        time.sleep(10)
     record('RUNNING_FIXED_3000_PICK2048_EVALUATION', faithful_case=case, training=names)
     with ThreadPoolExecutor(max_workers=2) as pool:
         reports = list(pool.map(evaluate, names))
