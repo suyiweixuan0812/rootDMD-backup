@@ -31,6 +31,8 @@ assert sum(float(t.double().square().sum()) for k,t in tensors.items() if 'lora_
 pending=parent/(a.name+'.copying');(pending/'lora/generator').mkdir(parents=True)
 for f in files:shutil.copy2(f,pending/'lora/generator'/f.name)
 shutil.copy2(checkpoint/'config.json',pending/'config.json')
+runtime=root/'runs'/a.training_run/'runtime-numerics.json'
+if runtime.exists():shutil.copy2(runtime,pending/'runtime-numerics.json')
 def digest(path):
     with path.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
 for f in files:assert digest(f)==digest(pending/'lora/generator'/f.name)

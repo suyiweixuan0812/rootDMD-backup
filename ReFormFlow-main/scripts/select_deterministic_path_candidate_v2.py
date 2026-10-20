@@ -34,11 +34,17 @@ def select(root):
     qualifying = [r for r in rows if r['eligible']]
     pool = qualifying or [r for r in rows if not r['is_control']]
     chosen = max(pool, key=lambda r: r['selection_rank'])
+    faithful = [r for r in rows if r['case'] in {'base', 'time', 'last', 'last_time'}]
+    faithful_pool = [r for r in faithful if r['eligible']] or faithful
+    faithful_choice = max(faithful_pool, key=lambda r: r['selection_rank'])
     return dict(frozen_utc=datetime.now(timezone.utc).isoformat(),
                 status='QUALIFIED_DEV_CANDIDATE' if qualifying else 'NO_QUALIFIED_DEV_CANDIDATE',
                 interpretation=('The selected candidate requires independent test validation.' if qualifying else
                                 'No path method met all predeclared guards. The best-ranked path method is evaluated for diagnosis only.'),
                 selected_case=chosen['case'], paired_control='paired_time' if chosen['case'].endswith('time') else 'paired',
+                pure_teacher_alternative=dict(case=faithful_choice['case'], eligible=faithful_choice['eligible'],
+                    paired_control='paired_time' if faithful_choice['case'].endswith('time') else 'paired',
+                    role='Same predeclared ranking restricted to pure Teacher mappings; additional fidelity comparison if primary selected proposal is bridged; never replaces primary selection by test results'),
                 reference=reference, trials=rows, dev_report_sha256=hashes,
                 selection_inputs='Only the twelve predeclared deterministic seed42 DrawBench64 reports; no PickScore2048/holdout138 scores.')
 

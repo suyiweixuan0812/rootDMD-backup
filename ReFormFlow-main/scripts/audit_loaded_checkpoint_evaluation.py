@@ -30,6 +30,7 @@ def main():
     stored=json.loads(storage_file.read_text()) if storage_file.exists() else {}
     actual_step=int(matched.group(1)) if matched else stored.get('step',actual['num_epochs'])
     runtime_file=checkpoint.parents[3]/'runtime-numerics.json'
+    if not runtime_file.exists():runtime_file=checkpoint.parents[1]/'runtime-numerics.json'
     numerical=json.loads(runtime_file.read_text()) if runtime_file.exists() else {'recorded':False}
     before=report['table'].copy()
     report['protocol']['path_is']=actual.get('path_is',{'enabled':False})

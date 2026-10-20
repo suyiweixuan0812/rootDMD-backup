@@ -69,7 +69,7 @@ def group(cases, seed, dataset, count, suffix):
     results = {}
     errors = []
     with ThreadPoolExecutor(max_workers=2) as pool:
-        priority = ([cases[0], cases[2], cases[1], cases[3]] if len(cases) == 4 else cases)
+        priority = ([cases[0], cases[2], cases[1], cases[3], *cases[4:]] if len(cases) >= 4 else cases)
         work = {pool.submit(evaluate, c, seed, dataset, count, suffix): c for c in priority}
         for future in as_completed(work):
             case = work[future]
@@ -93,10 +93,14 @@ def compare(base, candidates, output):
     execute(command)
 
 
-def comparisons(names, suffix):
+def comparisons(names, suffix, cases=None):
     compare(names[0], names[1:], 'comparison-deterministic-'+suffix)
     compare(names[1], names[2:], 'comparison-deterministic-fp32-'+suffix)
     compare(names[3], [names[2]], 'comparison-deterministic-particle-vs-paired-'+suffix)
+    if cases is not None and len(cases) > 4:
+        alternative = read(R/'deterministic-selection.json')['pure_teacher_alternative']
+        side, control = cases.index(alternative['case']), cases.index(alternative['paired_control'])
+        compare(names[control], [names[side]], 'comparison-faithful-particle-vs-paired-'+suffix)
 
 
 def main():
@@ -119,9 +123,17 @@ def main():
     choice = read(selection)
     best, control = choice['selected_case'], choice['paired_control']
     cases = ['dmd', 'dmd_fp32', best, control]
+    faithful = choice['pure_teacher_alternative']
+    extras = []
+    if faithful['case'] != best:
+        extras.append(faithful['case'])
+        if faithful['paired_control'] not in cases:
+            extras.append(faithful['paired_control'])
+    cases.extend(extras)
     plan = dict(frozen_utc=datetime.now(timezone.utc).isoformat(), selected_case=best,
         selected_file_sha256=hashlib.sha256(selection.read_bytes()).hexdigest(),
         seed42_full_and_holdout_cases=cases, seed43_replication_cases=cases,
+        pure_teacher_alternative=faithful,
         seed43_selection_role='Independent replication only; not selection or tuning',
         max_parallel_training=2, max_parallel_evaluation=2,
         inference_protocol='Unchanged eval wrapper, batch, prompts, seed, NFE and scorers',
@@ -135,13 +147,15 @@ def main():
     replication = None
     if D-time.time() > 5400:
         with (Path('/rootDMD')/'path-is-deterministic-replication-queue.log').open('w') as stream:
-            replication = subprocess.Popen(['python', '-u', 'jobs/run_deterministic_replication_queue.py',
-                '--selected', best, '--control', control], cwd=ROOT, stdout=stream,
+            command = ['python', '-u', 'jobs/run_deterministic_replication_queue.py',
+                       '--selected', best, '--control', control]
+            for case in extras:command += ['--extra-case', case]
+            replication = subprocess.Popen(command, cwd=ROOT, stdout=stream,
                 stderr=subprocess.STDOUT, start_new_session=True)
     tests = group(cases, 42, 'dataset/pickscore', 2048, 'pick2048-exact')
     if tests is None:
         return
-    comparisons(tests, 'seed42')
+    comparisons(tests, 'seed42', cases)
     archive_results = []
     for case in [best, 'dmd']:
         name = f'sd3-det-{case}-seed42-pick2048-exact'
@@ -157,7 +171,7 @@ def main():
     heldout = group(cases, 42, 'dataset/drawbench_path_holdout', 138, 'holdout138-exact')
     if heldout is None:
         return
-    comparisons(heldout, 'holdout138')
+    comparisons(heldout, 'holdout138', cases)
     if replication is None:
         record('SEED42_AND_HOLDOUT_COMPLETE_SEED43_NOT_LAUNCHED_BUDGET', tests=tests, heldout=heldout)
         return
@@ -176,7 +190,7 @@ def main():
     repeated = group(cases, 43, 'dataset/pickscore', 2048, 'pick2048-exact')
     if repeated is None:
         return
-    comparisons(repeated, 'seed43')
+    comparisons(repeated, 'seed43', cases)
     record('ALL_PLANNED_VALIDATION_COMPLETED', selected_case=best,
            seed42_reports=tests, holdout_reports=heldout, seed43_reports=repeated)
 

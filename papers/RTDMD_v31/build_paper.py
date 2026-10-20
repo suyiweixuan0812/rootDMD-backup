@@ -23,7 +23,7 @@ tex=preamble+r'''\title[保留路径比的 RTDMD]{保留教师/学生路径比�
 \begin{frame}{本版保留什么，必须改动什么}
 \small
 \begin{block}{保留方法主线}
-教师路径提议 $\to$ 同一路径的 Student/Teacher 转移概率比 $\to$
+以 Teacher 为参照的路径提议 $\to$ 同一路径的 Student/Teacher 比（改变提议时补校正）$\to$
 归一化粒子加权均值 $\to$ Tweedie score 接口 $\to$ Student 更新。
 不训练 Fake；Student 推理沿用四步 CPS。
 \end{block}
@@ -324,13 +324,14 @@ N&=8,\quad \text{条件更新次数}=2,\quad B=16,\\
 令 $D=D_\theta(y,\sigma,c)$，$r=y-\sigma v_{\rm ref}(y,\sigma,c)$。
 本轮按原稿式 (2) 的同一查询点解释，使用
 \begin{equation}
-g_0=\big[J_\theta D\big]^\top\frac{\widehat m-r}{n_\theta(y)},\quad
+g_0=\big[J_\theta D\big]^\top\frac{\widehat m-r}{d\,n_\theta(y)},\quad
 n_\theta(y)=\operatorname{mean}|D-r|.
 \end{equation}
 \begin{itemize}\itemsep5pt
 \item 给定 $y,c,\sigma,\theta$，Jacobian 与归一化因子是确定的，避免与成对源参考的相关项。
 \item 若改为对原成对源 $F_\theta(H^*)$ 反传，其 Jacobian 与参考粒子一般相关，不能直接复用无偏均值结论。
 \item 目标分支停止梯度，原梯度裁剪与 AdamW 继续使用。
+\item $d$ 为 MSE 均值的元素数；公式假定 $0<n_\theta(y)<\infty$ 且未触发数值清理分支。
 \end{itemize}
 \begin{alertblock}{明确的方法边界}
 这是同一查询点 clean prediction 的 surrogate；不是严格证明的原 DMD 源 Jacobian 或完整 KL 梯度等价式。
@@ -342,7 +343,7 @@ n_\theta(y)=\operatorname{mean}|D-r|.
 令 $\lambda=\lambda(\sigma)$ 在给定噪声后是确定量：
 \begin{equation}
 g_\lambda=G\left[(1-\lambda)\widehat m+\lambda D-r\right],\qquad
-G=\frac{[J_\theta D]^\top}{n_\theta(y)}.
+G=\frac{[J_\theta D]^\top}{d\,n_\theta(y)}.
 \end{equation}
 理想条件均值成立时，给定 $y,c,\sigma,\theta$，裁剪前有
 \begin{align}
@@ -547,6 +548,9 @@ $\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 参考链冻结率\\\midrul
 参考提升 / 条件 i-SIR & \texttt{flow\_grpo/conditional\_path\_is.py}\\
 真实 SD3 接口 & \texttt{diffusers\_patch/sd3\_conditional\_path\_is.py}\\
 训练与细节消融 & \texttt{train\_rtdmd\_path\_is\_sd3.py} / \texttt{train\_rtdmd\_path\_is\_refined\_sd3.py}\\
+最后正方差块 & \texttt{scripts/train\_rtdmd\_path\_is\_last\_sd3.py}\\
+精确前缀缓存 & \texttt{diffusers\_patch/sd3\_last\_innovation\_path\_is.py}\\
+桥接及历史校准 & \texttt{flow\_grpo/bridged\_path\_is.py} / \texttt{adaptive\_bridge.py}\\
 统一 EMA 评测 & \texttt{jobs/evaluate\_loaded\_path\_checkpoint.sh}\\
 逐图结果与统计 & \texttt{logs/path-ratio-round1/evidence/} 与 \texttt{comparison-final/}\\
 冻结与选择记录 & \texttt{source-manifest.json} / \texttt{refinement-manifest.json} / \texttt{selection.json}\\

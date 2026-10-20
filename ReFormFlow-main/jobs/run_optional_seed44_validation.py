@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import subprocess
 import time
+import shutil
 import run_selected_deterministic_validation_v3 as validation
 
 R, D, ROOT = validation.R, validation.D, validation.ROOT
@@ -44,6 +45,9 @@ def main():
         time.sleep(10)
     if D-time.time() < 3900:
         record('NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED')
+        return
+    if shutil.disk_usage(ROOT).free < 600*1024**2:
+        record('NOT_LAUNCHED_PRESERVE_PERSISTENT_STORAGE_MARGIN')
         return
     selection = validation.read(R/'deterministic-selection.json')
     best, control = selection['selected_case'], selection['paired_control']

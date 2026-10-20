@@ -9,11 +9,12 @@ import time
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--selected', required=True)
 p.add_argument('--control', required=True)
+p.add_argument('--extra-case', action='append', default=[])
 a = p.parse_args()
 root = Path(__file__).resolve().parents[1]
 r = root/'logs/path-ratio-round1'
 deadline = datetime(2026, 10, 21, 1, 20, tzinfo=timezone.utc).timestamp()
-queue = ['dmd', a.selected, 'dmd_fp32', a.control]
+queue = list(dict.fromkeys(['dmd', a.selected, 'dmd_fp32', a.control, *a.extra_case]))
 running, completed, failed = {}, [], []
 
 

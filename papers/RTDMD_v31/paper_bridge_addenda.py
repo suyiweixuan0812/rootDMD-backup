@@ -200,6 +200,10 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
     if selection.exists():
         choice = json.loads(selection.read_text())
         cases = ['dmd', 'dmd_fp32', choice['selected_case'], choice['paired_control']]
+        faithful = choice.get('pure_teacher_alternative')
+        if faithful and faithful['case'] not in cases:
+            cases.append(faithful['case'])
+            if faithful['paired_control'] not in cases:cases.append(faithful['paired_control'])
         for title, seed, suffix, note in [
                 ('确定性完整 PickScore 测试：seed42', 42, 'pick2048-exact', '固定开发候选后的2048条完整测试；同推理噪声与四项评分模型。'),
                 ('保留提示词验证：138条唯一提示词', 42, 'holdout138-exact', '与开发集及 PickScore 训练/测试逐字去重；结果不用于重新选择参数。'),
