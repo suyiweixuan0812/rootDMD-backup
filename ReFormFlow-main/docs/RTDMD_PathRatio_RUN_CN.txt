@@ -1,0 +1,73 @@
+RTDMD v31 路径比版：代码、运行和结果说明
+======================================
+
+本轮选定配置：config/rtdmd_path_is_refined.py:train010。
+选择基于DrawBench开发集；最终PickScore2048结果见logs/path-ratio-round1/comparison-final/。
+本文件不是最终成绩报告，分数以实际final-metrics.json和RESULTS_CN.txt为准。
+
+1. 核心代码
+flow_grpo/path_ratio_smc.py：正噪声Student/Teacher路径比、共同Student读出、观测似然、BF16概率质量。
+flow_grpo/conditional_path_is.py：成对后验参考的截断Gaussian创新提升、局部条件i-SIR。
+flow_grpo/diffusers_patch/sd3_conditional_path_is.py：真实SD3字段、位精确重放和采样接口。
+flow_grpo/posterior_consistency.py：同一查询点的正则surrogate。
+flow_grpo/consistency_schedule.py：确定的噪声条件正则消融，主选配置是固定0.10。
+scripts/train_rtdmd_path_is_sd3.py：lambda0/.25原始消融入口。
+scripts/train_rtdmd_path_is_refined_sd3.py：lambda.10和随噪声变化正则入口。
+原DMD、SourceIS、MH、PCMH文件均保留。
+
+2. 新建一次独立训练（不会覆盖本轮已有证据）
+在终端执行：
+
+cd /rootDMD/ReFormFlow-main
+source jobs/local_env.sh
+export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+RTDMD_REPRO_NAME="path-is-reproduce-$(date +%Y%m%d-%H%M%S)"
+python -u scripts/train_rtdmd_path_is_refined_sd3.py \
+  --config=config/rtdmd_path_is_refined.py:train010 \
+  --config.run_name="$RTDMD_REPRO_NAME"
+
+默认训练仍是完整PickScore train25432、seed42、1000外层轮/100次生成器更新，
+训练期间仅在DrawBench开发集生成图像并计算开发PickScore；不把任何奖励用于训练。
+当前训练入口仅支持单卡batch1；不要直接用torchrun启动16卡。
+默认输出根目录中的runs在本机指向/dev/shm，为RAM存储；机器重启会丢失完整PNG与未归档checkpoint。
+训练完成后应按本轮做法，将选中EMA LoRA和配置另存到持久目录。
+保存的是推理EMA LoRA，不含完整优化器/RNG状态，不能精确恢复训练。
+
+3. 用持久保存的主候选权重跑同一PickScore测试
+在上述环境中执行：
+
+bash jobs/evaluate_loaded_path_checkpoint_v2.sh \
+  /rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-checkpoint-seed42/lora/generator \
+  path-is-reproduce-pick2048 dataset/pickscore 2048 \
+  'PathIS lambda0.10 seed42 EMA1000'
+
+同名评测若已存在，脚本会拒绝覆盖。需要再次运行时修改第二个参数（评测名称）。
+入口只加载已有EMA，不额外修改EMA、不进行优化器更新；全部382个导出LoRA张量需逐位等于输入。
+随后用同一批保存PNG计算CLIP、Aesthetic、PickScore和HPSv2.1。
+报告中的训练配置取自checkpoint的真实config.json，而非评测入口的闲置默认采样配置。
+
+4. 结果从哪里看
+logs/path-ratio-round1/evidence/：各组真实config、训练日志、逐图分数及四项最终评分。
+logs/path-ratio-round1/comparison-dev64-all/：全部开发消融、成对差异、分噪声段诊断。
+logs/path-ratio-round1/comparison-final/：seed42完整PickScore2048最终对照。
+logs/path-ratio-round1/selection.json：在查看本轮候选完整测试成绩之前冻结的开发选择。
+logs/path-ratio-round1/parameter-audit-seed42.json：与DMD共同参数逐组相等及所有实际差异。
+logs/path-ratio-round1/selected-checkpoint-seed42/：持久保存的主候选原始FP32 LoRA和训练配置。
+logs/path-ratio-round1/figures/path-is-diagnostics.png/.pdf：ESS、真实移动和冻结诊断。
+papers/RTDMD_v31/（在项目上一级/rootDMD下）：更新的论文TeX、PDF、构建与验证文件。
+训练种子确认的报告名称含seed43/seed44；仅已经完成的报告才代表实际结果。
+
+5. 解释指标与局限
+CLIP/HPS表中乘100；PickScore恢复raw logits（仓库内部值乘26）；Aesthetic不缩放。
+推理NFE=4，不计评分或训练；相同外部配置不代表相同训练GPU耗时。
+候选权重ESS不等于独立后验样本ESS。低噪声仍会冻结，需看移动率与位移。
+条件后验与方差证明针对理想Gaussian舍入模型；有限RNG/浮点运算仍为数值近似。
+同一查询点clean Jacobian是明确的surrogate，不冒充与原DMD源Jacobian完全等价的KL梯度。
+提示词bootstrap区间不能替代多个训练种子；开发选择也未做多重比较校正。
+
+6. 本轮资源保活
+用户授权的保活有固定截止时间2026-10-21 01:20 UTC（北京时间09:20）。
+低优先级CPU负载按正式工作忙闲自动降低；只在没有外部CUDA任务时运行GPU矩阵负载。
+整体资源监测在/rootDMD/development-load-guard/resource-monitor.jsonl。
+需要提前停止时：删除/rootDMD/development-load-guard/enabled。
+保活负载不是科研进展，不计入模型性能或有效训练。

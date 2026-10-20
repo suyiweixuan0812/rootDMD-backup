@@ -31,7 +31,10 @@ def diagnostics(folder, report):
     rows = [json.loads(x) for x in p.read_text().splitlines()]
     updates = [r for r in rows if 'path_is/ess' in r]
     if not updates: return {}
-    assert len(updates) == 100 and rows[-1]['step'] == 1000
+    training=json.loads((run/'config.json').read_text())
+    expected_steps=training['num_epochs']
+    expected_updates=expected_steps//training['dmd']['fake_update_ratio']
+    assert len(updates) == expected_updates and rows[-1]['step'] == expected_steps
     assert all(r['path_is/reference_replay_exact'] == 1 for r in updates)
     def summarize(selected):
         keys = ['path_is/ess', 'path_is/max_weight', 'path_is/reference_probability',
