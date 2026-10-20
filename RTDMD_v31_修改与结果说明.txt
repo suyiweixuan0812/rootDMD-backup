@@ -1,5 +1,5 @@
 RTDMD v31：本轮修改与结果说明
-生成时间：2026-10-20T23:10:18.351431+00:00
+生成时间：2026-10-20T23:18:24.263086+00:00
 
 一、保留与改动
 保留实际 Student/Teacher 路径核比、粒子加权条件均值、Tweedie 接口、无 Fake 训练和四步 Student 推理。
@@ -17,9 +17,10 @@ RTDMD v31：本轮修改与结果说明
 这保留路径比框架，但已经不是纯 Teacher 提议；不能把分解中的 Teacher 因子描述成从未改变原方法。纯 Teacher-only 和最后创新块代码均保留。
 
 二、完整 PickScore2048：所有已完成的匹配训练种子
-对照 dmd；训练种子 []
-  候选减对照的均值：{"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
-  每个已测种子 Pick/HPS 都上升：False
+对照 dmd；训练种子 [42]
+  seed 42：{"CLIP Score": 0.40093752122629667, "Aesthetic Score": 0.0912163583561778, "Pick Score": 0.4312538266531192, "HP Score": 1.1034046201530145}
+  候选减对照的均值：{"CLIP Score": 0.40093752122629667, "Aesthetic Score": 0.0912163583561778, "Pick Score": 0.4312538266531192, "HP Score": 1.1034046201530145}
+  每个已测种子 Pick/HPS 都上升：True
 对照 dmd_fp32；训练种子 []
   候选减对照的均值：{"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
   每个已测种子 Pick/HPS 都上升：False

@@ -1,0 +1,10 @@
+本轮预算与资源记录
+固定截止：2026-10-21 01:20 UTC（北京时间09:20）
+单张A100-SXM4 80GB；训练及评测采用独立进程并发，不改变每项实验batch1。
+CPU统计按实际获配13核；保活CPU为nice19，GPU占位在正式CUDA进程存在时让出GPU。
+保活只到本轮截止，不能算作算法训练成果或效率提升。
+已记录3843个约5秒样本；时间范围 2026-10-20T17:52:41.336730+00:00 至 2026-10-20T23:18:43.005754+00:00。
+CPU_percent_of_allocated13：{"mean": 67.03555814785007, "median": 64.52853342887664, "minimum": 19.25087925582435, "maximum": 94.65951454775669, "fraction_samples_at_least50": 0.9791829300026021}
+GPU_utilization_percent：{"mean": 82.45094977881863, "median": 100.0, "minimum": 0.0, "maximum": 100.0, "fraction_samples_at_least50": 0.7952120739005984}
+rolling12_CPU：{"mean": 67.0743101000656, "median": 64.51752069435555, "minimum": 57.26596658303617, "maximum": 93.34157678031988, "fraction_samples_at_least50": 1.0}
+rolling12_GPU：{"mean": 82.43108190563304, "median": 97.83333333333333, "minimum": 0.0, "maximum": 100.0, "fraction_samples_at_least50": 0.8319021597710122}
