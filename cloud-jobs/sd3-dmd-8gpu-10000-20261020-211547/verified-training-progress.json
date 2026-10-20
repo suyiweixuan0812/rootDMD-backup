@@ -1,0 +1,29 @@
+{
+  "job_id": "t-20261020220728-lmk7p",
+  "gpus": 16,
+  "nodes": 2,
+  "nccl_connection": "confirmed in both node logs",
+  "dataset": "PickScore prompt dataset",
+  "counts": {
+    "train": 25432,
+    "test": 2048
+  },
+  "latest_observed": {
+    "step": 70,
+    "generator_step": 7,
+    "metrics": {
+      "fake_score/loss_fake": 0.05886723450385034,
+      "fake_score/loss_fake_base": 0.05886723450385034,
+      "fake_score/loss_consistency": 0.0,
+      "fake_score/gen_steps": 2.0,
+      "fake_score/grad_norm": 0.042299140244722366,
+      "fake_score/lr": 3e-05,
+      "generator/teacher_cfg": 4.5,
+      "generator/loss_dm": 0.5060911362130127,
+      "generator/gen_steps": 2.0,
+      "generator/grad_norm": 0.16122499108314514,
+      "generator/lr": 3e-05
+    },
+    "all_finite": true
+  }
+}

@@ -11,7 +11,7 @@
   "outer_steps": 10000,
   "gpus": 16,
   "output_directory": "/rootDMD/cloud-jobs/sd3-dmd-8gpu-10000-20261020-211547",
-  "state": "running-containers",
+  "state": "training",
   "vepfs_id": "vepfs-cnbj2c98dea54433",
   "vepfs_name": "vepfs-mlp2",
   "vepfs_host_path": "/mnt/vepfs-cnbj2c98dea54433",
@@ -23,13 +23,21 @@
   "transfer_job_history": [
     "t-20261020214915-n8f6x"
   ],
-  "job_id": "t-20261020215646-ccqqz",
   "assets_verified_on_vepfs": true,
-  "asset_file_count": 77,
-  "asset_total_bytes": 27192789107,
+  "asset_file_count": 84,
+  "asset_total_bytes": 27206714711,
   "console_url": "https://console.volcengine.com/ml-platform/region:ml-platform+cn-beijing/customTask?projectName=default",
   "runtime_probe_job_id": "t-20261020220557-n2l2k",
   "runtime_probe_history": [
     "t-20261020220228-n8r8z"
-  ]
+  ],
+  "training_job_history": [
+    "t-20261020215646-ccqqz"
+  ],
+  "job_id": "t-20261020220728-lmk7p",
+  "latest_verified_step": 70,
+  "latest_verified_generator_step": 7,
+  "dataset": "PickScore prompt dataset",
+  "train_prompt_count": 25432,
+  "test_prompt_count": 2048
 }

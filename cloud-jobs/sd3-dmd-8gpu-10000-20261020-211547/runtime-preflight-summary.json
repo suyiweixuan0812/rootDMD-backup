@@ -1,0 +1,18 @@
+{
+  "task_id": "t-20261020220557-n2l2k",
+  "status": "Completed",
+  "exit_code": 0,
+  "completed_at": "2026-10-20T22:07:12+08:00",
+  "offline_installation": "passed",
+  "model_file_checks": "passed",
+  "vepfs_asset_files": 84,
+  "added_dependencies": [
+    "pandas==2.2.3",
+    "python-dateutil==2.9.0.post0",
+    "pytz==2025.2",
+    "tzdata==2025.2",
+    "six==1.17.0",
+    "attrs==25.4.0",
+    "pluggy==1.6.0"
+  ]
+}
