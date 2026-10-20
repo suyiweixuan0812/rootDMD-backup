@@ -47,6 +47,10 @@ def write_report(run_dir, folder, step, records, metrics):
     time_weight = config.get("posterior_time_weight", {"mode": "none"})
     if config.get("method_name") == "rtdmd_paired_source_ablation":
         label = "Paired-source control"
+    elif config.get("method_name") == "rtdmd_bridged_conditional_path_is":
+        label = "Bridged Path-IS; gamma(J)=0.90/0.99"
+    elif config.get("method_name") == "dmd_fp32_observation_control":
+        label = "DMD (FP32 observation control)"
     elif active_path:
         label = "Path-IS"
     else:
@@ -88,6 +92,7 @@ def write_report(run_dir, folder, step, records, metrics):
             "posterior_consistency": consistency,
             "posterior_time_weight": time_weight,
             "runtime_numerics": runtime,
+            "observation_noise_dtype": config.get("observation_noise_dtype", "bfloat16" if config.get("method_name")=="dmd" else "float32"),
             "interpretation": "Actual active training settings recorded above; path sampler, paired-source control and DMD are explicitly distinguished.",
             "nfe": "Generator transformer forward passes per image; excludes training and scoring",
             "comparability": "Scores require the same prompts, model versions, preprocessing and scales for comparison",

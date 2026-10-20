@@ -7,6 +7,8 @@ seed="${2:-42}"
 extra=()
 case "$preset" in
  dmd) trainer=scripts/train_dmd_sd3.py;config=config/dmd_sd3_pickscore.py:train;;
+ dmd_fp32) trainer=scripts/train_dmd_sd3_fp32_observation.py;config=config/dmd_fp32_observation_control.py:train;;
+ bridge|bridge_time) trainer=scripts/train_rtdmd_path_is_bridge_sd3.py;config="config/rtdmd_path_is_bridge.py:$preset";;
  base) trainer=scripts/train_rtdmd_path_is_details_sd3.py;config=config/rtdmd_path_is_details.py:time;extra+=(--config.posterior_time_weight.mode=none);;
  paired|time|paired_time) trainer=scripts/train_rtdmd_path_is_details_sd3.py;config="config/rtdmd_path_is_details.py:$preset";;
  *) exit 2;;

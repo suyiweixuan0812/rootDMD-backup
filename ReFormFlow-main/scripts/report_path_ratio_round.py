@@ -32,7 +32,9 @@ def diagnostics(folder, report):
     updates = [r for r in rows if 'path_is/ess' in r]
     if not updates: return {}
     training=json.loads((run/'config.json').read_text())
-    expected_steps=training['num_epochs']
+    expected_steps=report['protocol'].get('checkpoint_training_configuration',{}).get('checkpoint_outer_step',training['num_epochs'])
+    rows=[x for x in rows if x['step']<=expected_steps]
+    updates=[x for x in updates if x['step']<=expected_steps]
     expected_updates=expected_steps//training['dmd']['fake_update_ratio']
     assert len(updates) == expected_updates and rows[-1]['step'] == expected_steps
     assert all(r['path_is/reference_replay_exact'] == 1 for r in updates)

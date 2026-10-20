@@ -9,9 +9,11 @@ from .sd3_conditional_path_is import make_fields,sample_prefix
 @torch.no_grad()
 def conditional_path_mean(observation,sigma,states,source,student,teacher,positive_sigmas,
                           eta,num_particles=8,num_sweeps=2,base_scale=.05,block_size=16,
-                          bridge_strength=.9,high_noise_block_size=4096,high_noise_threshold=.9):
+                          bridge_strength=.9,high_noise_block_size=4096,high_noise_threshold=.9,
+                          max_innovation_radius=.5,long_bridge_strength=.99,long_bridge_min_stop=3):
     if source.shape[0]!=1:raise ValueError('Bridge comparison requires batch1')
     grid=[float(s) for s in positive_sigmas]
+    bridge_strength=long_bridge_strength if len(states)>=long_bridge_min_stop else bridge_strength
     def proposal(x,s):
         return bridge_velocity(student(x,s).float(),teacher(x,s).float(),bridge_strength)
     reference=lift_student_prefix(states,grid,eta,proposal)
@@ -27,7 +29,11 @@ def conditional_path_mean(observation,sigma,states,source,student,teacher,positi
     s=float(sigma.item())
     active_block=high_noise_block_size if s>=high_noise_threshold else block_size
     if not 1<=active_block<=source[0].numel():raise ValueError('Invalid bridge coordinate block')
-    scale=min(.5,max(1e-4,base_scale*s/((1-s)*math.sqrt(active_block))))
+    radius=base_scale*s/(1-s)
+    if max_innovation_radius is not None:
+        if max_innovation_radius<=0:raise ValueError("Innovation radius must be positive")
+        radius=min(radius,max_innovation_radius)
+    scale=min(.5,max(1e-4,radius/math.sqrt(active_block)))
     estimates=[];diagnostics=[]
     for _ in range(num_sweeps):
         result=conditional_importance_sweep(reference,stops,evaluate,num_particles=num_particles,
@@ -37,6 +43,7 @@ def conditional_path_mean(observation,sigma,states,source,student,teacher,positi
         sources=value.source.flatten(1).double()
         variance=(weights[:,None]*(sources-result.mean.flatten(1).double()).square()).sum(0).mean()
         extra={'bridge_strength':bridge_strength,
+            'innovation_radius_limit':float(max_innovation_radius or 0),
             'base_student_teacher_span':float(value.log_student_teacher.max()-value.log_student_teacher.min()),
             'teacher_proposal_correction_span':float(value.log_teacher_proposal.max()-value.log_teacher_proposal.min()),
             'rb_removed_variance_trace_per_coordinate':float(variance)}

@@ -24,6 +24,13 @@ def main():
     file=run/'eval/step-1/final-metrics.json'
     report=json.loads(file.read_text())
     assert report['protocol']['checkpoint_evaluation_only']['all_exported_tensors_exactly_equal']
+    import re
+    matched=re.fullmatch(r'checkpoint-(\d+)',checkpoint.parents[1].name)
+    storage_file=checkpoint.parents[1]/'storage-manifest.json'
+    stored=json.loads(storage_file.read_text()) if storage_file.exists() else {}
+    actual_step=int(matched.group(1)) if matched else stored.get('step',actual['num_epochs'])
+    runtime_file=checkpoint.parents[3]/'runtime-numerics.json'
+    numerical=json.loads(runtime_file.read_text()) if runtime_file.exists() else {'recorded':False}
     before=report['table'].copy()
     report['protocol']['path_is']=actual.get('path_is',{'enabled':False})
     report['protocol']['posterior_consistency']=actual.get('posterior_consistency',{'enabled':False})
@@ -31,7 +38,10 @@ def main():
     report['protocol']['checkpoint_training_configuration']={
         'path':str(training_config),'sha256':hashlib.sha256(training_config.read_bytes()).hexdigest(),
         'method_name':actual.get('method_name','DMD'), 'seed':actual['seed'],
-        'outer_steps':actual['num_epochs'],'generator_update_interval':actual['dmd']['fake_update_ratio'],
+        'outer_steps':actual_step,'checkpoint_outer_step':actual_step,
+        'planned_outer_steps':actual['num_epochs'],'runtime_numerics':numerical,
+        'observation_noise_dtype':actual.get('observation_noise_dtype','bfloat16' if actual.get('method_name')=='dmd' else 'float32'),
+        'generator_update_interval':actual['dmd']['fake_update_ratio'],
         'dataset':actual['dataset'],'sampler_fields_from_actual_training_configuration':True}
     assert before==report['table']
     file.write_text(json.dumps(report,indent=2,ensure_ascii=False))

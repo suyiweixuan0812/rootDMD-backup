@@ -52,3 +52,31 @@ def test_bf16_bridged_reference_replays_and_factors_correctly():
     expected=(nxt.float()-.5*student(nxt,.5)).bfloat16()
     assert torch.equal(r.source,expected)
     torch.testing.assert_close(r.log_student_teacher+r.log_teacher_proposal,r.log_path_ratio,atol=1e-12,rtol=1e-12)
+
+
+def test_omitting_bridge_proposal_correction_targets_the_wrong_posterior():
+    torch.set_num_threads(1)
+    g=torch.Generator().manual_seed(62115)
+    e=torch.randn(120000,2,1,generator=g,dtype=torch.float64)
+    r=evaluate_bridged_path(e,torch.ones(len(e),dtype=torch.long),torch.full((1,1),.8),.4,[1.,.5],.9,
+        lambda x,s:.4*x,lambda x,s:-.4*x,bridge_strength=.9)
+    a=float(cps_mean(torch.ones(1),.4*torch.ones(1),1.,.5,.9))
+    var=.8**2*(a*a+(.5*torch.sin(torch.tensor(.9*torch.pi/2)))**2)
+    exact=.6*var/(.36*var+.16)*.8
+    correct=(r.log_weight.softmax(0)[:,None]*r.source).sum()
+    wrong_weight=r.log_student_teacher+r.log_initial_ratio+r.log_stop_ratio+r.log_observation
+    wrong=(wrong_weight.softmax(0)[:,None]*r.source).sum()
+    assert abs(float(correct-exact))<.004
+    assert abs(float(wrong-exact))>.015
+
+
+def test_continuous_cps_bridge_reduces_conditional_kernel_kl():
+    x=torch.linspace(-2,2,100,dtype=torch.float64).reshape(10,10)
+    student=.4*x.tanh();teacher=.1*x.sin();gamma=.9
+    s,t,eta=.9,.5,.9
+    a=cps_mean(x,student,s,t,eta);b=cps_mean(x,teacher,s,t,eta)
+    q=cps_mean(x,bridge_velocity(student,teacher,gamma),s,t,eta)
+    variance=(t*torch.sin(torch.tensor(eta*torch.pi/2,dtype=torch.float64)))**2
+    original=(a-b).square().sum()/2/variance
+    bridged=(a-q).square().sum()/2/variance
+    torch.testing.assert_close(bridged,(1-gamma)**2*original,atol=1e-14,rtol=1e-12)
