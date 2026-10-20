@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+exec 2>&1
 task_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$task_root"
 : "${HF_HOME:?Set HF_HOME to the mounted PickScore cache}"
@@ -19,6 +20,10 @@ export DMD_PYTHON="$task_runtime/bin/python"
 export PYTHONPATH="$task_root${PYTHONPATH:+:$PYTHONPATH}"
 "$DMD_PYTHON" scripts/check_runtime.py --method dmd --model "$SD3_MODEL" \
     --rewards pickscore clipscore aesthetic hpsv2
+if [[ "${DMD_SETUP_ONLY:-0}" == 1 ]]; then
+    echo "Cloud environment and all model files verified."
+    exit 0
+fi
 if [[ "${DMD_NNODES:-1}" -gt 1 ]]; then
     exec bash "$task_root/jobs/run_dmd_pickscore_distributed.sh"
 fi

@@ -60,3 +60,21 @@
   checkpoints/checkpoint-N/lora/generator/ 和 fake_score/ 保存两套 LoRA。
   评估/推理应使用 lora/generator/，不能把两套 adapter 的父目录当作单个 LoRA。
   上游恢复逻辑从 EMA 导出的生成器恢复，未保存完整 EMA/scheduler 历史；恢复并非位级连续训练。
+
+
+正式云任务（16 卡，2026-10-20）
+  资源：c20250506 预付费队列，2 个 worker，各 8 张 A100-80GB，ml.hpcpni2.28xlarge。
+  入口：jobs/cloud_bootstrap.sh；多节点启动：jobs/run_dmd_pickscore_distributed.sh。
+  官方任务 CLI 以 RuntimeConfig.Code.LocalPath 上传代码，并自动生成 snapshot manifest。
+  Code.SavedPath 不能直接填普通 TOS 目录；平台需要上传器生成的 manifest 地址。
+  持久化目录：/vepfs-mlp2/c20250506/250404014/rootDMD/sd3-dmd-8gpu-10000-20261020-211547。
+  容器中将上述个人 vePFS 子目录挂载到 /mnt/vepfs，模型、评分缓存和输出均位于其中。
+  10000 指外层迭代：10000 次 fake_score 更新，1000 次 generator 更新，每卡 batch=1。
+  每 1000 步保存和评估，最后生成完整 2048 条 PickScore 测试提示词对应的图像。
+  训练结束后再次使用同一批保存的 PNG 计算四种指标，评分不反传到训练。
+  最终文件：outputs/sd3-dmd-16gpu-10000/eval/step-10000/final-metrics.{json,csv,md}。
+  逐图分数：per-image-scores.json；检查点：checkpoints/checkpoint-10000/lora/generator/。
+  报告列：Method、NFE、Post-Train、CLIP Score、Aesthetic Score、Pick Score、HP Score。
+  NFE=4；Post-Train=DMD (no reward)；CLIP 与 HPSv2.1 采用乘 100 展示尺度，PickScore 还原原始 logit。
+  final-metrics.json 同时保留仓库原始尺度和完整评估协议；结果只应与相同协议的实验比较。
+  评分依赖见 requirements-dmd-eval.txt，已预先构建离线 wheel 包并传入任务存储。

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "six-1.17.0-py2.py3-none-any.whl",
+    "size": 11050,
+    "sha256": "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"
+  },
+  {
+    "name": "tzdata-2025.2-py2.py3-none-any.whl",
+    "size": 347839,
+    "sha256": "1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"
+  },
+  {
+    "name": "pytz-2025.2-py2.py3-none-any.whl",
+    "size": 509225,
+    "sha256": "5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00"
+  },
+  {
+    "name": "python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+    "size": 229892,
+    "sha256": "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"
+  },
+  {
+    "name": "pandas-2.2.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "size": 12739445,
+    "sha256": "fffb8ae78d8af97f849404f21411c95062db1496aeb3e56f146f0355c9989319"
+  },
+  {
+    "name": "pluggy-1.6.0-py3-none-any.whl",
+    "size": 20538,
+    "sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"
+  },
+  {
+    "name": "attrs-25.4.0-py3-none-any.whl",
+    "size": 67615,
+    "sha256": "adcf7e2a1fb3b36ac48d97835bb6d8ade15b8dcce26aba8bf1d14847b57a3373"
+  }
+]
