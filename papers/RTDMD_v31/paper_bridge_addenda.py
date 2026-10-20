@@ -176,7 +176,8 @@ C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
         completed = []
         for label, name in items:
             path = root / 'evidence' / name / 'final-metrics.json'
-            if path.exists():
+            status = path.parent/'status.txt'
+            if path.exists() and status.exists() and status.read_text().strip().startswith('COMPLETED'):
                 report = json.loads(path.read_text())
                 completed.append(('4 & ' + label + ' & ' + ' & '.join(f'{report["table"][k]:.4f}' for k in METRICS) + r' \\', name))
                 reports[name] = str(path)
@@ -214,6 +215,29 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
     table('原路径版长训练确认：10000轮',
           [('DMD', 'dmd-seed42-10000-pick2048'), ('Path-IS', 'path-is-seed42-10000-pick2048')],
           r'原先固定的 $\lambda=.10$、Teacher-only、无时间权重；双方10000轮/1000次生成器更新。此组 CUDA 后向未启用新确定性设置，不能与新队列混为同组。')
+    optional = root/'optional-faithful-long-progress.json'
+    if optional.exists():
+        longer = json.loads(optional.read_text())
+        if longer.get('status') == 'OPTIONAL_FAITHFUL_LONG_CHECK_COMPLETE':
+            table('新纯教师细节版：固定3000轮复核',
+                  [(LABELS.get(c, c), name) for c, name in zip(
+                      ['dmd', longer['faithful_case']], longer['reports'])],
+                  r'预先固定的3000轮端点，不按中间评分选checkpoint；同生成器更新次数。双查询若启用有额外计算，本组没有3000轮FP32与无粒子控制。')
+            prefix = root/'deterministic-full-prefix-reproduction.json'
+            if prefix.exists():
+                checks = json.loads(prefix.read_text())
+                message = '；'.join(x['case'].replace('_', r'\_')+': '+str(x['equal_tensors'])+'/'+str(x['tensor_count']) for x in checks)
+                tex += r'''\begin{frame}{完整训练前缀的重复性复核}
+\small
+两条新3000轮训练在1000轮处，与此前保存的原生FP32 EMA逐张量比较：\par
+'''+message+r'''
+\begin{itemize}\itemsep5pt
+\item 此处报告实际一致数；不把40轮冒烟的重复性推广为完整训练已逐位复现。
+\item CPU加载线程数由96限制为1；LoRA形状uniform、训练randperm及normal抽样的单独检查一致，但仍以这里的完整权重比较为准。
+\item 只保存推理EMA，无完整优化器/RNG状态；3000轮实验从初始化重新训练。
+\end{itemize}
+\end{frame}
+'''
     drift = root/'training-drift-long/training-drift.json'
     if drift.exists():
         data = json.loads(drift.read_text())

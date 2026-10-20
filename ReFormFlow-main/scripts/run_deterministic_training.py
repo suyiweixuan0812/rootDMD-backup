@@ -1,5 +1,6 @@
 """Run an unchanged training entry with explicit deterministic CUDA settings."""
 import json
+import hashlib
 import os
 from pathlib import Path
 import runpy
@@ -23,6 +24,19 @@ record={'started_utc':datetime.now(timezone.utc).isoformat(),'deterministic_algo
         'CUBLAS_WORKSPACE_CONFIG':os.environ['CUBLAS_WORKSPACE_CONFIG'],
         'cudnn_benchmark':False,'cudnn_deterministic':True,'torch_version':torch.__version__,
         'trainer':trainer,'trainer_arguments':forwarded,'status':'RUNNING'}
+record['cpu_runtime']={'torch_num_threads':torch.get_num_threads(),
+    'torch_num_interop_threads':torch.get_num_interop_threads(),
+    'thread_environment':{k:os.environ.get(k) for k in
+        ['OMP_NUM_THREADS','MKL_NUM_THREADS','OPENBLAS_NUM_THREADS']}}
+sources={root/trainer,Path(__file__).resolve()}
+sources.update((root/'flow_grpo').glob('*path_is*.py'))
+sources.update((root/'flow_grpo').glob('*path_ratio*.py'))
+sources.update((root/'flow_grpo').glob('*rounding*.py'))
+sources.update((root/'flow_grpo').glob('*query*.py'))
+sources.update((root/'flow_grpo/diffusers_patch').glob('sd3*path_is*.py'))
+sources.update((root/'config').glob('*.py'))
+record['source_sha256']={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest()
+    for p in sorted(sources) if p.is_file()}
 path=run/'runtime-numerics.json'
 assert not path.exists(),'Never overwrite a deterministic training record'
 path.write_text(json.dumps(record,indent=2))
