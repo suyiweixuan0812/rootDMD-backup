@@ -1,0 +1,50 @@
+本轮修改、ESS诊断与实际结论
+==========================
+
+上一版退化原因：
+- 65536维latent的Gaussian观测平方误差逐坐标累加，无条件8个候选难覆盖后验。
+- log权重跨度中位数1706.605、最大3209766.865，ESS均值1.095/8，96%更新ESS<2。
+- 教师估计的腐化噪声不保证等于Student生成初始噪声；微小均值偏移不能保证提议适配。
+- 旧损失和梯度后段放大与退化并存；没有单独因果消融，不能把每一项影响完全分离。
+
+本轮修改：
+1. 显式保存当前Student的初始噪声、全部CPS创新和随机停止步。
+2. 用同一条真实源轨迹构造Gaussian观测，获得条件后验平稳初始化。
+3. 教师预测仍引导proposal；改为16坐标局部pCN提议与正确Hastings概率比。
+4. 8次转移中停止步单独更新，避免活跃块选择概率在改变停止步时被错误抵消。
+5. 使用接受/拒绝条件期望的Rao-Blackwell平均，减少额外的接受随机性。
+6. 根据论文同一点的clean prediction写法，改用J_theta D_theta(y,s,c)；
+   使Jacobian给定观测后不依赖原始源轨迹，避免成对初始化的源Jacobian协方差项。
+7. 不训练Fake；不补终端噪声；不做似然温度、权重裁剪或把维度和改平均。
+8. 新增8项数学/数值测试，与旧6项合计14项通过。
+
+保持与DMD相同的外部参数：
+原SD3-Medium、512、bf16网络、LoRA rank32/alpha64、batch1、seed42、学习率、优化器、
+EMA、梯度裁剪、CFG4.5、CPS eta=.9、4步schedule、随机停止与训练/测试提示词。
+均1000外层轮/100次生成器更新，完整2048条测试提示词，NFE=4，四项均评分同一PNG。
+本轮新增8次MH、16坐标块、proposal_scale=.25、scale循环(.5,1,2)、教师偏移.01。
+反传位置是方法改动，计算量不同；Gaussian先float32采样的数值差异和仅末轮LoRA
+保存策略均详见数学说明。原DMD与上一版代码/结果未覆盖。
+
+实际结果（CLIP/HP采用x100展示，HP=HPSv2.1）：
+{"Method": "SD3-Medium + DMD", "NFE": 4, "Post-Train": "DMD (no reward)", "CLIP Score": 25.537401000474347, "Aesthetic Score": 5.915189849445596, "Pick Score": 20.347763730271254, "HP Score": 27.274177578874514}
+{"Method": "SD3-Medium + RTDMD Source-IS (corrected Scheme A)", "NFE": 4, "Post-Train": "Source-IS (no reward)", "CLIP Score": 19.578851690084775, "Aesthetic Score": 4.552630437770858, "Pick Score": 17.90977377901436, "HP Score": 16.01970657793572}
+{"Method": "SD3-Medium + RTDMD Posterior-MH (Eq.2)", "NFE": 4, "Post-Train": "Posterior-MH (no reward)", "CLIP Score": 25.426447528298013, "Aesthetic Score": 5.965997888240963, "Pick Score": 20.557982619444374, "HP Score": 28.393753196723992}
+
+结论：本轮四项均高于上一版；相对DMD，Aesthetic +0.050808，Pick +0.210219，
+HPSv2.1 +1.119576，CLIP -0.110953。只能报告本次试跑结果，不能证明稳定优于DMD。
+模型382个LoRA张量全部有限、参数确有更新，正式进程退出码0，A100已释放。
+
+剩余问题：
+MH平均接受率28.75%，实际图像移动率25.75%；39%更新全拒绝，50%更新没有实际图像移动。
+低于.5的噪声段没有实际图像移动。8步短链不能可靠估计MCMC ESS，不能说“ESS=8”。
+平稳初始化下的条件期望正确性不等于单次条件均值精确，也不等于KL梯度/收敛证明。
+本轮同时改后验估计和梯度位置，尚未分别消融；也未做多种子或更长训练验证。
+本版保留教师引导、Student后验目标、概率比校正和在线均值，采用原始噪声轨迹空间MH，
+不是原论文Pref反向CPS整路径IS的严格复现。
+
+文件：
+数学分析 docs/RTDMD_PosteriorMH_Math_CN.txt；运行说明 RUN_RTDMD_POSTERIOR_MH_CN.txt。
+三方报告 logs/rtdmd-posterior-mh/comparison-1000/RESULTS_CN.txt、comparison.csv、summary.json。
+低噪声冻结/实际移动审计同目录 movement-audit.json；旧ESS审计 previous-ess-audit.json。
+逐图分数/PNG/EMA生成器LoRA位于 logs/rtdmd-posterior-mh/sd3-medium-rtdmd-posterior-mh-train/。
