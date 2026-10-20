@@ -115,7 +115,7 @@ def main():
         for item in info["siblings"]:
             name = item["rfilename"]
             if role == "processor":
-                selected = name in {"preprocessor_config.json", "tokenizer_config.json", "tokenizer.json",
+                selected = name in {"config.json", "preprocessor_config.json", "tokenizer_config.json", "tokenizer.json",
                                     "special_tokens_map.json", "vocab.json", "merges.txt"}
             elif role == "pickscore":
                 selected = name in {"config.json", "model.safetensors"}

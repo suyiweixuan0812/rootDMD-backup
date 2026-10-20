@@ -26,7 +26,7 @@
   train 最后一轮评估完整 2048 条测试提示词；中间少量提示词用于运行检查。
 
 环境与模型
-  Python /rootDMD/.venv-dmd/bin/python，独立 venv 复用服务器现有 PyTorch。
+  Python 3.12.1：/rootDMD/.venv-dmd/bin/python，独立 venv 复用服务器现有 PyTorch。
   实际 PyTorch 2.7.1+cu128；上游参考为 2.6.0，未改动系统 PyTorch。
   其余核心依赖见 requirements-dmd-runtime.txt。
   只安装 DMD/PickScore 所需依赖；该入口不需要 FlashAttention、DeepSpeed 等额外扩展。

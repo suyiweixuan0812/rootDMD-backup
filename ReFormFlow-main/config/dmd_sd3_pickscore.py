@@ -25,7 +25,7 @@ def get_config(name="train"):
     config.logging.enabled = False
     config.train.batch_size = 1
     config.train.gradient_checkpointing = True
-    config.sample.test_batch_size = 1
+    config.sample.test_batch_size = 1 if name == "smoke" else 4
     config.eval.dataset = config.dataset
     config.eval.reward_fn = ConfigDict({"pickscore": 1.0})
     config.eval.num_prompts = 4 if name == "smoke" else 16

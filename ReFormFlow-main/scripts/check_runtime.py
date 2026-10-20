@@ -67,7 +67,7 @@ def check_rewards(rewards, root, hf_cache, home):
         if reward == "pickscore":
             errors += check_hf_cache(hf_cache, "yuvalkirstain/PickScore_v1", ["config.json", "model.safetensors"])
             errors += check_hf_cache(hf_cache, "laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
-                                     ["preprocessor_config.json", "tokenizer_config.json", "vocab.json", "merges.txt"])
+                                     ["config.json", "preprocessor_config.json", "tokenizer_config.json", "vocab.json", "merges.txt"])
         if reward in ("clipscore", "aesthetic"):
             errors += check_hf_cache(hf_cache, "openai/clip-vit-large-patch14",
                                      ["config.json", "model.safetensors", "preprocessor_config.json", "vocab.json", "merges.txt"])

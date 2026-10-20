@@ -21,3 +21,5 @@ hf-cache/
 backup-tools/*.log
 !ReFormFlow-main/jobs/
 !ReFormFlow-main/jobs/*.sh
+
+backup-tools/*.log.*
