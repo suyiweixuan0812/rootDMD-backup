@@ -35,6 +35,29 @@ def completed(name):
     return report
 
 
+def pair_statistics(reports, candidate, comparator):
+    matched = []
+    for seed in [42, 43, 44]:
+        a = reports.get(f'sd3-det-{comparator}-seed{seed}-pick2048-exact')
+        b = reports.get(f'sd3-det-{candidate}-seed{seed}-pick2048-exact')
+        if a is None or b is None:
+            continue
+        assert a['num_images'] == b['num_images'] == 2048
+        assert a['protocol']['checkpoint_training_configuration']['seed'] == b['protocol']['checkpoint_training_configuration']['seed'] == seed
+        for key in ['test_file_sha256', 'resolution', 'seed', 'ema', 'clip', 'aesthetic', 'pickscore', 'hp']:
+            assert a['protocol'][key] == b['protocol'][key], key
+        matched.append(dict(seed=seed, baseline=a['table'], candidate=b['table'],
+                            deltas={k:b['table'][k]-a['table'][k] for _, k, _ in METRICS}))
+    stats = {}
+    for _, key, _ in METRICS:
+        data = [x['deltas'][key] for x in matched]
+        stats[key] = dict(mean_delta=float(np.mean(data)) if data else None,
+                         sample_std_across_seed_deltas=float(np.std(data, ddof=1)) if len(data)>1 else None)
+    return dict(matched_training_seeds=[x['seed'] for x in matched], per_seed=matched, statistics=stats,
+                all_seeds_improve_both_preferences=bool(matched) and all(
+                    x['deltas']['Pick Score']>0 and x['deltas']['HP Score']>0 for x in matched))
+
+
 def main():
     selection = json.loads((R/'deterministic-selection.json').read_text())
     best, control = selection['selected_case'], selection['paired_control']
@@ -54,30 +77,13 @@ def main():
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
         writer.writerows(rows)
-    pairs = {}
-    for comparator in ['dmd', 'dmd_fp32', control]:
-        matched = []
-        for seed in [42, 43, 44]:
-            a = reports.get(f'sd3-det-{comparator}-seed{seed}-pick2048-exact')
-            b = reports.get(f'sd3-det-{best}-seed{seed}-pick2048-exact')
-            if a is None or b is None:
-                continue
-            assert a['num_images'] == b['num_images'] == 2048
-            assert a['protocol']['checkpoint_training_configuration']['seed'] == b['protocol']['checkpoint_training_configuration']['seed'] == seed
-            for key in ['test_file_sha256', 'resolution', 'seed', 'ema', 'clip', 'aesthetic', 'pickscore', 'hp']:
-                assert a['protocol'][key] == b['protocol'][key], key
-            matched.append(dict(seed=seed, baseline=a['table'], candidate=b['table'],
-                                deltas={k:b['table'][k]-a['table'][k] for _, k, _ in METRICS}))
-        stats = {}
-        for _, key, _ in METRICS:
-            data = [x['deltas'][key] for x in matched]
-            stats[key] = dict(mean_delta=float(np.mean(data)) if data else None,
-                             sample_std_across_seed_deltas=float(np.std(data, ddof=1)) if len(data)>1 else None)
-        pairs[comparator] = dict(matched_training_seeds=[x['seed'] for x in matched], per_seed=matched, statistics=stats,
-                                all_seeds_improve_both_preferences=bool(matched) and all(
-                                    x['deltas']['Pick Score']>0 and x['deltas']['HP Score']>0 for x in matched))
+    pairs = {comparator:pair_statistics(reports, best, comparator) for comparator in ['dmd', 'dmd_fp32', control]}
+    faithful = selection.get('pure_teacher_alternative', dict(case=best, paired_control=control))
+    faithful_pairs = {comparator:pair_statistics(reports, faithful['case'], comparator)
+                      for comparator in ['dmd', 'dmd_fp32', faithful['paired_control']]}
     summary = dict(created_utc=datetime.now(timezone.utc).isoformat(), selected_case=best,
         dev_selection_status=selection['status'], paired_control=control, comparisons=pairs,
+        pure_teacher_alternative=dict(**faithful, comparisons=faithful_pairs),
         statistical_scope='Every available matched trained seed is retained, including negative replications. No reliable training-seed CI is claimed from two or three seeds. Prompt bootstrap reports are conditional on the saved trained models.',
         incomplete_groups='Individual completed rows remain in CSV; pair means use every seed with both reports, with seed sets explicitly listed. Historical nondeterministic and deterministic cohorts are never averaged together.')
     (R/'multiseed-validation-summary.json').write_text(json.dumps(summary, indent=2, ensure_ascii=False))
@@ -109,6 +115,11 @@ def main():
             lines.append('  seed '+str(item['seed'])+'：'+json.dumps(item['deltas'], ensure_ascii=False))
         lines.append('  候选减对照的均值：'+json.dumps({k:v['mean_delta'] for k,v in pair['statistics'].items()}, ensure_ascii=False))
         lines.append('  每个已测种子 Pick/HPS 都上升：'+str(pair['all_seeds_improve_both_preferences']))
+    if faithful['case'] != best:
+        lines += ['', '更贴近原稿的纯Teacher版本：'+faithful['case']+'；按同一Dev规则在纯Teacher版本内选出，主完整测试不回调选择。']
+        for comparator,pair in faithful_pairs.items():
+            lines.append('  对照 '+comparator+'；种子 '+str(pair['matched_training_seeds'])+'；均值差 '+json.dumps(
+                {k:v['mean_delta'] for k,v in pair['statistics'].items()},ensure_ascii=False))
     lines += [
         '', '三、公平性与结论边界',
         '共同配置审计覆盖模型、512分辨率、BF16、TF32、种子、CPS、随机停止、batch1、LoRA32/alpha64、优化器、LR3e-5、EMA.99及训练轮次。',
@@ -153,6 +164,10 @@ def main():
             '如果应用的PDF链接没有响应，可打开同目录TeX的LaTeX预览，或在开发机文件系统取回PDF/ZIP。',
             '代码补丁包需要现有ReFormFlow项目及对应模型/依赖；不包含大模型和凭据。完整版本/模型指纹见 dependency-fingerprints.json。',
             '本轮一次性队列写有固定截止时间；复现实验请使用上述训练入口，不照搬已过期的队列截止日期。']
+    if faithful['case'] != best:
+        faithful_trainer,faithful_config,_ = ENTRIES[faithful['case']]
+        code += ['', '更贴近原稿的纯Teacher选项：'+faithful['case'], '入口：'+str(ROOT/faithful_trainer),
+                 '配置：'+faithful_config, '原生EMA目录：'+str(R/'archived-checkpoints'/f'sd3-det-{faithful["case"]}-seed42-ema1000/lora/generator')]
     (OUT/'RTDMD_v31_代码与运行说明.txt').write_text('\n'.join(code)+'\n')
     print('Wrote result CSV, matched-seed summary, change report and runnable code guide')
 

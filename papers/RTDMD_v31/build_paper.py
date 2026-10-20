@@ -322,13 +322,15 @@ N&=8,\quad \text{条件更新次数}=2,\quad B=16,\\
 \begin{frame}{同一查询点的 Student Jacobian：保留并说明 surrogate 边界}
 \small
 令 $D=D_\theta(y,\sigma,c)$，$r=y-\sigma v_{\rm ref}(y,\sigma,c)$。
-本轮按原稿式 (2) 的同一查询点解释，使用
+共享 Tweedie 比例为 $\widehat s-s_{\rm ref}=\alpha(\widehat m-r)/\sigma^2$。
+以下写代码实际采用的 clean-gap 时间加权 surrogate：
 \begin{equation}
 g_0=\big[J_\theta D\big]^\top\frac{\widehat m-r}{d\,n_\theta(y)},\quad
 n_\theta(y)=\operatorname{mean}|D-r|.
 \end{equation}
 \begin{itemize}\itemsep5pt
 \item 给定 $y,c,\sigma,\theta$，Jacobian 与归一化因子是确定的，避免与成对源参考的相关项。
+\item 按原稿式(2)在查询噪声时刻反传；原DMD从生成源读出反传，两者梯度输入/时刻不同。
 \item 若改为对原成对源 $F_\theta(H^*)$ 反传，其 Jacobian 与参考粒子一般相关，不能直接复用无偏均值结论。
 \item 目标分支停止梯度，原梯度裁剪与 AdamW 继续使用。
 \item $d$ 为 MSE 均值的元素数；公式假定 $0<n_\theta(y)<\infty$ 且未触发数值清理分支。

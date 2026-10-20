@@ -46,6 +46,20 @@ def main():
     if D-time.time() < 3900:
         record('NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED')
         return
+    while True:
+        longer = validation.read(R/'optional-faithful-long-progress.json').get('status', '')
+        if longer == 'OPTIONAL_FAITHFUL_LONG_CHECK_COMPLETE' or longer.startswith('NOT_LAUNCHED'):
+            break
+        if longer.startswith('FAILED') or longer.startswith('BUDGET_STOP'):
+            record('NOT_LAUNCHED_LONGER_CHECK_NEEDS_ATTENTION_OR_BUDGET', long_status=longer)
+            return
+        if time.time() > D-3900:
+            record('NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED')
+            return
+        time.sleep(10)
+    if D-time.time() < 3900:
+        record('NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED')
+        return
     if shutil.disk_usage(ROOT).free < 600*1024**2:
         record('NOT_LAUNCHED_PRESERVE_PERSISTENT_STORAGE_MARGIN')
         return

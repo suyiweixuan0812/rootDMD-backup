@@ -293,3 +293,11 @@ a对所有latent坐标求和，因此小的坐标误差也可能产生很大的�
 因此精确写为G=(J_theta D)^T/(d*n_theta(y))，n_theta(y)=mean|D-r|。
 期望和协方差公式假定归一化分母正且有限，未触发nan_to_num的非线性清理分支；裁剪和Adam后的分布不由该线性公式直接给出。
 共同1/d因子不改变所述lambda条件方差缩放关系，原DMD与各路径版的MSE均保持相同mean reduction。
+
+二十一、Tweedie到代码的clean-gap接口，以及与DMD反传时刻的区别
+
+若r=y-sigma*v_ref，按同一个Tweedie定义，shat-s_ref=alpha*(mhat-r)/sigma^2。
+代码使用clean-gap，把已知时间比例并入surrogate的时间权重定义，与直接计算两个score之差的实现接口分开说明。
+本版按原稿式(2)在加噪查询(y,sigma)处反传Student预测；原DMD实现从生成源读出反传。
+因此Student接受梯度的输入与噪声时刻也改变了，不只是把Fake的数值替换成路径均值。
+这项区别连同lambda正则、时间权重和数值精度对照都必须报告；无粒子的成对源控制正是用来隔离粒子平均是否有额外贡献。
