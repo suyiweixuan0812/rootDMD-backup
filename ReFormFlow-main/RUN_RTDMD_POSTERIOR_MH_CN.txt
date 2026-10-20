@@ -1,0 +1,51 @@
+教师引导后验 MH 修正版：代码、运行与结果
+=======================================
+
+先读 docs/RTDMD_PosteriorMH_Math_CN.txt：旧ESS退化原因、本轮正确接受比、后验平稳
+初始化证明、同一观测点Jacobian及其限制。本轮不是原Pref反向CPS全路径IS的严格复现。
+
+新增代码
+  flow_grpo/posterior_mh.py：活跃Gaussian块的教师引导pCN、Hastings校正、均值和移动诊断。
+  flow_grpo/diffusers_patch/sd3_source_trace.py：保存/重放原Student随机停止和CPS创新。
+  scripts/train_rtdmd_posterior_mh_sd3.py：同一观测点clean prediction反传；无Fake训练。
+  config/rtdmd_posterior_mh_pickscore.py：继承单卡DMD；新增MH提议设置。
+  scripts/score_rtdmd_posterior_mh_images.py：相同PNG四指标协议。
+  scripts/summarize_posterior_mh_comparison.py：DMD、上一版、MH三方比较与分噪声诊断。
+  jobs/run_rtdmd_posterior_mh_pickscore.sh：训练入口。
+  jobs/run_rtdmd_posterior_mh_comparison.sh：完整训练、评分、三方报告。
+  tests/test_posterior_mh.py、test_posterior_mh_blocks.py：8项新增验证；上一版6项仍保留，共14项。
+原DMD与上一版代码、权重及结果均保留。.gitignore仅增加本轮测试文件纳入规则。
+
+复现（服务器）
+  cd /rootDMD/ReFormFlow-main
+  source jobs/local_env.sh
+  python -m unittest discover -s tests -v
+  bash jobs/run_rtdmd_posterior_mh_pickscore.sh smoke
+  bash jobs/run_rtdmd_posterior_mh_comparison.sh > /rootDMD/rtdmd-posterior-mh-comparison.log 2>&1
+完整比较脚本检测到已有正式结果时会拒绝覆盖。不是resume入口。
+同一A100、1000外层轮、100次生成器更新，完整2048条PickScore测试提示词。
+对照是原单卡DMD，不是16卡10000轮云任务；训练计算量并不完全相等。
+
+结果
+  logs/rtdmd-posterior-mh/comparison-1000/RESULTS_CN.txt：中文三方结论。
+  同目录 comparison.csv：CLIP/Aesthetic/Pick/HPSv2.1四指标表；NFE=4。
+  同目录 summary.json：配置差异、配对分差、真实源移动率、分噪声诊断和权重检查。
+  同目录 previous-ess-audit.json：旧100次更新的ESS及log权重跨度分析。
+  同目录 source-manifest.json：实际代码/数据SHA256与依赖版本。
+  同目录 training-diagnostics.png：损失、接受率与真实移动、分噪声位移图。
+  同目录 status.txt：TRAINING_AND_FINAL_IMAGE_GENERATION / SCORING_POSTERIOR_MH / COMPLETED / FAILED。
+  logs/rtdmd-posterior-mh/sd3-medium-rtdmd-posterior-mh-train/metrics.jsonl：所有轮记录。
+  同run下 eval/step-1000/final-metrics.json：四指标和协议；per-image-scores.json：逐图分数。
+  同eval下 rank-0/：2048张PNG及prompts.json。
+  同run下 checkpoints/checkpoint-1000/lora/generator/：EMA生成器LoRA（权重导出，非完整训练恢复）。
+  /rootDMD/rtdmd-posterior-mh-comparison.log：完整正式日志。
+  /rootDMD/rtdmd-posterior-mh-smoke.log：全局提议失败的短跑诊断。
+  /rootDMD/rtdmd-posterior-mh-block-smoke.log：分块提议短跑诊断。
+
+查看
+  tail -f /rootDMD/rtdmd-posterior-mh-comparison.log
+  cat logs/rtdmd-posterior-mh/comparison-1000/RESULTS_CN.txt
+  cat logs/rtdmd-posterior-mh/comparison-1000/comparison.csv
+
+不要把均匀平均权重说成ESS=8；链可能仍然高度相关或完全不动。
+本轮以接受率和实际图像位移报告问题，不宣称8步足以混合。

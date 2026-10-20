@@ -14,7 +14,7 @@ def get_config(name='train'):
     config.run_name = f'sd3-medium-rtdmd-posterior-mh-{name}'
     config.save_dir = str(root / 'logs/rtdmd-posterior-mh')
     config.posterior_mh = ConfigDict(dict(
-        enabled=True, num_moves=8, teacher_shift=0.01, proposal_scale=2.38,
+        enabled=True, num_moves=8, teacher_shift=0.01, proposal_scale=0.25, block_size=16,
         scale_cycle=[0.5, 1.0, 2.0],
         gradient_site='same_observation_clean_prediction',
         initialization='paired_joint_source_trace',

@@ -52,3 +52,4 @@ tests/
 tests/*
 !tests/test_source_posterior.py
 !tests/test_posterior_mh.py
+!tests/test_posterior_mh_blocks.py

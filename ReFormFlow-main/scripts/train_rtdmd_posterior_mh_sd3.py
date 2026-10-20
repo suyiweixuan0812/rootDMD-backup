@@ -87,14 +87,8 @@ def save_ckpt(
         )
         for name, parameter in parameters["generator"].items():
             parameter.data.copy_(stored[name])
-        torch.save(
-            {"generator": optimizers["generator"].state_dict()},
-            root / "optimizer.pt",
-        )
-        torch.save(
-            {"generator": scalers["generator"].state_dict()},
-            root / "scaler.pt",
-        )
+        # Inference-only checkpoint: exact resume is explicitly disabled. Avoid
+        # saving unused optimizer states on this disk-limited comparison host.
         (root / "config.json").write_text(json.dumps(config.to_dict(), indent=2))
         logger.info(f"Saved checkpoint to {root}")
 
@@ -432,6 +426,7 @@ def main(_):
                     random_stop=config.sample.random_stop_idx,
                     proposal_scale=config.posterior_mh.proposal_scale,
                     scales=config.posterior_mh.scale_cycle,
+                    block_size=config.posterior_mh.block_size,
                 )
                 metrics.update({key: [value] for key, value in posterior_metrics.items()})
             # Eq.(2): J_theta D_theta(y,t,c), with y detached. This Jacobian

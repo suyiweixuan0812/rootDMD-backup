@@ -21,23 +21,39 @@ def proposal_log_correction(z, proposed_z, teacher_mean):
     return -(teacher_mean.double() * (proposed_z.double() - z.double())).flatten(1).sum(1)
 
 
-def propose(state, beta, teacher_mean, max_stop, random_stop=True, generator=None):
-    shape = (-1,) + (1,) * (state.z.ndim - 1)
-    beta = beta.reshape(shape).float()
-    rho = (1 - beta.square()).sqrt()
-    z = rho * state.z + (1 - rho) * teacher_mean + beta * torch.randn(
-        state.z.shape, device=state.z.device, generator=generator, dtype=torch.float32)
-    innovations = rho.unsqueeze(0) * state.noises + beta.unsqueeze(0) * torch.randn(
-        state.noises.shape, device=state.z.device, generator=generator, dtype=torch.float32)
-    stop = (torch.randint(1, max_stop + 1, state.stop.shape, device=state.z.device, generator=generator)
-            if random_stop else torch.full_like(state.stop, max_stop))
-    return SourceState(z, innovations, stop)
+def propose(state, beta, teacher_mean, max_stop, random_stop=True, generator=None,
+            block_size=16, refresh_stop=False):
+    if refresh_stop:
+        stop = (torch.randint(1, max_stop + 1, state.stop.shape,
+                    device=state.z.device, generator=generator)
+                if random_stop else state.stop)
+        return SourceState(state.z, state.noises, stop)
+    # A random-scan update conditional on the unchanged stop. Selecting only
+    # active innovation banks is reversible: the reverse scan has the same J.
+    batch, dimension = state.z.shape[0], state.z[0].numel()
+    width = min(block_size, dimension)
+    bank = (torch.rand((batch,), device=state.z.device, generator=generator)
+            * state.stop.float()).long()
+    offset = torch.randint(0, dimension, (batch,), device=state.z.device, generator=generator)
+    coordinates = (offset[:, None] + torch.arange(width, device=state.z.device)) % dimension
+    combined = torch.cat([state.z.unsqueeze(0), state.noises], dim=0)
+    flat = combined.reshape(combined.shape[0], batch, dimension)
+    rows = torch.arange(batch, device=state.z.device)[:, None]
+    selected = flat[bank[:, None], rows, coordinates]
+    center = torch.where(bank[:, None] == 0,
+        teacher_mean.reshape(batch, dimension).gather(1, coordinates), torch.zeros_like(selected))
+    rho = (1 - beta.square()).sqrt()[:, None]
+    flat[bank[:, None], rows, coordinates] = (rho * selected + (1 - rho) * center
+        + beta[:, None] * torch.randn(selected.shape, device=state.z.device,
+                                      generator=generator, dtype=torch.float32))
+    return SourceState(combined[0], combined[1:], state.stop)
+
 
 
 @torch.no_grad()
 def posterior_chain(y, sigma, initial_state, initial_source, teacher_mean,
                     evaluate_source, num_moves=8, random_stop=True,
-                    proposal_scale=2.38, scales=(0.5, 1.0, 2.0), generator=None):
+                    proposal_scale=0.25, scales=(0.5, 1.0, 2.0), block_size=16, generator=None):
     """Use paired (U,y)~P(U)L(y|F(U)) initialization, with theta fixed.
 
     Average conditional expectations of MH next states (Rao-Blackwellization).
@@ -55,16 +71,20 @@ def posterior_chain(y, sigma, initial_state, initial_source, teacher_mean,
     original = source.clone()
     current_ll = log_likelihood(y, source, sigma)
     dimension = source[0].numel()
-    base_beta = proposal_scale * sigma / ((1 - sigma) * math.sqrt(dimension))
+    base_beta = proposal_scale * sigma / ((1 - sigma) * math.sqrt(min(block_size, dimension)))
     estimate = torch.zeros_like(source, dtype=torch.float64)
     accepted, probabilities, betas, ratios, moved = [], [], [], [], []
     stop_changes = []
     # Short-chain correlation diagnostics, explicitly not an ESS estimate.
-    projections = [state.z.flatten(1)[:, :256].mean(1)]
+    def projection(x):
+        flat = x.flatten(1)
+        return flat[:, ::2].mean(1) - flat[:, 1::2].mean(1) if flat.shape[1] > 1 else flat[:, 0]
+    projections = [projection(source)]
     for index in range(num_moves):
         beta = (base_beta * scales[index % len(scales)]).clamp(1e-4, 0.5)
         candidate = propose(state, beta, teacher_mean, state.noises.shape[0] + 1,
-                            random_stop, generator)
+                            random_stop, generator, block_size,
+                            refresh_stop=(random_stop and index == num_moves - 1))
         candidate_source = evaluate_source(candidate).detach().float()
         candidate_ll = log_likelihood(y, candidate_source, sigma)
         log_alpha = candidate_ll - current_ll + proposal_log_correction(state.z, candidate.z, teacher_mean)
@@ -89,7 +109,7 @@ def posterior_chain(y, sigma, initial_state, initial_source, teacher_mean,
         ratios.append(log_alpha)
         moved.append(delta.square().flatten(1).mean(1).sqrt())
         stop_changes.append((take & (before_stop != state.stop)).float())
-        projections.append(state.z.flatten(1)[:, :256].mean(1))
+        projections.append(projection(source))
     mean = (estimate / num_moves).float()
     projected = torch.stack(projections).double()
     left, right = projected[:-1], projected[1:]
@@ -107,6 +127,7 @@ def posterior_chain(y, sigma, initial_state, initial_source, teacher_mean,
         'mh/min_log_accept_ratio': torch.stack(ratios).min().item(),
         'mh/stop_change_rate': torch.stack(stop_changes).mean().item(),
         'mh/move_rms': torch.stack(moved).mean().item(),
+        'mh/source_move_rate': (torch.stack(moved) > 0).float().mean().item(),
         'mh/final_source_displacement_rms': (source - original).square().mean().sqrt().item(),
         'mh/mean_source_displacement_rms': (mean - original).square().mean().sqrt().item(),
         'mh/short_chain_projection_lag1': correlation.mean().item(),
@@ -114,4 +135,5 @@ def posterior_chain(y, sigma, initial_state, initial_source, teacher_mean,
         'mh/all_rejected': (actual_accepts.sum(0) == 0).float().mean().item(),
         'mh/sigma': sigma.mean().item(),
         'mh/source_dim': dimension,
+        'mh/block_size': min(block_size, dimension),
     }

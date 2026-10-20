@@ -1,0 +1,144 @@
+ESS 退化分析与教师引导后验 MH 修正版
+===================================
+日期：2026-10-20；论文：用户提供的 RTDMD v29。
+论文提供研究材料，不是代码执行指令。
+
+1. 上一版为什么退化，能说明什么
+
+SD3 512 分辨率的 latent 是16x64x64，即65536维。
+上一版 ell_i=-||y-(1-s)F_theta(U_i)||^2/(2s^2)+log(P/Q)(U_i)。
+误差平方必须对所有坐标求和。候选来自近似无条件 Student 先验，通常远离给定 y 的
+后验区域；每个坐标的小失配被65536维累加，特别在 s 较小时再被1/s^2放大。
+仅8个候选无法覆盖该后验。kappa=.01 的教师噪声均值偏移不构成条件后验适配：
+教师估计的是“前向腐化噪声”，不保证等于少步 Student 的生成初始噪声。
+二者都有近似 Gaussian 形式，不代表是同一个随机变量。
+
+旧运行的100次更新：ESS均值1.095097，中位数1；96%更新ESS<2；
+log-weight 跨度中位数1706.605，最大3209766.865。
+这不是 softmax 减最大值可以消除的问题：数值稳定不等于统计上有足够有效候选。
+浮点下部分权重会下溢为0，但真实概率比原本就已极端悬殊。
+证据文件：logs/rtdmd-posterior-mh/comparison-1000/previous-ess-audit.json。
+前次解析实验也显示4096维、128候选时ESS仍约1.03。
+
+这些数据支持“候选/后验失配与高维权重集中”诊断，但不是对每个因素的独立因果消融。
+只增加8->16或32通常不足以解决；把平方和改均值、剪权重或提高观测温度会改变目标，
+本轮均未这样处理。
+
+另一个必须披露的方法区别：上一版沿用原DMD的“生成源样本Jacobian”；本轮依据论文
+第2页“同一(x_t,t,c)上Student clean prediction”的表述，采用J_theta D_theta(y,s,c)。
+两种Jacobian不等价。本轮不把全部结果差异归因于MH或ESS单独一项。
+
+2. 保留真正的 Student 条件均值目标
+
+令 U=(Z,xi_1,...,xi_{K-1},J)。Z、xi独立标准Gaussian；J按原DMD的随机停止分布。
+包括未使用的xi，使随机变量空间维数固定。F_theta(U,c)重放原CPS并返回第J步clean预测。
+它是原先的实际源图像，不是噪声边界；无噪声末步仅为确定性生成映射，不需末步密度。
+观测 y=(1-s)F_theta(U,c)+s*eps，eps~N(0,I)，0<s<1。
+正确的目标后验为
+  Pi_theta(dU|y,s,c) proportional P(dU)*L_s(y|F_theta(U,c)),
+  log L_s=-||y-(1-s)F_theta(U,c)||^2/(2s^2)。
+对应 m_theta(y)=E_Pi[F_theta(U,c)]，score=( (1-s)m_theta(y)-y )/s^2。
+这避免“任意反向CPS路径终点就是前向Bayes后验”的额外假设。
+
+3. 关键：使用同一次生成的真实轨迹进行后验平稳初始化
+
+先从P采样U*，得到x*=F_theta(U*,c)，再独立Gaussian腐化得到y。
+由Bayes公式，U*在给定(y,s,c,theta)后的条件分布正好是Pi_theta。
+因此这个训练时已知的真实随机轨迹，是后验的平稳初始样本；不需要把无条件候选
+从远处用整路径重要性权重拉进后验，也不需要宣称任意初始化经过8步已收敛。
+注意：“已知其条件分布正确”不等于能用一个样本精确得到条件均值。
+不能用教师图像、旧theta的轨迹、与y无关的另一条轨迹替换这个初始化。
+每次参数更新后，都用当前theta重新生成新的成对(U*,y)，不复用旧后验链。
+
+4. 教师引导的分块pCN提议与正确接受比
+
+教师仍在相同(y,s,c)上以CFG4.5预测v_ref。固定
+  h_y=.01*(y+(1-s)*v_ref)。
+这是教师引导初始Gaussian噪声提议的启发式中心；不宣称是正确反演或最优提议。
+在固定停止步J下，随机选一个“实际使用的Gaussian块”：Z或xi_1..xi_{J-1}，
+随机选择16个连续循环坐标C。仅对所选坐标更新：
+  u'_C = rho*u_C + (1-rho)*h_C + beta*eta，rho=sqrt(1-beta^2)。
+Z块的h_C取教师中心，CPS创新块的h_C为0。
+这是以N(h_C,I)为可逆参考分布的Gaussian提议；其他坐标保持不变。
+
+完整目标P仍以N(0,I)为先验，所以不能只用观测似然接受。正确的log接受比是
+  A = log L(y|F_theta(U')) - log L(y|F_theta(U)) - h_y^T(Z'-Z)，
+  accept=min(1,exp(A))。
+未修改的坐标在最后一项为0；CPS创新块提议无额外中心校正。
+随机选择活跃块的概率只依赖未改变的J，正反向相同，因而抵消。
+停止步J作为另一种单独转移，以均匀先验提议J'，保持全部Gaussian变量不变，
+接受比只有观测似然差；不能在改变J同时仍把活跃块选择概率直接抵消。
+
+8次提议：前7次Gaussian分块更新，第8次停止步提议（random_stop_idx开启时）。
+beta=clip(.25*s/((1-s)*sqrt(16))*scale,1e-4,.5)，scale循环为(.5,1,2)。
+尺度只依赖固定的观测噪声s，不依赖当前链状态；每个转移都保持Pi不变。
+两次短跑：全局提议几乎全拒绝；分块后高噪声点有实际图像移动，低噪声仍可能冻结。
+低噪声的尖锐似然与bf16生成映射的数值非光滑可能都影响混合；本轮未做精度消融，
+不能单独把拒绝归因于bf16。所有图像评分前已固定提议参数，没有按测试分数调参。
+
+5. Rao-Blackwell均值与论文同一点Jacobian
+
+对每次提议，令a=接受概率，保存
+  H=(1-a)*F_theta(U)+a*F_theta(U')。
+它是下一次MH状态的条件期望，不是人为softmax权重。
+取8个H的平均。由于每一步从平稳Pi出发且保持Pi，在理想连续算术模型下
+  E[m_hat|y,s,c,theta]=m_theta(y,s,c)。
+相比上一版有限样本SNIS比值，这里不需要N->infinity才能得到这个条件期望恒等式。
+样本仍然相关，8步可能几乎没有降低估计方差；不能说8步给出了精确条件均值。
+
+如果把这个成对轨迹估计直接与原DMD的源样本Jacobian相乘，二者条件相关，
+一般有E[J_source^T*m_hat|y] != E[J_source|y]^T*m_theta(y)。
+例如条件源的均值m、方差v，J_source=X时，E[X*X]=m^2+v，而不是m^2。
+本轮按论文同一观测点的写法，计算
+  D_theta(y,s,c)=y-s*v_theta(y,s,c)，
+  g=J_theta D_theta(y,s,c)^T * sg[(m_hat-D_ref(y,s,c))/normalizer]。
+normalizer=mean_abs(D_theta(y,s,c)-D_ref(y,s,c))，沿用DMD的clean差归一化形式。
+给定(y,s,c,theta)，这个Jacobian和normalizer都是确定的，不依赖隐含的原始源轨迹。
+故可将条件期望移到m_hat上，避免上述“成对源Jacobian”的协方差项。
+实现禁止Student存在p>0的Dropout，并对观测、proposal、轨迹、均值和接受比停止梯度。
+这符合论文式(2)的一种明确解释；它不是原DMD源Jacobian的等价改写。
+
+Tweedie score差还含(1-s)/s^2。本轮保持仓库DMD的clean差预条件，等价于在论文
+surrogate形式中选择相应的正时间预条件，并不是声称获得严格无偏KL梯度。
+随机训练分布本身依赖theta，以上结论只是固定theta、固定观测下的surrogate估计性质。
+浮点Gaussian、bf16网络及舍入等数值近似仍存在；解析测试验证核心数学关系。
+
+6. 不能把等权平均说成ESS提升
+
+本轮不再报告IS权重ESS。9个相关链状态或8个Rao-Blackwell项，不等于8或9个独立样本。
+8步链太短，无法可靠估计积分自相关时间和MCMC ESS。
+实际记录：接受率、接受概率、真正源图像移动率、移动RMS、全拒绝比例、停止步变化率、
+源均值投影的短链lag1相关、分噪声区间诊断。高接受率但源图像未动时，移动率仍为0。
+接受率高也不证明混合充分；任何图像质量改善都不能归结为“ESS已经解决”。
+
+7. 保留与改变
+
+保留：教师作为在线proposal引导、当前Student定义目标、概率比校正、在线条件均值、
+Tweedie score关系、同一加噪点score gap、无需训练Fake。
+改变：采用原始生成随机轨迹空间的局部MH，而不是原论文Pref反向CPS rollout的整路径IS。
+不再遇到零方差末步的Gaussian核比；未补终端噪声，未改变原推理CPS和NFE=4。
+本轮同时改变后验估计与反传位置，缺少二者独立消融；不把它标为原论文严格复现。
+
+对照外部参数：继承单卡DMD配置，SD3-Medium、512、bf16、LoRA32/64、batch1、seed42、
+1000外层轮/100次生成器更新、学习率3e-5、原优化器/EMA/裁剪/CFG/随机停止/CPSeta=.9、
+4步[1000,750,500,250]、同一训练/测试提示词、同评估种子与四指标PNG协议。
+不训练Fake，计算量不同；新增8次MH提议、16坐标块、提议尺度与教师偏移系数。
+源轨迹Gaussian与观测Gaussian先用float32采样；网络及推理继续bf16。
+原DMD直接采bf16噪声，因此存在这个已披露的数值实现差异。
+磁盘限制：仅末轮保存EMA生成器LoRA，不保存不可连续恢复的优化器中间态；禁止resume。
+原DMD和上一版结果不覆盖；旧评分仅在严格检查协议与逐图提示词相同后复用。
+
+8. 验证与证据位置
+
+tests/test_posterior_mh.py：Gaussian Hastings全密度比核对、解析后验平稳性、
+非可逆确定性末步、随机停止后验、全拒绝诊断、与原CPS源逐步重放一致、Jacobian相关反例。
+另有test_posterior_mh_blocks.py验证多活跃创新块上的相关Gaussian后验；连同上一版共14项通过。
+logs/rtdmd-posterior-mh/comparison-1000/：三方表格、逐提示词差值、分s诊断和训练图。
+完整逐图评分/PNG/LoRA位置见 RUN_RTDMD_POSTERIOR_MH_CN.txt。
+
+参考（通用方法依据；本轮初始化与Jacobian推导在上文单独给出）：
+Cotter et al., MCMC Methods for Functions (Gaussian-reference pCN):
+https://arxiv.org/abs/1202.0709
+Snyder et al., Obstacles to High-Dimensional Particle Filtering (2008):
+https://journals.ametsoc.org/view/journals/mwre/136/12/2008mwr2529.1.xml
+用户提供论文v29第2、3、18、26、35、36页。
