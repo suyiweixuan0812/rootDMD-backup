@@ -566,6 +566,9 @@ $\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 整次更新冻结率\\\mid
 \end{frame}
 \end{document}
 '''
+from paper_addenda import render
+addenda,added_reports,added_groups,computed_values=render(ROUND)
+tex=tex.replace(r'\begin{frame}{仍未被实验或理论解决的边界}',addenda+r'\begin{frame}{仍未被实验或理论解决的边界}')
 (OUT/'RTDMD_SchemeA_Reorganized_Final_CN_v31.tex').write_text(tex)
 print('v31 frames:',tex.count('\\begin{frame}'),'plus title')
 
@@ -573,4 +576,10 @@ manifest={'reports':{name:str(ROUND/'evidence'/name/'final-metrics.json') for _,
  'report_sha256':{name:hashlib.sha256((ROUND/'evidence'/name/'final-metrics.json').read_bytes()).hexdigest() for _,name in dev_items+final_items if (ROUND/'evidence'/name/'final-metrics.json').exists()},
  'validation_table_groups':[{'title_contains':'独立开发集','names':[n for _,n in dev_items]},{'title_contains':'完整测试：同','names':[n for _,n in final_items]}],
  'selection':selection,'source_sha256':hashlib.sha256(tex.encode()).hexdigest()}
+(OUT/'paper-data-manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False))
+
+manifest['reports'].update(added_reports)
+manifest['report_sha256'].update({n:hashlib.sha256(Path(f).read_bytes()).hexdigest() for n,f in added_reports.items()})
+manifest['validation_table_groups'].extend(added_groups)
+manifest['computed_values']=computed_values
 (OUT/'paper-data-manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False))

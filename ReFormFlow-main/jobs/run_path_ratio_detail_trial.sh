@@ -16,7 +16,7 @@ export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export REWARD_CKPT_PATH="${REWARD_CKPT_PATH:-/dev/shm/dmd-eval-weights/reward_ckpts}"
 python -u scripts/train_rtdmd_path_is_details_sd3.py \
  --config="config/rtdmd_path_is_details.py:$preset" --config.seed="$seed" --config.run_name="$name"
-python -u scripts/score_rtdmd_path_is_images.py --run-dir "$run" --step 1000 --expected-count 64 --batch-size 8
+python -u scripts/score_sd3_comparison_images.py --run-dir "$run" --step 1000 --expected-count 64 --batch-size 8
 python scripts/audit_path_detail_report.py --run-dir "$run"
 cp "$run/config.json" "$run/metrics.jsonl" "$evidence/"
 cp "$run/eval/step-1000/final-metrics.json" "$run/eval/step-1000/final-metrics.csv" "$run/eval/step-1000/per-image-scores.json" "$evidence/"

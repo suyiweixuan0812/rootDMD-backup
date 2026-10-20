@@ -1,33 +1,72 @@
 {
-  "updated_at": "2026-10-21T03:20:05.789847+08:00",
+  "updated_at": "2026-10-21T03:30:14.776558+08:00",
   "jobs": {
     "ocr": {
       "job_id": "t-20261021011436-d5rtf",
+      "state": "Completed",
+      "status": {
+        "State": "Completed",
+        "SecondaryState": "",
+        "Message": "all pods(2) are succeeded",
+        "StartTime": "2026-10-20T17:15:20Z",
+        "EndTime": "2026-10-20T19:25:13Z",
+        "HoldingEndTime": "",
+        "RetriedTimes": 0
+      },
+      "step": 10000,
+      "generator_step": 1000,
+      "final_metrics": {
+        "step": 10000,
+        "num_images": 1018,
+        "table": {
+          "Method": "SD3-Medium + DMD",
+          "Dataset": "OCR",
+          "NFE": 4,
+          "Post-Train": "DMD (no reward)",
+          "CLIP Score": 31.20432098511394,
+          "Aesthetic Score": 5.2009239880649885,
+          "Pick Score": 22.08764807121693,
+          "HP Score": 28.162162654350688
+        },
+        "raw_repository_means": {
+          "clipscore": 0.3120432098511394,
+          "aesthetic": 5.2009239880649885,
+          "pickscore": 0.8495249258160357,
+          "hpsv2": 0.28162162654350686
+        },
+        "protocol": {
+          "dataset": "OCR test.txt, original order, one image per test record",
+          "dataset_name": "OCR",
+          "unique_prompts": 1018,
+          "test_file_sha256": "4dd8caf3ab6ade73bd376c7d14c6ca49b6eacfb1bd321e22c40714ae4a98d4dc",
+          "resolution": 512,
+          "seed": 42,
+          "ema": true,
+          "images": "The identical saved PNG files are scored by all four models",
+          "clip": "openai/clip-vit-large-patch14; repository logits/100; table = raw * 100",
+          "aesthetic": "improved-aesthetic-predictor sac+logos+ava1-l14-linearMSE.pth; no rescaling",
+          "pickscore": "yuvalkirstain/PickScore_v1; repository raw/26; table restores raw logits",
+          "hp": "HPSv2.1 (xswu/HPSv2 HPS_v2.1_compressed.pt); table = cosine * 100",
+          "training_rewards": {},
+          "nfe": "Generator transformer forward passes per image; excludes training and scoring",
+          "comparability": "Scores require the same prompts, model versions, preprocessing and scales for comparison"
+        }
+      }
+    },
+    "geneval": {
+      "job_id": "t-20261021011501-rlmj5",
       "state": "Running",
       "status": {
         "State": "Running",
         "SecondaryState": "",
         "Message": "2 个实例皆在运行中。",
-        "StartTime": "2026-10-20T17:15:20Z",
+        "StartTime": "2026-10-20T19:25:42Z",
         "EndTime": "",
         "HoldingEndTime": "",
         "RetriedTimes": 0
       },
-      "step": 9730,
-      "generator_step": 973
-    },
-    "geneval": {
-      "job_id": "t-20261021011501-rlmj5",
-      "state": "Queueing",
-      "status": {
-        "State": "Queueing",
-        "SecondaryState": "",
-        "Message": "当前队列剩余配额不足，您可以选择继续等待资源释放或者将任务变更为闲时任务，以借用其他队列资源（支持出借空闲资源的队列），但任务创建为闲时任务后有随时被抢占风险。",
-        "StartTime": "",
-        "EndTime": "",
-        "HoldingEndTime": "",
-        "RetriedTimes": 0
-      }
+      "step": 261,
+      "generator_step": 26
     }
   }
 }

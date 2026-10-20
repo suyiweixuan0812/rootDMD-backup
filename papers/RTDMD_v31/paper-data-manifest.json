@@ -6,7 +6,9 @@
     "sd3-medium-path-is-train010": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-medium-path-is-train010/final-metrics.json",
     "sd3-medium-path-is-train_sigma": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-medium-path-is-train_sigma/final-metrics.json",
     "dmd-ema-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-ema-pick2048-exact/final-metrics.json",
-    "path-is-selected-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-selected-pick2048-exact/final-metrics.json"
+    "path-is-selected-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-selected-pick2048-exact/final-metrics.json",
+    "dmd-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-seed43-pick2048-exact/final-metrics.json",
+    "path-is-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed43-pick2048-exact/final-metrics.json"
   },
   "report_sha256": {
     "dmd-ema-dev64-exact": "1971f7320167e81e50b2ec68be633445f61abe7c4532d86234bade180705e440",
@@ -15,7 +17,9 @@
     "sd3-medium-path-is-train010": "46f85506018d29ec94ca5ec1d99b3618247ad8721ff92413a0f09625419f7125",
     "sd3-medium-path-is-train_sigma": "5fc5b40a71ce2a11061f17b36e5f3ce1dac0ddec38d4641bc7ffce7304904171",
     "dmd-ema-pick2048-exact": "143b804189ca28a6c8575eaa2e34b50b99b15f3e45031d28cc2804600c177bb6",
-    "path-is-selected-pick2048-exact": "a8e0cd1719e08de2abd6e30011c1325a26827df3ecb3ff733e00a322385d06d9"
+    "path-is-selected-pick2048-exact": "a8e0cd1719e08de2abd6e30011c1325a26827df3ecb3ff733e00a322385d06d9",
+    "dmd-seed43-pick2048-exact": "c95ce848ce0298cc93f2e14c6a0f20484fbf76cba91d964278cda1da029c1e7c",
+    "path-is-seed43-pick2048-exact": "cc5e7260269f1cc0d1a4b879f598f2189d02ebce8f80cccf024bb8573de5067a"
   },
   "validation_table_groups": [
     {
@@ -33,6 +37,15 @@
       "names": [
         "dmd-ema-pick2048-exact",
         "path-is-selected-pick2048-exact"
+      ]
+    },
+    {
+      "title_contains": "两组训练种子",
+      "names": [
+        "dmd-ema-pick2048-exact",
+        "path-is-selected-pick2048-exact",
+        "dmd-seed43-pick2048-exact",
+        "path-is-seed43-pick2048-exact"
       ]
     }
   ],
@@ -110,5 +123,27 @@
       1500
     ]
   },
-  "source_sha256": "b1b44a5f47a5feb94d01da2b545683c4d85f01ab3554a49e072224d485fd6e09"
+  "source_sha256": "ddc5bc1a64339f90f9e71c43ef5ce0df63dc30d388ec3a3f638e83b211387bea",
+  "computed_values": [
+    {
+      "title_contains": "两组训练种子",
+      "value": "+0.0502",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/comparison-two-seeds/comparison.json"
+    },
+    {
+      "title_contains": "两组训练种子",
+      "value": "-0.0250",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/comparison-two-seeds/comparison.json"
+    },
+    {
+      "title_contains": "两组训练种子",
+      "value": "+0.0768",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/comparison-two-seeds/comparison.json"
+    },
+    {
+      "title_contains": "两组训练种子",
+      "value": "+0.2109",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/comparison-two-seeds/comparison.json"
+    }
+  ]
 }
