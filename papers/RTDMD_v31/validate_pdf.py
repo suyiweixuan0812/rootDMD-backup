@@ -40,7 +40,8 @@ def main():
                 assert v in text,(name,key,v)
                 values.append({'run':name,'metric':key,'rendered_value':v})
     for item in manifest.get('computed_values',[]):
-        matching=[p for p in doc if item['title_contains'] in p.get_text().splitlines()[0]]
+        normalize=lambda x:''.join(x.split())
+        matching=[p for p in doc if normalize(item['title_contains']) in normalize(p.get_text().splitlines()[0])]
         assert any(item['value'] in p.get_text() for p in matching),item
     PREVIEW.mkdir(exist_ok=True)
     outside=[];replacement=[];thumbs=[]

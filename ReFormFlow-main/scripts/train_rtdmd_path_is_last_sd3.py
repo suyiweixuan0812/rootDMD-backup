@@ -358,14 +358,18 @@ def main(_):
 
         # --- Prompt Batch ---
         prompts, _ = next(train_iter)
-        with torch.no_grad():
-            embeds, pooled = encode_prompt(
-                text_encoders, tokenizers, prompts, config.train.max_sequence_length, device=device,
-            )
+        update_generator = (outer_step + 1) % config.dmd.fake_update_ratio == 0
+        # No Fake optimizer exists in this method. Preserve data position, seed
+        # reset, EMA and update cadence, but encode text only when it is used.
+        # Frozen eval-mode text encoders have no state updates on skipped rows.
+        if update_generator:
+            with torch.no_grad():
+                embeds, pooled = encode_prompt(
+                    text_encoders, tokenizers, prompts, config.train.max_sequence_length, device=device,
+                )
 
         # --- Fake / Generator Updates ---
         metrics = defaultdict(list)
-        update_generator = (outer_step + 1) % config.dmd.fake_update_ratio == 0
         for role in ("generator",) if update_generator else ():
             optimizer, scaler = optimizers[role], scalers[role]
             optimizer.zero_grad(set_to_none=True)

@@ -18,6 +18,16 @@
     "sd3-det-bridge-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42/final-metrics.json",
     "sd3-det-bridge_time-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge_time-seed42/final-metrics.json",
     "sd3-det-adaptive_bridge-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-adaptive_bridge-seed42/final-metrics.json",
+    "sd3-det-adaptive_bridge_time-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-adaptive_bridge_time-seed42/final-metrics.json",
+    "sd3-det-last-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42/final-metrics.json",
+    "sd3-det-last_time-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last_time-seed42/final-metrics.json",
+    "sd3-det-last_q2_time-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last_q2_time-seed42/final-metrics.json",
+    "sd3-det-paired_q2_time-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-paired_q2_time-seed42/final-metrics.json",
+    "sd3-det-dmd-seed42-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+    "sd3-det-dmd_fp32-seed42-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+    "sd3-det-bridge-seed42-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json",
+    "sd3-det-paired-seed42-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-paired-seed42-pick2048-exact/final-metrics.json",
+    "sd3-det-last-seed42-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json",
     "dmd-seed42-10000-pick2048": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-seed42-10000-pick2048/final-metrics.json",
     "path-is-seed42-10000-pick2048": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed42-10000-pick2048/final-metrics.json"
   },
@@ -40,6 +50,16 @@
     "sd3-det-bridge-seed42": "b54b1cef3f48cffea19289a98667e720cdc6677f67b0e712d57d754f7069c346",
     "sd3-det-bridge_time-seed42": "5197b15e6bd2254f82d0784d24cf22f7482c2b867ffc381e61d90dab79f1c294",
     "sd3-det-adaptive_bridge-seed42": "311df395275587950ca91362e943e548c81d3314081719295d1458daf379649b",
+    "sd3-det-adaptive_bridge_time-seed42": "16b09659c61d10d02ac7794ddfcb75177d24f184338a6d3238b56b0732a11a76",
+    "sd3-det-last-seed42": "18c664c1c4a5ce79c04239e8a855c62f14c7aa6fec3c35e1e871a338650b8f9c",
+    "sd3-det-last_time-seed42": "bf8332dd5b68decb786d3ddb84d3177aa95068a9de72c438e32fd70d04ddc467",
+    "sd3-det-last_q2_time-seed42": "08dc7672c641ef73c7c32c6f60f82e562060c1d3658b4f8013705ba6dd04f22e",
+    "sd3-det-paired_q2_time-seed42": "30508229b6304b0ad03930d9183df58dd729f2ae1ecbec74b5fb91fae64e6dca",
+    "sd3-det-dmd-seed42-pick2048-exact": "0a50fb93b8dea12da1ab1aad06af0e7f7bbe92ec0bfa4e1ed6f95788884c3f09",
+    "sd3-det-dmd_fp32-seed42-pick2048-exact": "463f72a4e52c8b6d25111a19614c001d177117ca5eae13f983742c51f024ba8c",
+    "sd3-det-bridge-seed42-pick2048-exact": "d192623d5e54dab70b6c0261127f6cd1fcaf0caf16114d8193426c73e0215e99",
+    "sd3-det-paired-seed42-pick2048-exact": "d0431a0dc8fbf2b80a58a4b6b455fadfc6fc424e010ee5d09533365de0d83e3d",
+    "sd3-det-last-seed42-pick2048-exact": "4f19b5c357dcc54acbf750eb6abc7b04fc4c3febaaca46aa62809783e33a63e1",
     "dmd-seed42-10000-pick2048": "96c2a58cd9cb3ae6f25aa68ceb380feedbb7b05ad89d376b5d960d21a622470a",
     "path-is-seed42-10000-pick2048": "29fc3b983afc649a9f47fa9b88a6a2a76492d6ebf6f403c060e0029c94154020"
   },
@@ -86,7 +106,27 @@
         "sd3-det-time-seed42",
         "sd3-det-bridge-seed42",
         "sd3-det-bridge_time-seed42",
-        "sd3-det-adaptive_bridge-seed42"
+        "sd3-det-adaptive_bridge-seed42",
+        "sd3-det-adaptive_bridge_time-seed42"
+      ]
+    },
+    {
+      "title_contains": "确定性开发集：纯教师最后正方差块",
+      "names": [
+        "sd3-det-last-seed42",
+        "sd3-det-last_time-seed42",
+        "sd3-det-last_q2_time-seed42",
+        "sd3-det-paired_q2_time-seed42"
+      ]
+    },
+    {
+      "title_contains": "确定性完整 PickScore 测试：seed42",
+      "names": [
+        "sd3-det-dmd-seed42-pick2048-exact",
+        "sd3-det-dmd_fp32-seed42-pick2048-exact",
+        "sd3-det-bridge-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact",
+        "sd3-det-last-seed42-pick2048-exact"
       ]
     },
     {
@@ -94,6 +134,22 @@
       "names": [
         "dmd-seed42-10000-pick2048",
         "path-is-seed42-10000-pick2048"
+      ]
+    },
+    {
+      "title_contains": "本轮完整测试结论：与两种 DMD 对照",
+      "names": [
+        "sd3-det-dmd-seed42-pick2048-exact",
+        "sd3-det-dmd_fp32-seed42-pick2048-exact",
+        "sd3-det-bridge-seed42-pick2048-exact"
+      ]
+    },
+    {
+      "title_contains": "纯教师路径版：保留核心的完整测试",
+      "names": [
+        "sd3-det-dmd-seed42-pick2048-exact",
+        "sd3-det-dmd_fp32-seed42-pick2048-exact",
+        "sd3-det-last-seed42-pick2048-exact"
       ]
     }
   ],
@@ -171,7 +227,382 @@
       1500
     ]
   },
-  "source_sha256": "97f8708dd880611485ab30ef1961a40ec4f33fa647fd98b5ee5e9a01f9a78eaa",
+  "source_sha256": "9cc6d47257fc0d158d89fac16f9d48c9a3502aabdfdbb3cc79d50b66eff22127",
+  "selection_role": "Legacy first-phase choice for older tables; new cohort selection is separately stored",
+  "deterministic_selection": {
+    "frozen_utc": "2026-10-20T22:56:38.501425+00:00",
+    "status": "QUALIFIED_DEV_CANDIDATE",
+    "interpretation": "The selected candidate requires independent test validation.",
+    "selected_case": "bridge",
+    "paired_control": "paired",
+    "pure_teacher_alternative": {
+      "case": "last",
+      "eligible": true,
+      "paired_control": "paired",
+      "role": "Same predeclared ranking restricted to pure Teacher mappings; additional fidelity comparison if primary selected proposal is bridged; never replaces primary selection by test results"
+    },
+    "reference": {
+      "CLIP Score": 25.553217041306198,
+      "Aesthetic Score": 5.419242732226849,
+      "Pick Score": 21.20138174109161,
+      "HP Score": 25.62065701931715
+    },
+    "trials": [
+      {
+        "case": "dmd",
+        "table": {
+          "Method": "dmd",
+          "NFE": 4,
+          "Post-Train": "DMD",
+          "CLIP Score": 25.553217041306198,
+          "Aesthetic Score": 5.418727278709412,
+          "Pick Score": 21.093777388334274,
+          "HP Score": 24.87020178232342
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.0,
+          "Aesthetic Score": -0.0005154535174369812,
+          "Pick Score": -0.10760435275733471,
+          "HP Score": -0.7504552369937301
+        },
+        "eligible": false,
+        "selection_rank": [
+          -1.5009104739874601,
+          -2.0389322377741337
+        ],
+        "is_control": true
+      },
+      {
+        "case": "dmd_fp32",
+        "table": {
+          "Method": "dmd_fp32_observation_control",
+          "NFE": 4,
+          "Post-Train": "DMD (FP32 observation control)",
+          "CLIP Score": 25.344332167878747,
+          "Aesthetic Score": 5.419242732226849,
+          "Pick Score": 21.20138174109161,
+          "HP Score": 25.62065701931715
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": -0.20888487342745066,
+          "Aesthetic Score": 0.0,
+          "Pick Score": 0.0,
+          "HP Score": 0.0
+        },
+        "eligible": false,
+        "selection_rank": [
+          0.0,
+          0.0
+        ],
+        "is_control": true
+      },
+      {
+        "case": "base",
+        "table": {
+          "Method": "rtdmd_conditional_path_is",
+          "NFE": 4,
+          "Post-Train": "Path-IS; lambda=0.10",
+          "CLIP Score": 25.953827006742358,
+          "Aesthetic Score": 5.495532430708408,
+          "Pick Score": 21.39022221416235,
+          "HP Score": 26.181969279423356
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.40060996543616056,
+          "Aesthetic Score": 0.07628969848155975,
+          "Pick Score": 0.1888404730707407,
+          "HP Score": 0.5613122601062059
+        },
+        "eligible": true,
+        "selection_rank": [
+          0.9442023653537035,
+          2.0668268855661154
+        ],
+        "is_control": false
+      },
+      {
+        "case": "time",
+        "table": {
+          "Method": "rtdmd_conditional_path_is",
+          "NFE": 4,
+          "Post-Train": "Path-IS; lambda=0.10; time weight=0.30/sigma",
+          "CLIP Score": 26.034152414649725,
+          "Aesthetic Score": 5.505922511219978,
+          "Pick Score": 21.39720467478037,
+          "HP Score": 26.230718940496445
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.4809353733435273,
+          "Aesthetic Score": 0.08667977899312973,
+          "Pick Score": 0.1958229336887598,
+          "HP Score": 0.6100619211792946
+        },
+        "eligible": true,
+        "selection_rank": [
+          0.979114668443799,
+          2.199238510802388
+        ],
+        "is_control": false
+      },
+      {
+        "case": "paired",
+        "table": {
+          "Method": "rtdmd_paired_source_ablation",
+          "NFE": 4,
+          "Post-Train": "Paired-source control; lambda=0.10",
+          "CLIP Score": 25.804312620311975,
+          "Aesthetic Score": 5.524563103914261,
+          "Pick Score": 21.395840169861913,
+          "HP Score": 26.26217072829604
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.25109557900577784,
+          "Aesthetic Score": 0.10532037168741226,
+          "Pick Score": 0.19445842877030373,
+          "HP Score": 0.6415137089788914
+        },
+        "eligible": false,
+        "selection_rank": [
+          0.9722921438515186,
+          2.2553195618093014
+        ],
+        "is_control": true
+      },
+      {
+        "case": "paired_time",
+        "table": {
+          "Method": "rtdmd_paired_source_ablation",
+          "NFE": 4,
+          "Post-Train": "Paired-source control; lambda=0.10; time weight=0.30/sigma",
+          "CLIP Score": 26.21985252480954,
+          "Aesthetic Score": 5.505293488502502,
+          "Pick Score": 21.36632363125682,
+          "HP Score": 26.11398429144174
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.6666354835033417,
+          "Aesthetic Score": 0.08605075627565384,
+          "Pick Score": 0.16494189016520977,
+          "HP Score": 0.4933272721245885
+        },
+        "eligible": false,
+        "selection_rank": [
+          0.8247094508260489,
+          1.8113639950752258
+        ],
+        "is_control": true
+      },
+      {
+        "case": "bridge",
+        "table": {
+          "Method": "rtdmd_bridged_conditional_path_is",
+          "NFE": 4,
+          "Post-Train": "Bridged Path-IS; gamma(J)=0.90/0.99; lambda=0.10",
+          "CLIP Score": 26.368771889247,
+          "Aesthetic Score": 5.518206559121609,
+          "Pick Score": 21.467271158471704,
+          "HP Score": 26.40196536667645
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.8155548479408026,
+          "Aesthetic Score": 0.09896382689476013,
+          "Pick Score": 0.26588941738009453,
+          "HP Score": 0.7813083473592997
+        },
+        "eligible": true,
+        "selection_rank": [
+          1.3294470869004726,
+          2.892063781619072
+        ],
+        "is_control": false
+      },
+      {
+        "case": "bridge_time",
+        "table": {
+          "Method": "rtdmd_bridged_conditional_path_is",
+          "NFE": 4,
+          "Post-Train": "Bridged Path-IS; gamma(J)=0.90/0.99; lambda=0.10; time weight=0.30/sigma",
+          "CLIP Score": 26.096765254624188,
+          "Aesthetic Score": 5.404194913804531,
+          "Pick Score": 21.30310170724988,
+          "HP Score": 25.704107619822025
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.5435482133179903,
+          "Aesthetic Score": -0.015047818422317505,
+          "Pick Score": 0.10171996615827084,
+          "HP Score": 0.08345060050487518
+        },
+        "eligible": true,
+        "selection_rank": [
+          0.16690120100975037,
+          0.6755010318011045
+        ],
+        "is_control": false
+      },
+      {
+        "case": "adaptive_bridge",
+        "table": {
+          "Method": "rtdmd_adaptive_bridged_conditional_path_is",
+          "NFE": 4,
+          "Post-Train": "Adaptive bridged Path-IS; past KL budget=.25; lambda=0.10",
+          "CLIP Score": 26.451902044937015,
+          "Aesthetic Score": 5.460616081953049,
+          "Pick Score": 21.40911958180368,
+          "HP Score": 25.82039947155863
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.8986850036308169,
+          "Aesthetic Score": 0.041373349726200104,
+          "Pick Score": 0.20773784071207047,
+          "HP Score": 0.19974245224148035
+        },
+        "eligible": true,
+        "selection_rank": [
+          0.3994849044829607,
+          1.438174108043313
+        ],
+        "is_control": false
+      },
+      {
+        "case": "adaptive_bridge_time",
+        "table": {
+          "Method": "rtdmd_adaptive_bridged_conditional_path_is",
+          "NFE": 4,
+          "Post-Train": "Adaptive bridged Path-IS; past KL budget=.25; lambda=0.10; time weight=0.30/sigma",
+          "CLIP Score": 26.422070804983377,
+          "Aesthetic Score": 5.499760128557682,
+          "Pick Score": 21.393998447805643,
+          "HP Score": 25.990393315441906
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.8688537636771798,
+          "Aesthetic Score": 0.08051739633083344,
+          "Pick Score": 0.19261670671403408,
+          "HP Score": 0.36973629612475634
+        },
+        "eligible": true,
+        "selection_rank": [
+          0.7394725922495127,
+          1.702556125819683
+        ],
+        "is_control": false
+      },
+      {
+        "case": "last",
+        "table": {
+          "Method": "rtdmd_teacher_last_innovation_path_is",
+          "NFE": 4,
+          "Post-Train": "Teacher Path-IS; last-positive innovation, corrected symmetric auxiliary; lambda=0.10",
+          "CLIP Score": 26.00621187593788,
+          "Aesthetic Score": 5.492333963513374,
+          "Pick Score": 21.430381266400218,
+          "HP Score": 26.35437019634992
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.45299483463168144,
+          "Aesthetic Score": 0.07309123128652573,
+          "Pick Score": 0.228999525308609,
+          "HP Score": 0.7337131770327687
+        },
+        "eligible": true,
+        "selection_rank": [
+          1.144997626543045,
+          2.6124239806085825
+        ],
+        "is_control": false
+      },
+      {
+        "case": "last_time",
+        "table": {
+          "Method": "rtdmd_teacher_last_innovation_path_is",
+          "NFE": 4,
+          "Post-Train": "Teacher Path-IS; last-positive innovation, corrected symmetric auxiliary; lambda=0.10; time weight=0.30/sigma",
+          "CLIP Score": 25.75223206076771,
+          "Aesthetic Score": 5.468656770884991,
+          "Pick Score": 21.373029394075274,
+          "HP Score": 25.974447396583855
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.19901501946151257,
+          "Aesthetic Score": 0.04941403865814209,
+          "Pick Score": 0.17164765298366547,
+          "HP Score": 0.35379037726670504
+        },
+        "eligible": true,
+        "selection_rank": [
+          0.7075807545334101,
+          1.5658190194517374
+        ],
+        "is_control": false
+      },
+      {
+        "case": "last_q2_time",
+        "table": {
+          "Method": "rtdmd_teacher_last_query_average_path_is",
+          "NFE": 4,
+          "Post-Train": "Teacher Path-IS; last-positive innovation; lambda=0.10; time weight=0.30/sigma; independent query views=2",
+          "CLIP Score": 26.28672916907817,
+          "Aesthetic Score": 5.453659608960152,
+          "Pick Score": 21.396379109472036,
+          "HP Score": 26.196991419419646
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.7335121277719736,
+          "Aesthetic Score": 0.03441687673330307,
+          "Pick Score": 0.19499736838042736,
+          "HP Score": 0.5763344001024961
+        },
+        "eligible": true,
+        "selection_rank": [
+          0.9749868419021368,
+          2.127655642107129
+        ],
+        "is_control": false
+      },
+      {
+        "case": "paired_q2_time",
+        "table": {
+          "Method": "rtdmd_paired_source_ablation",
+          "NFE": 4,
+          "Post-Train": "Paired-source control; lambda=0.10; time weight=0.30/sigma; independent query views=2",
+          "CLIP Score": 26.196308247745037,
+          "Aesthetic Score": 5.455746687948704,
+          "Pick Score": 21.441081289201975,
+          "HP Score": 26.13957510329783
+        },
+        "delta_vs_larger_baseline": {
+          "CLIP Score": 0.6430912064388394,
+          "Aesthetic Score": 0.036503955721855164,
+          "Pick Score": 0.23969954811036587,
+          "HP Score": 0.5189180839806795
+        },
+        "eligible": false,
+        "selection_rank": [
+          1.037836167961359,
+          2.2363339085131884
+        ],
+        "is_control": true
+      }
+    ],
+    "dev_report_sha256": {
+      "dmd": "166f55fdd8dfaa5640ba5c0fd6f50509f52f2ab981c63f2352b4205aa5bd70b2",
+      "dmd_fp32": "b5429a3e142a750ad8b70d55c6af56070474c48ebeb1783d0199572ea67c30bf",
+      "base": "58fc460c5881ac3d3be43a379e8c7e8343ebcfa6501c18eb342adc223c01c7e3",
+      "time": "e738edf6099cbef981c7d21364505439ac9ddd075d01c91743a04fdb97e5d8a4",
+      "paired": "c5bed351af3c2b46d3911199f2dff48b3b2e328c1c3aa3086b22d7b329138b2d",
+      "paired_time": "91e0fbaffbbd852ffd932f9acabb44246dc7b3bf6f46301d0fdeac6997b9600f",
+      "bridge": "b54b1cef3f48cffea19289a98667e720cdc6677f67b0e712d57d754f7069c346",
+      "bridge_time": "5197b15e6bd2254f82d0784d24cf22f7482c2b867ffc381e61d90dab79f1c294",
+      "adaptive_bridge": "311df395275587950ca91362e943e548c81d3314081719295d1458daf379649b",
+      "adaptive_bridge_time": "16b09659c61d10d02ac7794ddfcb75177d24f184338a6d3238b56b0732a11a76",
+      "last": "18c664c1c4a5ce79c04239e8a855c62f14c7aa6fec3c35e1e871a338650b8f9c",
+      "last_time": "bf8332dd5b68decb786d3ddb84d3177aa95068a9de72c438e32fd70d04ddc467",
+      "last_q2_time": "08dc7672c641ef73c7c32c6f60f82e562060c1d3658b4f8013705ba6dd04f22e",
+      "paired_q2_time": "30508229b6304b0ad03930d9183df58dd729f2ae1ecbec74b5fb91fae64e6dca"
+    },
+    "selection_inputs": "Only the fourteen predeclared deterministic seed42 DrawBench64 reports; no new candidate PickScore2048/holdout138 scores."
+  },
   "computed_values": [
     {
       "title_contains": "两组训练种子",
@@ -377,6 +808,188 @@
       "title_contains": "长训练中的提议漂移",
       "value": "87",
       "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练场诊断：固定教师提议的失配",
+      "value": "5118.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-dmd10000.json"
+    },
+    {
+      "title_contains": "长训练场诊断：固定教师提议的失配",
+      "value": "8409.8",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-dmd10000.json"
+    },
+    {
+      "title_contains": "长训练场诊断：固定教师提议的失配",
+      "value": "5174.6",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-dmd10000.json"
+    },
+    {
+      "title_contains": "长训练场诊断：固定教师提议的失配",
+      "value": "218049.4",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-oldpath10000.json"
+    },
+    {
+      "title_contains": "长训练场诊断：固定教师提议的失配",
+      "value": "218251.8",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-oldpath10000.json"
+    },
+    {
+      "title_contains": "长训练场诊断：固定教师提议的失配",
+      "value": "218201.4",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-oldpath10000.json"
+    },
+    {
+      "title_contains": "本轮完整测试结论：与两种 DMD 对照",
+      "value": "+0.4009",
+      "sources": [
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json"
+      ],
+      "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
+    },
+    {
+      "title_contains": "本轮完整测试结论：与两种 DMD 对照",
+      "value": "+0.0912",
+      "sources": [
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json"
+      ],
+      "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
+    },
+    {
+      "title_contains": "本轮完整测试结论：与两种 DMD 对照",
+      "value": "+0.4313",
+      "sources": [
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json"
+      ],
+      "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
+    },
+    {
+      "title_contains": "本轮完整测试结论：与两种 DMD 对照",
+      "value": "+1.1034",
+      "sources": [
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json"
+      ],
+      "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
+    },
+    {
+      "title_contains": "纯教师路径版：保留核心的完整测试",
+      "value": "+0.3725",
+      "sources": [
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json"
+      ],
+      "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
+    },
+    {
+      "title_contains": "纯教师路径版：保留核心的完整测试",
+      "value": "+0.0925",
+      "sources": [
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json"
+      ],
+      "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
+    },
+    {
+      "title_contains": "纯教师路径版：保留核心的完整测试",
+      "value": "+0.4424",
+      "sources": [
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json"
+      ],
+      "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
+    },
+    {
+      "title_contains": "纯教师路径版：保留核心的完整测试",
+      "value": "+1.1275",
+      "sources": [
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json"
+      ],
+      "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0626",
+      "sources": [
+        "sd3-det-bridge-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0118",
+      "sources": [
+        "sd3-det-bridge-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0206",
+      "sources": [
+        "sd3-det-bridge-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0956",
+      "sources": [
+        "sd3-det-bridge-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0341",
+      "sources": [
+        "sd3-det-last-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0131",
+      "sources": [
+        "sd3-det-last-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0318",
+      "sources": [
+        "sd3-det-last-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.1197",
+      "sources": [
+        "sd3-det-last-seed42-pick2048-exact",
+        "sd3-det-paired-seed42-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
     }
   ],
   "source_artifacts": {
@@ -389,9 +1002,17 @@
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-last-innovation-geometry-diagnostics/diagnostics.json": "575393f625058949e7b437393a42d8b7bdf9da17d212dbebb1aa5b5b75dfd3d5",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-last-innovation-radius2-diagnostics/diagnostics.json": "6036270f96377cec90e0542c08b9fe063fa980679c9b6d0d6bfbe0ae109cfd90",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json": "5ffb9fc6444a939faaa25c8b5ca5501a0453cbecf41b460b5a3344232fd70278",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-selection.json": "8919cf86848bb43c1e76df97f88f4412c0cdc66d4ed34a294d8ea03f344ded57",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-validation-plan.json": "7062dfd02a798f670d958aed45060361ad78c1b73fe8a9e3b18f839253f21fb7",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/query-view-detail-plan.json": "b667853f6a0a9c4fb907614b6cb6301db7bd22fb6115639f57b6023fa14facab",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/cpu-loading-runtime-change.json": "b09d68eae7fd5fc3d2f021f19f93f5f409b0bc3491bb61641e2223cd01ce6e7f",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/physical-gaussian-gpu-replay-audit.json": "56ada821654e6441dbcd0a9b3304c6be4c1f88da509189867de8b8d038c7a1fa",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/old-inverse-prefix-metric-check.json": "9bd3738e6cea3688255d7b0ac2d278727bbecd77a69b1d7086e69bb733d0eeda",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-dmd10000.json": "2968933826131d47cb831519b6fbd9493d1176bc0da8b78d950d0476781dd432",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-oldpath10000.json": "f3509ed8af5851240b5c2fe38d91fb335c367e644bacf8fd36d8e1c3c2c661fa",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-conditioning-revision.json": "ac2e71555e3abad257b49ef9cae4204c3039518eafcfbe107617a611368f6ccd",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/failed-attempts/last-inverse-bounds-20261020T220837Z/failure-numeric-state.json": "f72bd5a4cd5250def4ab4d54118d8f4dbaebcd9c4d23f0bb6b5f14c517904177",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/scoring-numeric-source-audit-v31.json": "b9766440cb846fa1a827e7d0ea59a58539bce93a621287aad6c6c0eae4ddf310",
-    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-inverse-repair-record.json": "8c377462b8e6a1da90990322a6b7e1496ce16966bd9642963f90cda0de1d622b"
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-inverse-repair-record.json": "989fe66ba571454b51a5b8ce2da256989fa37a637f848da792cf3a8d3e2eaa8c"
   }
 }

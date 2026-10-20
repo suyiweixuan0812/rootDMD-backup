@@ -263,4 +263,30 @@ Teacher-only 原路径版；每行统计截至所列轮次的最近1000轮（100
 链冻结指两次参考重采样均未移动，加权均值仍可能变化。分噪声/停止点诊断另存；总平均 ESS 不代表所有层均有效。此表不是图像质量或全局收敛证明。
 \end{frame}
 '''
+    cfg_files = [root/'teacher-cfg-drift-dmd10000.json', root/'teacher-cfg-drift-oldpath10000.json']
+    if all(p.exists() for p in cfg_files):
+        cfg_data = [json.loads(p.read_text()) for p in cfg_files]
+        assert all(x['max_sequence_length']==128 and x['source_stop']==4 for x in cfg_data)
+        cfg_title = '长训练场诊断：固定教师提议的失配'
+        cfg_lines = []
+        for label, data, source in zip(['DMD10000', 'Old Path10000'], cfg_data, cfg_files):
+            vals=[f"{data['summary'][str(c)]['mean_sum_conditional_Gaussian_KL_per_path']:.1f}" for c in [1.,4.5]]
+            vals.append(f"{data['summary']['1.0']['mean_source_path_log_mass_ratio']:.1f}")
+            cfg_lines.append(label+' & '+' & '.join(vals)+r' \\')
+            computed.extend(dict(title_contains=cfg_title,value=v,source=str(source)) for v in vals)
+        tex+=r'\begin{frame}{'+cfg_title+r'''}
+\scriptsize\centering
+两条旧10000轮模型；每条用2个固定开发提示词、4个种子、$J=4$，文本长度128。
+\begin{tabular}{lrrr}\toprule
+Student & Gaussian $K$, CFG1 & Gaussian $K$, CFG4.5 & 样本$\log(p_S/q_{T,1})$\\\midrule
+'''+ '\n'.join(cfg_lines)+r'''
+\bottomrule\end{tabular}\par\raggedright\vspace{5pt}
+$K$ 为8条源路径的逐父状态等方差 Gaussian KL 之和的样本均值；最后一列用 BF16 单元质量计算。
+\begin{itemize}\itemsep4pt
+\item 健康 DMD 也可与固定 Teacher 路径明显失配；崩溃旧路径版在此组的 CFG1 代理约为其43倍。
+\item 简单把提议 CFG 改成4.5，在这两组均未降低失配；本轮不据此增加新训练候选。
+\item 此为机制诊断，没有新增图像质量实验；不能把先验失配代理当成后验 ESS 或唯一崩溃因果。
+\end{itemize}
+\end{frame}
+'''
     return tex, reports, groups, computed

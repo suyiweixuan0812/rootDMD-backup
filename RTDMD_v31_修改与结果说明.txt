@@ -1,5 +1,5 @@
 RTDMD v31：本轮修改与结果说明
-生成时间：2026-10-20T23:18:24.263086+00:00
+生成时间：2026-10-20T23:51:15.491825+00:00
 
 一、保留与改动
 保留实际 Student/Teacher 路径核比、粒子加权条件均值、Tweedie 接口、无 Fake 训练和四步 Student 推理。
@@ -9,6 +9,7 @@ RTDMD v31：本轮修改与结果说明
 4. BF16 状态按 Gaussian 舍入单元质量计算比，提议创新用 FP64，并逐次检查共同读出重放。有限 RNG/算术仍是理想核的近似。
 5. 新增 lambda=.10 的一致性细节改变期望更新；可选 .30/sigma 时间权重改变 surrogate 时间加权，不能说原目标完全未改。
 7. 最后正方差块使用物理 Gaussian 坐标和直接 BF16 舍入，修复极小单元逆变换与两次舍入问题；通用创新实现配套正确的后验保护分区。
+9. 纯Teacher入口跳过9/10无更新轮次中未使用的冻结文本编码；数据位置、逐轮种子、EMA及有效更新不变，40轮真实训练的全部更新日志一致。完整1000轮权重比较另存，不能仅凭4次更新声称已验证全程。
 8. 双查询选项固定源与时间，对两个独立观测的梯度取平均后只裁剪/更新一次；查询计算约加倍，有相同计算量无粒子对照。
 6. 同查询 Jacobian 避免与成对参考相关的源 Jacobian 问题；它是本文明确的 surrogate，不宣称等价于原 DMD 源梯度的完整 KL。
 
@@ -21,17 +22,19 @@ RTDMD v31：本轮修改与结果说明
   seed 42：{"CLIP Score": 0.40093752122629667, "Aesthetic Score": 0.0912163583561778, "Pick Score": 0.4312538266531192, "HP Score": 1.1034046201530145}
   候选减对照的均值：{"CLIP Score": 0.40093752122629667, "Aesthetic Score": 0.0912163583561778, "Pick Score": 0.4312538266531192, "HP Score": 1.1034046201530145}
   每个已测种子 Pick/HPS 都上升：True
-对照 dmd_fp32；训练种子 []
-  候选减对照的均值：{"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
-  每个已测种子 Pick/HPS 都上升：False
-对照 paired；训练种子 []
-  候选减对照的均值：{"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
-  每个已测种子 Pick/HPS 都上升：False
+对照 dmd_fp32；训练种子 [42]
+  seed 42：{"CLIP Score": 0.2250163182907272, "Aesthetic Score": 0.07247636467218399, "Pick Score": 0.23885010211961344, "HP Score": 0.4334526511229342}
+  候选减对照的均值：{"CLIP Score": 0.2250163182907272, "Aesthetic Score": 0.07247636467218399, "Pick Score": 0.23885010211961344, "HP Score": 0.4334526511229342}
+  每个已测种子 Pick/HPS 都上升：True
+对照 paired；训练种子 [42]
+  seed 42：{"CLIP Score": 0.06258480243559461, "Aesthetic Score": 0.011832922464236617, "Pick Score": 0.020592225657310337, "HP Score": 0.09562937120790593}
+  候选减对照的均值：{"CLIP Score": 0.06258480243559461, "Aesthetic Score": 0.011832922464236617, "Pick Score": 0.020592225657310337, "HP Score": 0.09562937120790593}
+  每个已测种子 Pick/HPS 都上升：True
 
 更贴近原稿的纯Teacher版本：last；按同一Dev规则在纯Teacher版本内选出，主完整测试不回调选择。
-  对照 dmd；种子 []；均值差 {"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
-  对照 dmd_fp32；种子 []；均值差 {"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
-  对照 paired；种子 []；均值差 {"CLIP Score": null, "Aesthetic Score": null, "Pick Score": null, "HP Score": null}
+  对照 dmd；种子 [42]；均值差 {"CLIP Score": 0.37246084884827724, "Aesthetic Score": 0.09245303086936474, "Pick Score": 0.44241846073418856, "HP Score": 1.127483363598003}
+  对照 dmd_fp32；种子 [42]；均值差 {"CLIP Score": 0.19653964591270778, "Aesthetic Score": 0.07371303718537092, "Pick Score": 0.2500147362006828, "HP Score": 0.4575313945679227}
+  对照 paired；种子 [42]；均值差 {"CLIP Score": 0.03410813005757518, "Aesthetic Score": 0.013069594977423549, "Pick Score": 0.03175685973837972, "HP Score": 0.11970811465289444}
 
 三、公平性与结论边界
 共同配置审计覆盖模型、512分辨率、BF16、TF32、种子、CPS、随机停止、batch1、LoRA32/alpha64、优化器、LR3e-5、EMA.99及训练轮次。
