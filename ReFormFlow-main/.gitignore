@@ -46,3 +46,8 @@ tests/
 # Keep reproducible server launch scripts in version control.
 !jobs/
 !jobs/*.sh
+
+# Keep the corrected Scheme A mathematical validation reproducible.
+!tests/
+tests/*
+!tests/test_source_posterior.py

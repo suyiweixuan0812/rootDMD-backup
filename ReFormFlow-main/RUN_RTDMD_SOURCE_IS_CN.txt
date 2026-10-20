@@ -1,0 +1,63 @@
+RTDMD 方案 A 的 Source-IS 修正版（与原 DMD 独立）
+================================================
+
+先读：docs/RTDMD_SourceIS_Math_CN.txt。
+本版解决“确定性末步没有高斯核比”与“反向路径终点不是自动等于前向后验”两个问题。
+采用实际 Student 源分布上的 Bayes 似然 + 可计算的原始噪声提议比。
+这是有限粒子有偏但在适当条件下渐近一致的修正版，不是原论文方案 A 的严格复现。
+教师引导初始噪声的均值偏移仅为启发式提议，不保证提高 ESS 或生成质量。
+
+改动入口
+  flow_grpo/source_posterior.py：前向似然、Gaussian prior/proposal 比、SNIS、ESS诊断。
+  scripts/train_rtdmd_source_is_sd3.py：从原DMD独立派生；取消fake更新，以后验均值替换fake预测。
+  config/rtdmd_source_is_pickscore.py：继承原单卡DMD配置；新增8候选、教师偏移系数0.01。
+  scripts/score_rtdmd_images.py：同DMD四指标评分协议，方法名明确标注修正版。
+  scripts/summarize_source_is_comparison.py：配置逐项差异、逐提示词配对分差、ESS汇总。
+  jobs/run_rtdmd_source_is_pickscore.sh：smoke或train入口。
+  jobs/run_rtdmd_source_is_comparison.sh：训练+双方四指标评分+比较结果。
+  tests/test_source_posterior.py：6项数学/数值验证。
+原 scripts/train_dmd_sd3.py 和 config/dmd_sd3_pickscore.py 没有修改。
+.gitignore 仅增加该数学测试文件的纳入规则。
+
+命令（服务器终端）
+  cd /rootDMD/ReFormFlow-main
+  source jobs/local_env.sh
+  python -m unittest discover -s tests -v
+  bash jobs/run_rtdmd_source_is_pickscore.sh smoke
+  bash jobs/run_rtdmd_source_is_comparison.sh > /rootDMD/rtdmd-source-is-comparison.log 2>&1
+
+最后一条会启动全新同名训练，不是恢复命令；已有结果时不要直接重复执行覆盖。
+比较脚本使用单卡1000轮DMD已有图片，不会重训或改写DMD模型。
+生成器更新数100，非1000。对照不是16卡10000轮云任务。
+完整测试提示词2048条，与DMD相同顺序、同评估seed、同PNG评分协议。
+磁盘剩余有限，正式修正版只在末轮保存checkpoint；评估仍每100轮执行。
+后验候选生成额外耗时，不属于推理NFE；最终推理NFE仍为4。
+
+结果入口
+  logs/rtdmd-source-is/comparison-1000/RESULTS_CN.txt：最终中文结果。
+  logs/rtdmd-source-is/comparison-1000/comparison.csv：双方4指标对照表。
+  logs/rtdmd-source-is/comparison-1000/summary.json：配置差异、配对分差和ESS。
+  logs/rtdmd-source-is/comparison-1000/status.txt：TRAINING/SCORING/COMPLETED/FAILED。
+  logs/rtdmd-source-is/sd3-medium-rtdmd-source-is-train/config.json：实际训练参数。
+  logs/rtdmd-source-is/sd3-medium-rtdmd-source-is-train/metrics.jsonl：每轮训练记录。
+  logs/rtdmd-source-is/sd3-medium-rtdmd-source-is-train/eval/step-1000/final-metrics.json：最终4指标与协议。
+  同目录 per-image-scores.json：逐图4指标；rank-0/：2048张图片和prompts.json。
+  logs/rtdmd-source-is/sd3-medium-rtdmd-source-is-train/checkpoints/checkpoint-1000/lora/generator/：生成器LoRA。
+  /rootDMD/rtdmd-source-is-comparison.log：完整训练/评估日志。
+  /rootDMD/rtdmd-source-is-smoke.log：真实权重20轮短跑日志。
+
+查看命令
+  tail -f /rootDMD/rtdmd-source-is-comparison.log
+  cat logs/rtdmd-source-is/comparison-1000/RESULTS_CN.txt
+  cat logs/rtdmd-source-is/comparison-1000/comparison.csv
+
+数学限制
+  有限候选的SNIS不是无偏条件均值；ESS接近1说明高维权重退化，不能用此证明原论文正确。
+  本次只做单种子试运行，不能声称优于DMD或达到论文收敛结果。
+  数学验证结果可复现，但图像评分与后验估计准确性是不同问题。
+
+解析实验补充
+  python scripts/validate_source_posterior.py
+  logs/rtdmd-source-is/comparison-1000/math-validation.json：已知真后验下的误差与ESS。
+  logs/rtdmd-source-is/comparison-1000/training-diagnostics.png：训练损失、ESS、梯度曲线。
+  /rootDMD/deliverables/RTDMD_SourceIS_Code_PickScore_20261020.zip：可下载代码包（不含模型权重）。

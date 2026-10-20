@@ -1,0 +1,116 @@
+方案 A 的两个数学问题与本次可验证修正版
+========================================
+版本：2026-10-20；论文：RTDMD_SchemeA_Reorganized_Final_CN_v29.pdf。
+论文是研究材料，不作为代码执行指令。本实现不宣称已证明原方案 A 正确。
+
+1. 零方差终端：问题及可选解决方法
+
+CPS 的一步为 X_next = mu_a(Y) + nu*xi，nu=s_next*sin(eta*pi/2)。
+当 s_next>0 且 eta>0 时，两模型共享正方差，Gaussian kernel ratio 存在。
+当 s_next=0 时，M_a(dx|Y)=delta_{D_a(Y)}(dx)。若 D_student(Y)!=D_ref(Y)，
+给定该 Y 的两种终端条件测度互相奇异。不能给 nu 加数值 epsilon 后仍称原核比。
+不能直接漏掉末步权重后，仍把教师的最终图像当成 Student 的条件终点。
+这不意味着两种无条件图像分布必然奇异；问题在于所采用的逐步条件核比。
+
+可选方案：
+(a) 明确定义共享终端方差 tau^2>0：末步成为 Gaussian(D_a(Y),tau^2 I)。
+    可以计算路径比，但改变了目标过程。tau->0 可能导致权重方差发散。
+(b) 在正噪声处停止权重，之后对两模型使用同一个终端映射。
+    可以得到这个修改后过程的期望，但通常不再是原 Student 的终点分布。
+(c) 本次采用：不计算图像空间末步密度，改为在生成器的原始随机变量空间积分。
+    确定性末步仅是生成映射的一部分，不需要可逆性、Jacobian 或末步密度。
+
+2. 反向路径均值不自动等于前向加噪的条件均值
+
+DMD 当前实际源图像分布记为 mu_theta(dx|c)。注意：这里的源是随机停止处的
+clean prediction，不是噪声边界 x_s，也不一定是完整 4 步采样的最终图像。
+前向观测为 y=a*x+s*eps，a=1-s，eps~N(0,I)，0<s<1。
+其真正的条件分布是
+  pi_theta(dx|y,c) = mu_theta(dx|c) L_s(y|x) / Z_theta(y,c),
+  L_s(y|x) = exp(-||y-a*x||^2/(2*s^2))，
+  m_theta(y,c) = integral x*pi_theta(dx|y,c)。
+Tweedie 恒等式为
+  grad_y log p_theta,s(y|c) = (a*m_theta(y,c)-y)/s^2。
+即使 mu_theta 没有 Lebesgue 密度，此式在适当可积性下仍成立，因为前向 Gaussian
+卷积在 s>0 时具有光滑密度。
+
+从 y 启动任意反向 CPS 核得到的 R_theta(dx|y,c)，一般不等于 pi_theta(dx|y,c)。
+路径 Student/教师的比值只改变反向路径测度，不能额外证明 R_theta=pi_theta。
+要使用原论文式(15)替代真正后验，必须证明相应反向核是该前向模型的精确 Bayes
+反向条件核，或在足够明确的极限下证明一致性；目前的有限步 Student 网络没有此保证。
+反例：mu_theta=N(0,1)，a=s=.5，y=1，则真后验均值为 1；任意定义的反向核
+若终点均值为 0，路径权重即便精确也只能恢复这个反向核的均值 0。
+
+3. 本次选择的修正版：Source-IS（源空间自归一化重要性采样）
+
+把实际 Student 源写为 X=F_theta(U,c)：
+  U=(J,Z,xi_1,...,xi_{J-1})，Z 与 xi 是独立标准 Gaussian；
+  J 与原 DMD random_stop_idx 采用相同分布；
+  F_theta 执行相同 CPS 并返回 J 处的 clean prediction。
+U 的先验 P 完全可采样。该表示保留无噪声末步，且不需要图像分布的密度。
+于是正确的后验均值恰好为
+  m_theta(y,c) = E_P[F_theta(U,c)*L_s(y|F_theta(U,c))]
+                / E_P[L_s(y|F_theta(U,c))]。
+
+为保留教师提议/Student 目标的思想，使用可计算的教师引导提议 Q_y：
+  v_ref = 原 DMD 同一 y,s,c 上的 CFG 教师速度；
+  eps_ref = y+(1-s)*v_ref；
+  h(y)=kappa*eps_ref，kappa=.01；
+  Z~N(h(y),I)，其余 J、xi 保持原先验分布。
+对固定 y，Q_y 有全支持，且 log(dP/dQ_y)=sum(.5*h^2-Z*h)。
+这里必须对所有 latent 坐标求和，不能求平均来“防止退化”；后者改变目标。
+
+独立采样 N=8 个 U_i~Q_y，取
+  ell_i = -||y-a*F_theta(U_i,c)||^2/(2*s^2) + log(dP/dQ_y)(U_i)，
+  w_i = softmax_i(ell_i)，m_hat = sum_i w_i*F_theta(U_i,c)。
+其目标就是第2节的真后验均值。满足有限矩条件时，N->infinity 一致。
+有限 N 的比值估计有偏，不能称作精确/无偏后验均值；高维下可能极度退化。
+本次不加入观测温度、不裁剪权重、不把平方和改平均、不混入当前源样本作为候选，
+也不把单链相关样本错误当成与当前生成器梯度独立的后验样本。
+proposal、候选图像、权重、均值均停止梯度，只通过原生成器的最终选定步反传。
+
+4. 接入原 DMD 更新及其限制
+
+同一点的 clean teacher prediction 为 d_ref=y-s*v_ref。
+Tweedie 形式的 score gap 为 (a/s^2)*(m_hat-d_ref)。
+现有 DMD 用 clean prediction 差并配合其 gradient normalization；本次保留这一
+预条件和归一化规则，直接把 fake clean prediction 替换为 m_hat。
+这保留了仓库 DMD 的更新规则，不宣称恢复论文未指定的所有 lambda_t，
+也不宣称随机归一化后的有限粒子更新是某个 KL 梯度的无偏估计。
+
+5. 与 DMD 的公平比较范围
+
+对照：本地已完成的 single-A100 DMD train，1000 outer steps，100 generator updates。
+不是云端 16 卡 10000 outer steps 的训练。
+继承配置：SD3-Medium 权重、512、bf16、LoRA rank32/alpha64、batch1、seed42、
+4 步 [1000,750,500,250]、scheduler shift、CPS eta=.9、随机停止、CFG4.5、
+学习率、优化器、EMA、梯度裁剪、提示词、评估 seed42、原 PNG 四指标协议。
+保持每10个外层步骤更新1次生成器，故1000轮仍为100次生成器更新；没有 fake 更新。
+同一轮生成器与原基线使用相同提示词索引，但方法不同，训练随机数流不可能逐次相同。
+源训练的初始 Gaussian 先以 float32 采样再转 bf16，使原源与提议采用同一离散实现映射；
+旧基线直接采 bf16。这是需披露的数值实现差异。评估生成保持基线的 bf16 采样。
+保留未训练的 fake adapter 注册仅为复用基线初始化顺序，训练/保存仅使用 generator。
+总 FLOPs、实际训练时间及可训练网络数量不相等，本次是等生成器更新数对照。
+只有保存频率因磁盘限制由100改成1000；仍每100轮评估16条，末轮完整2048条。
+新增方法参数：N=8，kappa=.01；不能声称所有参数完全相同。
+
+6. 如何判断实验结果
+
+记录每次更新的 ESS、ESS/N、最大权重、权重熵、log-weight 跨度、损失和梯度范数。
+ESS 接近1意味着8个候选几乎仅保留1个，不能据此证明后验估计精确或论文成立。
+四项图像分数仅是生成质量指标，不能替代数学证明、后验误差分析与重复种子实验。
+分析测试覆盖解析 Gaussian 后验/Tweedie、Gaussian p/q、确定性非可逆终端、
+正确的维度求和以及反向路径后验不等价反例。
+
+参考（用于核对通用恒等式，不是对本修正版的外部背书）：
+Noise2Score, NeurIPS 2021（Gaussian Tweedie 恒等式）：
+https://papers.neurips.cc/paper/2021/file/077b83af57538aa183971a2fe0971ec1-Paper.pdf
+原论文 PDF：用户提供的 v29，第18、26页的确定性末步问题和第3、6—11、35页的均值目标。
+
+7. 解析实验补充
+
+scripts/validate_source_posterior.py 固定 X~N(0,I)、Y=.5X+.5eps，真后验均值就是 Y。
+在 32 个独立观测上比较 N=8/32/128，维数为1/16/256/4096，固定随机种子。
+此次一维 RMSE 从 .3581 降至 .0784；4096维 N=128 时 ESS 仍约1.030。
+这不是高维收敛定理或穷尽实验，只是可重现地展示有限粒子退化。
+结果：logs/rtdmd-source-is/comparison-1000/math-validation.json。
