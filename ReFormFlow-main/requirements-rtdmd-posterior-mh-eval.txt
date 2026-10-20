@@ -1,0 +1,3 @@
+-r requirements-dmd-eval.txt
+# Report plot; posterior-MH training itself needs no additional packages.
+matplotlib==3.10.9
