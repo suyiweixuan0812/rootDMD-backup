@@ -1,0 +1,16 @@
+{
+  "source_v29_sha256": "2b5a00f83471fc4a5d52dd9de39b7b9f1abd53ec207e3a2aa602d1b655d93197",
+  "new_tex_sha256": "fba4cb16ef38e76f298115275e1acb80288fd04f06ce20488b0b7f46a7fccc50",
+  "all_results_complete": false,
+  "experiment_roles": {
+    "lambda_025": "prespecified primary",
+    "lambda_050": "prespecified sensitivity"
+  },
+  "reports": {
+    "DMD": "/rootDMD/ReFormFlow-main/logs/dmd/sd3-medium-pickscore-no-reward-train/eval/step-1000/final-metrics.json",
+    "Source-IS": "/rootDMD/ReFormFlow-main/logs/rtdmd-source-is/sd3-medium-rtdmd-source-is-train/eval/step-1000/final-metrics.json",
+    "Posterior-MH": "/rootDMD/ReFormFlow-main/logs/rtdmd-posterior-mh/sd3-medium-rtdmd-posterior-mh-train/eval/step-1000/final-metrics.json",
+    "PC-MH, $\\lambda=.25$": "/rootDMD/ReFormFlow-main/logs/rtdmd-pcmh/sd3-medium-rtdmd-pcmh-lambda025-train/eval/step-1000/final-metrics.json",
+    "PC-MH, $\\lambda=.50$": "/rootDMD/ReFormFlow-main/logs/rtdmd-pcmh/sd3-medium-rtdmd-pcmh-lambda050-train/eval/step-1000/final-metrics.json"
+  }
+}
