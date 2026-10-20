@@ -11,11 +11,16 @@
   "outer_steps": 10000,
   "gpus": 16,
   "output_directory": "/rootDMD/cloud-jobs/sd3-dmd-8gpu-10000-20261020-211547",
-  "state": "waiting-for-authorized-vepfs-directory",
-  "vepfs_id": "vepfs-cnbj4cc563ae78e0",
-  "vepfs_name": "vepfs-mlp3",
-  "vepfs_host_path": "/mnt/vepfs-cnbj4cc563ae78e0",
+  "state": "copying-assets-to-authorized-vepfs",
+  "vepfs_id": "vepfs-cnbj2c98dea54433",
+  "vepfs_name": "vepfs-mlp2",
+  "vepfs_host_path": "/mnt/vepfs-cnbj2c98dea54433",
   "vepfs_asset_root": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547",
   "nodes": 2,
-  "training_run_name": "sd3-dmd-16gpu-10000"
+  "training_run_name": "sd3-dmd-16gpu-10000",
+  "vepfs_subpath": "c20250506/250404014",
+  "transfer_job_id": "t-20261020215354-pgth9",
+  "transfer_job_history": [
+    "t-20261020214915-n8f6x"
+  ]
 }
