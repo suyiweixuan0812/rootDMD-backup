@@ -538,7 +538,7 @@ seed42 的四项均值上升；seed43 的 Pick/HPS/Aesthetic 下降。
 \begin{itemize}\itemsep6pt
 \item 固定保存权重的推理可逐图复现；完整 DMD 重生成 PNG 与旧保存图逐字节相同。
 \item 同 seed 重训在第一次后向计算已出现微小梯度差异，发生在第一次评测之前；后续 BF16 轨迹放大差异。
-\item 长训练前1000轮与短训练的 LoRA 仅2/382张量逐位相同；不能据此宣称更改评测频率完全无影响。
+\item 长训练前1000轮与短训练的 LoRA 仅2/382张量逐位相同；差异已在首个反传出现，不能归因于评测频率。
 \item 启用确定性 CUDA 与固定 cuBLAS workspace 后，两次20轮小训练的 382/382 张量逐位相同。
 \item 这仅是小规模重复检查；后续新对照需让 DMD 与各方法同时使用相同设置，并继续记录完整训练重复性。
 \end{itemize}
@@ -572,6 +572,108 @@ D_\theta(y,\sigma)&=y-\sigma v_\theta(y,\sigma),\qquad J_\theta D=-\sigma J_\the
 \item 新轨迹的实际裁剪和质量必须重新测量；本页的校准预测不是最终质量结论。
 \end{itemize}
 \end{frame}
+\begin{frame}{ESS 的第二个瓶颈：长路径先验失配}
+\small
+已有 SD3 诊断中，长路径的观测对数似然跨度可小于1，但 Teacher/Student
+\textbf{路径先验比}跨度仍可超过100；只扩大坐标块或重复8次更新不能保证改善。
+\begin{align}
+\log w&=\sum_{k<J}\log(M_\theta/M_T)+\log L_\sigma,\\
+\KL\{\N(\mu_S,\nu^2I)\Vert\N(\mu_T,\nu^2I)\}
+&=\frac{\|\mu_S-\mu_T\|^2}{2\nu^2}.
+\end{align}
+\begin{itemize}\itemsep5pt
+\item latent 各坐标的差异进入完整平方范数；维度和路径长度都可能放大失配。
+\item 合理权重与正确后验并不保证有限候选池中有足够多的有效新候选。
+\item 必须同时报告候选 ESS、实际读出移动、重复值及加权候选方差。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{保留路径比主线的扩展：显式修正桥接提议}
+\small
+Teacher-only 版本保留为 $\gamma=0$ 基线。可选改进使用同一正方差 CPS 核：
+\begin{align}
+v_Q&=v_T+\gamma(v_\theta-v_T),\qquad 0\leq\gamma\leq1,\\
+w_Q&=\frac{p_J\phi}{q_Jq_0}\prod_{k<J}
+\underbrace{\frac{M_\theta}{M_T}}_{\text{原 Student/Teacher 比}}
+\underbrace{\frac{M_T}{Q_\gamma}}_{\text{新增提议校正}}\ L_\sigma
+=\frac{p_J\phi}{q_Jq_0}\prod_{k<J}\frac{M_\theta}{Q_\gamma}L_\sigma.
+\end{align}
+\begin{itemize}\itemsep5pt
+\item Student 源分布、共同末端读出、观测后验和条件 i-SIR 目标保持。
+\item 真正采样的提议已变为 $Q_\gamma$；不能仍用未校正的纯 $M_\theta/M_T$ 权重。
+\item 日志分别保存原比和提议校正；实际用直接 $\log M_\theta-\log Q$ 避免大数相减。
+\item 当 $\gamma$ 很大时，提议明显接近 Student；不能描述成完全未改动的教师提议。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{桥接为何可减小先验失配：结论与适用范围}
+\small
+理想连续等方差 Gaussian CPS 中，均值对速度线性：
+\begin{align}
+\mu_Q&=(1-\gamma)\mu_T+\gamma\mu_S,\\
+\KL(M_S\Vert Q_\gamma)&=(1-\gamma)^2\KL(M_S\Vert M_T).
+\end{align}
+固定 $J$ 和共同初始分布时，用 KL 链式分解得到相应路径先验等式。
+\begin{itemize}\itemsep5pt
+\item BF16 舍入后只可由数据处理得到 Gaussian KL 的\textbf{上界}；不再声称严格缩放等式。
+\item 这不是后验 KL、全局混合或图像质量的保证；观测似然仍会造成集中。
+\item 固定桥接细节：短路径 $\gamma=.90$，$J\geq3$ 用 $.99$；高噪声扩大局部块并限创新半径 $.5$。
+\item 原 Student CPS 的 $\eta=.9$ 和四步推理不变；创新空间半径是训练采样器的新参数。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{自适应桥接：只根据过去的查询定提议}
+\small
+当前 $J$ 已知后，先用\textbf{过去查询}的逐节点 Gaussian KL 代理确定提议，
+再生成当前 Student 源与观测：
+\begin{align}
+\bar K_k&\leftarrow\max(.95\bar K_k,K_k^{\rm observed}),\quad
+K_J=\sum_{k<J}\bar K_k,\\
+\gamma_J&=\begin{cases}0,&K_J\leq .25,\\1-\sqrt{.25/K_J},&K_J>.25.\end{cases}
+\end{align}
+\begin{itemize}\itemsep5pt
+\item 给定历史与 $J$，$\gamma_J$ 在当前成对采样之前固定，原条件后验参考证明仍适用。
+\item 该规则在历史代理预算下保留尽可能多的 Teacher 提议成分；本次查询后才更新历史。
+\item 不能根据当前参考/候选的 ESS 临时选 $\gamma$，然后直接套用固定提议的证明。
+\item 历史代理有滞后，且提示词变化；$.25$ 不是当前真实路径/后验 KL 的保证。
+\end{itemize}
+\end{frame}
+\begin{frame}{长路径采样诊断：改善 ESS，不替代质量实验}
+\footnotesize\centering
+同一保存的 Student、固定开发提示词、$J=4$、8候选；表中为候选池权重 ESS。
+\begin{tabular}{rrrrrr}\toprule
+$\sigma$ & 块大小 & Teacher ESS & Bridge ESS & Bridge 比跨度 & RB 方差迹/坐标\\\midrule
+0.95 & 16 & 1.00 & 7.09 & 0.11 & 0.00089 \\
+0.95 & 4096 & 1.00 & 6.09 & 0.31 & 0.00144 \\
+0.98 & 16 & 1.00 & 5.93 & 0.95 & 0.02722 \\
+0.98 & 4096 & 1.00 & 3.61 & 1.60 & 0.02436 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{5pt}
+\begin{itemize}\itemsep5pt
+\item $\gamma=.99$；原 FP32 LoRA 逐张量精确载入，实际 BF16-autocast 场重验一致。
+\item 每行是固定查询的一次局部池；不能外推为训练全过程的独立样本 ESS。
+\item RB 数值为候选池加权读出的每坐标方差；不是后验总方差的消除比例。
+\item 低噪声仍可能冻结。采样改善与最终 PickScore/HPS 必须分开验证。
+\end{itemize}
+\end{frame}
+\begin{frame}{新对照的选型与独立验证规则}
+\small
+\begin{itemize}\itemsep5pt
+\item 十组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
+\item 同时匹配原 DMD 和 FP32 观测噪声 DMD；逐指标取两者较大值作为开发参考。
+\item Pick/HPS 均需上升，CLIP 不低于参考 $-.10$、Aesthetic 不低于 $-.03$；排序预先固定。
+\item 无粒子的成对源仅是归因对照，不能替代所请求的路径比方法。
+\item 固定候选后再跑 PickScore2048、新种子和138条唯一未见 DrawBench 提示词；不把新测试结果回灌调参。
+\item 原 PickScore 测试已用于此前阶段汇报，不称为全程盲测；另保留138条独立提示词。
+\end{itemize}
+\end{frame}
+\begin{frame}{确定性开发集：对照与基线}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & DMD & 25.5532 & 5.4187 & 21.0938 & 24.8702 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。
+\end{frame}
 \begin{frame}{仍未被实验或理论解决的边界}
 \small
 \begin{itemize}\itemsep6pt
@@ -579,7 +681,7 @@ D_\theta(y,\sigma)&=y-\sigma v_\theta(y,\sigma),\qquad J_\theta D=-\sigma J_\the
 \item 固定停止点与 16 坐标块限制混合；低噪声冻结及 BF16 近似仍存在。
 \item 共同 Student 读出、生成器前缀提议与条件参考都改变了原采样细节；不能说只改最后一步。
 \item 正则改变期望更新；同一查询 Jacobian 是 surrogate。不能把所有改善归因于路径比本身。
-\item 100 次生成器更新、单张 A100、单训练种子属于小规模验证，未建立收敛或普遍优势。
+\item 首轮仅100次生成器更新；后续多种子与长训练仍属于单张 A100 的有限验证，未建立收敛或普遍优势。
 \item 四项自动指标不是人工偏好全貌；需要同提示词样图、独立提示词和多种子检查。
 \end{itemize}
 \end{frame}

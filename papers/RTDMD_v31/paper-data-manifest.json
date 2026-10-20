@@ -8,7 +8,8 @@
     "dmd-ema-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-ema-pick2048-exact/final-metrics.json",
     "path-is-selected-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-selected-pick2048-exact/final-metrics.json",
     "dmd-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-seed43-pick2048-exact/final-metrics.json",
-    "path-is-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed43-pick2048-exact/final-metrics.json"
+    "path-is-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed43-pick2048-exact/final-metrics.json",
+    "sd3-det-dmd-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42/final-metrics.json"
   },
   "report_sha256": {
     "dmd-ema-dev64-exact": "1971f7320167e81e50b2ec68be633445f61abe7c4532d86234bade180705e440",
@@ -19,7 +20,8 @@
     "dmd-ema-pick2048-exact": "143b804189ca28a6c8575eaa2e34b50b99b15f3e45031d28cc2804600c177bb6",
     "path-is-selected-pick2048-exact": "a8e0cd1719e08de2abd6e30011c1325a26827df3ecb3ff733e00a322385d06d9",
     "dmd-seed43-pick2048-exact": "c95ce848ce0298cc93f2e14c6a0f20484fbf76cba91d964278cda1da029c1e7c",
-    "path-is-seed43-pick2048-exact": "cc5e7260269f1cc0d1a4b879f598f2189d02ebce8f80cccf024bb8573de5067a"
+    "path-is-seed43-pick2048-exact": "cc5e7260269f1cc0d1a4b879f598f2189d02ebce8f80cccf024bb8573de5067a",
+    "sd3-det-dmd-seed42": "166f55fdd8dfaa5640ba5c0fd6f50509f52f2ab981c63f2352b4205aa5bd70b2"
   },
   "validation_table_groups": [
     {
@@ -46,6 +48,12 @@
         "path-is-selected-pick2048-exact",
         "dmd-seed43-pick2048-exact",
         "path-is-seed43-pick2048-exact"
+      ]
+    },
+    {
+      "title_contains": "确定性开发集：对照与基线",
+      "names": [
+        "sd3-det-dmd-seed42"
       ]
     }
   ],
@@ -123,7 +131,7 @@
       1500
     ]
   },
-  "source_sha256": "ddc5bc1a64339f90f9e71c43ef5ce0df63dc30d388ec3a3f638e83b211387bea",
+  "source_sha256": "da4280b2711a53547d92364aad923a0535e509923dc7bedf6bd31ec71a70c41b",
   "computed_values": [
     {
       "title_contains": "两组训练种子",
@@ -144,6 +152,72 @@
       "title_contains": "两组训练种子",
       "value": "+0.2109",
       "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/comparison-two-seeds/comparison.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "7.09",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "0.11",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "0.00089",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "6.09",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "0.31",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "0.00144",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "5.93",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "0.95",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "0.02722",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "3.61",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "1.60",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长路径采样诊断",
+      "value": "0.02436",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
     }
-  ]
+  ],
+  "source_artifacts": {
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json": "9759e249cbd9c8e4d0f6f36a9787d60ab270118da8009dde521aafe9c5c3fb95",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-capped-geometry-diagnostics/diagnostics.json": "a64b1c04901f1f08d824709a075dba554fdf49417eeaf72850cda36fe12cb8a6",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-cohort-plan.json": "22072060483647f3730f3a806225b1e681bacc2d61ba94108f7cc68111680b92",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/adaptive-bridge-extension-plan.json": "aec8314416ac3475006ab074f0a7aeb191477e9631035d346da06071e715ae42"
+  }
 }

@@ -20,6 +20,8 @@ def main():
     assert len(doc)==source.count('\\begin{frame}')+1
     assert source.count('\\end{document}')==1
     manifest=json.loads((PAPER/'paper-data-manifest.json').read_text())
+    for path,sha in manifest.get('source_artifacts',{}).items():
+        assert hashlib.sha256(Path(path).read_bytes()).hexdigest()==sha,path
     forbidden=['运行中；','训练未完成','完整测试仍运行','FINAL_NOT_SELECTED']
     all_text='\n'.join(p.get_text() for p in doc)
     assert not any(t in source or t in all_text for t in forbidden)

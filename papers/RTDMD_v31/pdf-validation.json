@@ -1,5 +1,5 @@
 {
-  "page_count": 37,
+  "page_count": 44,
   "all_pages_rendered": true,
   "numeric_values_verified": [
     {
@@ -221,13 +221,33 @@
       "run": "path-is-seed43-pick2048-exact",
       "metric": "HP Score",
       "rendered_value": "28.5872"
+    },
+    {
+      "run": "sd3-det-dmd-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "25.5532"
+    },
+    {
+      "run": "sd3-det-dmd-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4187"
+    },
+    {
+      "run": "sd3-det-dmd-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.0938"
+    },
+    {
+      "run": "sd3-det-dmd-seed42",
+      "metric": "HP Score",
+      "rendered_value": "24.8702"
     }
   ],
   "source_complete": true,
   "outside_page_text": [],
   "replacement_character_pages": [],
-  "pdf_sha256": "eb82fce4ee1dbaaf0c231963ff05de7bfe67a429025efa3b4cdff0cdac3afdba",
-  "tex_sha256": "ddc5bc1a64339f90f9e71c43ef5ce0df63dc30d388ec3a3f638e83b211387bea",
+  "pdf_sha256": "fe405bef29db712c568cdf8d45e9dad74e72b939d1330cf0a97b427db29462bf",
+  "tex_sha256": "da4280b2711a53547d92364aad923a0535e509923dc7bedf6bd31ec71a70c41b",
   "preview_directory": "/dev/shm/rtdmd-v31-pdf-preview",
   "visual_review": "Pending review of rendered pages"
 }

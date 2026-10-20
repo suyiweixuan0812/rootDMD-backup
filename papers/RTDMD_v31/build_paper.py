@@ -517,7 +517,7 @@ $\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 整次更新冻结率\\\mid
 \item 固定停止点与 16 坐标块限制混合；低噪声冻结及 BF16 近似仍存在。
 \item 共同 Student 读出、生成器前缀提议与条件参考都改变了原采样细节；不能说只改最后一步。
 \item 正则改变期望更新；同一查询 Jacobian 是 surrogate。不能把所有改善归因于路径比本身。
-\item 100 次生成器更新、单张 A100、单训练种子属于小规模验证，未建立收敛或普遍优势。
+\item 首轮仅100次生成器更新；后续多种子与长训练仍属于单张 A100 的有限验证，未建立收敛或普遍优势。
 \item 四项自动指标不是人工偏好全貌；需要同提示词样图、独立提示词和多种子检查。
 \end{itemize}
 \end{frame}
@@ -569,6 +569,12 @@ $\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 整次更新冻结率\\\mid
 from paper_addenda import render
 addenda,added_reports,added_groups,computed_values=render(ROUND)
 tex=tex.replace(r'\begin{frame}{仍未被实验或理论解决的边界}',addenda+r'\begin{frame}{仍未被实验或理论解决的边界}')
+from paper_bridge_addenda import render as render_bridge
+bridge_tex,bridge_reports,bridge_groups,bridge_values=render_bridge(ROUND)
+tex=tex.replace(r'\begin{frame}{仍未被实验或理论解决的边界}',bridge_tex+r'\begin{frame}{仍未被实验或理论解决的边界}')
+added_reports.update(bridge_reports)
+added_groups.extend(bridge_groups)
+computed_values.extend(bridge_values)
 (OUT/'RTDMD_SchemeA_Reorganized_Final_CN_v31.tex').write_text(tex)
 print('v31 frames:',tex.count('\\begin{frame}'),'plus title')
 
@@ -582,4 +588,10 @@ manifest['reports'].update(added_reports)
 manifest['report_sha256'].update({n:hashlib.sha256(Path(f).read_bytes()).hexdigest() for n,f in added_reports.items()})
 manifest['validation_table_groups'].extend(added_groups)
 manifest['computed_values']=computed_values
+artifacts=['bridged-exact-geometry-diagnostics/diagnostics.json',
+           'teacher-capped-geometry-diagnostics/diagnostics.json',
+           'deterministic-cohort-plan.json','adaptive-bridge-extension-plan.json',
+           'deterministic-selection.json','deterministic-validation-plan.json']
+manifest['source_artifacts']={str(ROUND/name):hashlib.sha256((ROUND/name).read_bytes()).hexdigest()
+                              for name in artifacts if (ROUND/name).exists()}
 (OUT/'paper-data-manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False))

@@ -1,0 +1,165 @@
+"""Bridge theory and completed deterministic results, read directly from evidence."""
+import json
+
+METRICS = ['CLIP Score', 'Aesthetic Score', 'Pick Score', 'HP Score']
+LABELS = {'dmd': 'DMD', 'dmd_fp32': 'DMD, FP32 query', 'base': 'Path-IS',
+          'time': 'Path-IS + time', 'paired': 'One-source control',
+          'paired_time': 'One-source + time', 'bridge': 'Bridge',
+          'bridge_time': 'Bridge + time', 'adaptive_bridge': 'Past-KL bridge',
+          'adaptive_bridge_time': 'Past-KL + time'}
+
+
+def render(root):
+    reports, groups, computed = {}, [], []
+    tex = r'''\begin{frame}{ESS 的第二个瓶颈：长路径先验失配}
+\small
+已有 SD3 诊断中，长路径的观测对数似然跨度可小于1，但 Teacher/Student
+\textbf{路径先验比}跨度仍可超过100；只扩大坐标块或重复8次更新不能保证改善。
+\begin{align}
+\log w&=\sum_{k<J}\log(M_\theta/M_T)+\log L_\sigma,\\
+\KL\{\N(\mu_S,\nu^2I)\Vert\N(\mu_T,\nu^2I)\}
+&=\frac{\|\mu_S-\mu_T\|^2}{2\nu^2}.
+\end{align}
+\begin{itemize}\itemsep5pt
+\item latent 各坐标的差异进入完整平方范数；维度和路径长度都可能放大失配。
+\item 合理权重与正确后验并不保证有限候选池中有足够多的有效新候选。
+\item 必须同时报告候选 ESS、实际读出移动、重复值及加权候选方差。
+\item CFG4.5 Teacher clean 值沿用 DMD 的学习参考；未证明它等于 Teacher 四步 CPS 源的精确条件均值。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{保留路径比主线的扩展：显式修正桥接提议}
+\small
+Teacher-only 版本保留为 $\gamma=0$ 基线。可选改进使用同一正方差 CPS 核：
+\begin{align}
+v_Q&=v_T+\gamma(v_\theta-v_T),\qquad 0\leq\gamma\leq1,\\
+w_Q&=\frac{p_J\phi}{q_Jq_0}\prod_{k<J}
+\underbrace{\frac{M_\theta}{M_T}}_{\text{原 Student/Teacher 比}}
+\underbrace{\frac{M_T}{Q_\gamma}}_{\text{新增提议校正}}\ L_\sigma
+=\frac{p_J\phi}{q_Jq_0}\prod_{k<J}\frac{M_\theta}{Q_\gamma}L_\sigma.
+\end{align}
+\begin{itemize}\itemsep5pt
+\item Student 源分布、共同末端读出、观测后验和条件 i-SIR 目标保持。
+\item 真正采样的提议已变为 $Q_\gamma$；不能仍用未校正的纯 $M_\theta/M_T$ 权重。
+\item 日志分别保存原比和提议校正；实际用直接 $\log M_\theta-\log Q$ 避免大数相减。
+\item 当 $\gamma$ 很大时，提议明显接近 Student；不能描述成完全未改动的教师提议。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{桥接为何可减小先验失配：结论与适用范围}
+\small
+理想连续等方差 Gaussian CPS 中，均值对速度线性：
+\begin{align}
+\mu_Q&=(1-\gamma)\mu_T+\gamma\mu_S,\\
+\KL(M_S\Vert Q_\gamma)&=(1-\gamma)^2\KL(M_S\Vert M_T).
+\end{align}
+固定 $J$ 和共同初始分布时，用 KL 链式分解得到相应路径先验等式。
+\begin{itemize}\itemsep5pt
+\item BF16 舍入后只可由数据处理得到 Gaussian KL 的\textbf{上界}；不再声称严格缩放等式。
+\item 这不是后验 KL、全局混合或图像质量的保证；观测似然仍会造成集中。
+\item 固定桥接细节：短路径 $\gamma=.90$，$J\geq3$ 用 $.99$；高噪声扩大局部块并限创新半径 $.5$。
+\item 原 Student CPS 的 $\eta=.9$ 和四步推理不变；创新空间半径是训练采样器的新参数。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{自适应桥接：只根据过去的查询定提议}
+\small
+当前 $J$ 已知后，先用\textbf{过去查询}的逐节点 Gaussian KL 代理确定提议，
+再生成当前 Student 源与观测：
+\begin{align}
+\bar K_k&\leftarrow\max(.95\bar K_k,K_k^{\rm observed}),\quad
+K_J=\sum_{k<J}\bar K_k,\\
+\gamma_J&=\begin{cases}0,&K_J\leq .25,\\1-\sqrt{.25/K_J},&K_J>.25.\end{cases}
+\end{align}
+\begin{itemize}\itemsep5pt
+\item 给定历史与 $J$，$\gamma_J$ 在当前成对采样之前固定，原条件后验参考证明仍适用。
+\item 该规则在历史代理预算下保留尽可能多的 Teacher 提议成分；本次查询后才更新历史。
+\item 不能根据当前参考/候选的 ESS 临时选 $\gamma$，然后直接套用固定提议的证明。
+\item 历史代理有滞后，且提示词变化；$.25$ 不是当前真实路径/后验 KL 的保证。
+\end{itemize}
+\end{frame}
+'''
+    diagnostics = root / 'bridged-exact-geometry-diagnostics/diagnostics.json'
+    teacher = root / 'teacher-capped-geometry-diagnostics/diagnostics.json'
+    if diagnostics.exists() and teacher.exists():
+        a = json.loads(teacher.read_text())['rows']
+        b = json.loads(diagnostics.read_text())['rows']
+        lines = []
+        for sigma in [.95, .98]:
+            for block in [16, 4096]:
+                vals = []
+                for data in [a, b]:
+                    r = [x for x in data if x['source_stop'] == 4 and x['sigma'] == sigma and x['active_block_size'] == block]
+                    assert len(r) == 1
+                    vals.append(r[0])
+                s, q = vals
+                values = [f'{sigma:.2f}', str(block), f'{s["path_is_ess"]:.2f}',
+                          f'{q["path_is_ess"]:.2f}', f'{q["path_is_path_ratio_span"]:.2f}',
+                          f'{q["rb_removed_variance_trace_per_coordinate"]:.5f}']
+                lines.append(' & '.join(values) + r' \\')
+                computed.extend(dict(title_contains='长路径采样诊断', value=v, source=str(diagnostics)) for v in values[3:])
+        tex += r'''\begin{frame}{长路径采样诊断：改善 ESS，不替代质量实验}
+\footnotesize\centering
+同一保存的 Student、固定开发提示词、$J=4$、8候选；表中为候选池权重 ESS。
+\begin{tabular}{rrrrrr}\toprule
+$\sigma$ & 块大小 & Teacher ESS & Bridge ESS & Bridge 比跨度 & RB 方差迹/坐标\\\midrule
+''' + '\n'.join(lines) + r'''
+\bottomrule\end{tabular}\par\raggedright\vspace{5pt}
+\begin{itemize}\itemsep5pt
+\item $\gamma=.99$；原 FP32 LoRA 逐张量精确载入，实际 BF16-autocast 场重验一致。
+\item 每行是固定查询的一次局部池；不能外推为训练全过程的独立样本 ESS。
+\item RB 数值为候选池加权读出的每坐标方差；不是后验总方差的消除比例。
+\item 低噪声仍可能冻结。采样改善与最终 PickScore/HPS 必须分开验证。
+\end{itemize}
+\end{frame}
+'''
+    tex += r'''\begin{frame}{新对照的选型与独立验证规则}
+\small
+\begin{itemize}\itemsep5pt
+\item 十组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
+\item 同时匹配原 DMD 和 FP32 观测噪声 DMD；逐指标取两者较大值作为开发参考。
+\item Pick/HPS 均需上升，CLIP 不低于参考 $-.10$、Aesthetic 不低于 $-.03$；排序预先固定。
+\item 无粒子的成对源仅是归因对照，不能替代所请求的路径比方法。
+\item 固定候选后再跑 PickScore2048、新种子和138条唯一未见 DrawBench 提示词；不把新测试结果回灌调参。
+\item 原 PickScore 测试已用于此前阶段汇报，不称为全程盲测；另保留138条独立提示词。
+\end{itemize}
+\end{frame}
+'''
+    def table(title, items, note):
+        nonlocal tex
+        completed = []
+        for label, name in items:
+            path = root / 'evidence' / name / 'final-metrics.json'
+            if path.exists():
+                report = json.loads(path.read_text())
+                completed.append(('4 & ' + label + ' & ' + ' & '.join(f'{report["table"][k]:.4f}' for k in METRICS) + r' \\', name))
+                reports[name] = str(path)
+        if not completed:
+            return
+        tex += r'\begin{frame}{' + title + r'''}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+''' + '\n'.join(row for row, _ in completed) + r'''
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+''' + note + '\n' + r'\end{frame}' + '\n'
+        groups.append(dict(title_contains=title, names=[name for _, name in completed]))
+    for title, cases in [
+            ('确定性开发集：对照与基线', ['dmd', 'dmd_fp32', 'base', 'paired', 'paired_time']),
+            ('确定性开发集：采样与时间细节', ['time', 'bridge', 'bridge_time', 'adaptive_bridge', 'adaptive_bridge_time'])]:
+        table(title, [(LABELS[c], f'sd3-det-{c}-seed42') for c in cases],
+              r'仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。')
+    selection = root / 'deterministic-selection.json'
+    if selection.exists():
+        choice = json.loads(selection.read_text())
+        cases = ['dmd', 'dmd_fp32', choice['selected_case'], choice['paired_control']]
+        for title, seed, suffix, note in [
+                ('确定性完整 PickScore 测试：seed42', 42, 'pick2048-exact', '固定开发候选后的2048条完整测试；同推理噪声与四项评分模型。'),
+                ('保留提示词验证：138条唯一提示词', 42, 'holdout138-exact', '与开发集及 PickScore 训练/测试逐字去重；结果不用于重新选择参数。'),
+                ('确定性训练种子复核：seed43', 43, 'pick2048-exact', '已固定的方法重新训练；单提示词 bootstrap 区间不能代替训练种子不确定性。')]:
+            active = cases if seed == 42 else cases[:3]
+            table(title, [(LABELS[c], f'sd3-det-{c}-seed{seed}-{suffix}') for c in active], note)
+    table('原路径版长训练确认：10000轮',
+          [('DMD', 'dmd-seed42-10000-pick2048'), ('Path-IS', 'path-is-seed42-10000-pick2048')],
+          r'原先固定的 $\lambda=.10$、Teacher-only、无时间权重；双方10000轮/1000次生成器更新。此组 CUDA 后向未启用新确定性设置，不能与新队列混为同组。')
+    return tex, reports, groups, computed
