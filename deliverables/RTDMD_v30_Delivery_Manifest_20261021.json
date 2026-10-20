@@ -1,0 +1,51 @@
+{
+  "tex": {
+    "path": "/rootDMD/papers/RTDMD_v30/RTDMD_SchemeA_Reorganized_Final_CN_v30.tex",
+    "sha256": "c8954df4aa796aef87e484b7da7d329c8b3ab5e217f09cb24127106a2bca8b30"
+  },
+  "pdf": {
+    "path": "/rootDMD/papers/RTDMD_v30/RTDMD_SchemeA_Reorganized_Final_CN_v30.pdf",
+    "sha256": "dbed3bfd506fbcf6b9c13b33f987ced9b3751669522e1befc8e92f2580f29cf1"
+  },
+  "archives": [
+    {
+      "path": "/rootDMD/deliverables/RTDMD_v30_Paper_20261021.zip",
+      "bytes": 511469,
+      "sha256": "de25698a8e27fb185ee7b39ffae9ee23c16744232e5dcd5b08b8dc6f03e51cd2"
+    },
+    {
+      "path": "/rootDMD/deliverables/RTDMD_v30_Code_PickScore_20261021.zip",
+      "bytes": 1365249,
+      "sha256": "93149b9f4b7e59fb5253c573723427baf6a242dde113dd94e3dfd47a0e900582"
+    },
+    {
+      "path": "/rootDMD/deliverables/RTDMD_v30_Results_20261021.zip",
+      "bytes": 1623055,
+      "sha256": "da07fa3d3e2ded61e7195453b3863518f183b8659855aba4538799265c84b532"
+    }
+  ],
+  "full_png_archive": {
+    "path": "/dev/shm/rtdmd-v30-images/RTDMD_v30_FullPNG_20261021.zip",
+    "volatile_on_host_restart": true,
+    "images": 4096
+  },
+  "audit_summary": "/rootDMD/ReFormFlow-main/logs/rtdmd-pcmh/comparison-v30/summary.json",
+  "weights": [
+    {
+      "path": "/rootDMD/ReFormFlow-main/logs/rtdmd-pcmh/sd3-medium-rtdmd-pcmh-lambda025-train/checkpoints/checkpoint-1000/lora/generator/adapter_model.safetensors",
+      "tensor_count": 382,
+      "all_finite": true,
+      "lora_B_squared_norm": 1.4659514729248946,
+      "sha256": "0762b3df0ebf5abaa36e7ef367b63345739b5421e262cc34f4dc3ab20027efae",
+      "kind": "Inference EMA LoRA; not a full training-resume checkpoint"
+    },
+    {
+      "path": "/rootDMD/ReFormFlow-main/logs/rtdmd-pcmh/sd3-medium-rtdmd-pcmh-lambda050-train/checkpoints/checkpoint-1000/lora/generator/adapter_model.safetensors",
+      "tensor_count": 382,
+      "all_finite": true,
+      "lora_B_squared_norm": 1.3028679212969785,
+      "sha256": "dae7157f57fa5ce0becbcb345c6710b241d191cf77b6df95202a007f323ed364",
+      "kind": "Inference EMA LoRA; not a full training-resume checkpoint"
+    }
+  ]
+}

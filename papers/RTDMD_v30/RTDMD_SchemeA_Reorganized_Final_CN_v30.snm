@@ -1,0 +1,16 @@
+\beamer@slide {eq:query}{3}
+\beamer@slide {eq:tweedie}{3}
+\beamer@slide {eq:source-map}{4}
+\beamer@slide {eq:posterior}{7}
+\beamer@slide {eq:likelihood}{7}
+\beamer@slide {eq:true-mean}{7}
+\beamer@slide {eq:paired-stationary}{9}
+\beamer@slide {eq:pcn}{10}
+\beamer@slide {eq:mh-accept}{11}
+\beamer@slide {eq:conditional-mean}{13}
+\beamer@slide {eq:denoiser}{14}
+\beamer@slide {eq:base-surrogate}{15}
+\beamer@slide {eq:consistency}{16}
+\beamer@slide {eq:regularized}{16}
+\beamer@slide {eq:variance}{17}
+\beamer@slide {eq:expected-regularized}{18}

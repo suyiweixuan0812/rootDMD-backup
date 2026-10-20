@@ -1,0 +1,41 @@
+{
+  "page_count": 32,
+  "numeric_table_verified": true,
+  "table_values": [
+    "25.5374",
+    "5.9152",
+    "20.3478",
+    "27.2742",
+    "19.5789",
+    "4.5526",
+    "17.9098",
+    "16.0197",
+    "25.4264",
+    "5.9660",
+    "20.5580",
+    "28.3938",
+    "26.1713",
+    "6.0386",
+    "20.8326",
+    "28.0147",
+    "26.2382",
+    "5.9494",
+    "20.7121",
+    "26.5751"
+  ],
+  "source_complete": true,
+  "text_blocks_outside_page": [],
+  "replacement_character_pages": [],
+  "pdf_sha256": "dbed3bfd506fbcf6b9c13b33f987ced9b3751669522e1befc8e92f2580f29cf1",
+  "tex_sha256": "c8954df4aa796aef87e484b7da7d329c8b3ab5e217f09cb24127106a2bca8b30",
+  "preview_directory": "/dev/shm/rtdmd-v30-pdf-preview",
+  "all_pages_rendered": true,
+  "compiler": "Tectonic 0.17.0 (XeTeX); fonts bundled through the TeX resource bundle",
+  "visual_review": "Reviewed both 16-page montages (all 32 pages) and full-size pages 15, 17, 23; Chinese text, equations, conditional-variance statement and numeric results table are legible; no visible clipping.",
+  "compile_diagnostics": {
+    "overfull_boxes": 0,
+    "undefined_references": 0,
+    "nullfont_messages": 108,
+    "note": "Nonfatal nullfont digit messages remain in the log; rendered text, equations, page numbers and the full result table were inspected. Compiler log is preserved."
+  }
+}

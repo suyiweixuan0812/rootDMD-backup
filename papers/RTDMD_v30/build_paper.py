@@ -51,7 +51,11 @@ tex=r'''% !TEX program = xelatex
 \documentclass[10pt,aspectratio=169]{beamer}
 \usetheme{Madrid}
 \usecolortheme{dolphin}
-\usepackage[fontset=fandol]{ctex}
+\usepackage[fontset=none]{ctex}
+% Use two TeX-distributed fonts explicitly; no machine-specific Noto dependency.
+\setCJKmainfont{FandolSong-Regular.otf}[BoldFont=FandolSong-Bold.otf,AutoFakeSlant=.2]
+\setCJKsansfont{FandolSong-Regular.otf}[BoldFont=FandolSong-Bold.otf,AutoFakeSlant=.2]
+\setCJKmonofont{FandolSong-Regular.otf}
 \usepackage{amsmath,amssymb,bm,mathtools}
 \usepackage{booktabs,tabularx,array,multirow}
 \usepackage{graphicx,hyperref}

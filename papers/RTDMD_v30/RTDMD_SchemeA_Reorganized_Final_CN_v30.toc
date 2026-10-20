@@ -1,0 +1,5 @@
+\beamer@sectionintoc {1}{目标、保留内容与需要修订的假设}{2}{0}{1}
+\beamer@sectionintoc {2}{真实源后验与教师引导局部校正}{7}{0}{2}
+\beamer@sectionintoc {3}{同一观测点的更新与新增一致性正则}{14}{0}{3}
+\beamer@sectionintoc {4}{实验协议、结果与诊断}{21}{0}{4}
+\beamer@sectionintoc {5}{附录：原CPS与路径比背景的适用边界}{29}{1}{5}

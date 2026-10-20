@@ -1,0 +1,1630 @@
+--- v29-original-reference.tex
++++ RTDMD_SchemeA_Reorganized_Final_CN_v30.tex
+@@ -1,1085 +1,585 @@
+ % !TEX program = xelatex
++% v30: generated from actual saved PNG evaluation reports; self-contained source.
+ \documentclass[10pt,aspectratio=169]{beamer}
+ \usetheme{Madrid}
+ \usecolortheme{dolphin}
+-\usepackage{ctex}
+-\setCJKmainfont{Noto Sans CJK SC}
+-\setmainfont{Liberation Sans}
+-
++\usepackage[fontset=none]{ctex}
++% Use two TeX-distributed fonts explicitly; no machine-specific Noto dependency.
++\setCJKmainfont{FandolSong-Regular.otf}[BoldFont=FandolSong-Bold.otf,AutoFakeSlant=.2]
++\setCJKsansfont{FandolSong-Regular.otf}[BoldFont=FandolSong-Bold.otf,AutoFakeSlant=.2]
++\setCJKmonofont{FandolSong-Regular.otf}
+ \usepackage{amsmath,amssymb,bm,mathtools}
+ \usepackage{booktabs,tabularx,array,multirow}
+-\usepackage{tikz}
+-\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric}
+ \usepackage{graphicx,hyperref}
+ \usefonttheme{professionalfonts}
+ \setbeamertemplate{navigation symbols}{}
+ \setbeamertemplate{footline}[frame number]
+ \setbeamertemplate{equation number}[default]
+ \setbeamerfont{frametitle}{size=\large}
+-\setbeamersize{text margin left=6mm,text margin right=6mm}
+-\setlength{\parskip}{2pt}\linespread{1.02}
++\setbeamersize{text margin left=7mm,text margin right=7mm}
++\setlength{\parskip}{2pt}
+ \definecolor{deepblue}{RGB}{27,67,121}
+ \definecolor{softblue}{RGB}{236,243,252}
+ \definecolor{softgreen}{RGB}{235,247,241}
+ \definecolor{softorange}{RGB}{252,243,233}
+-\definecolor{softred}{RGB}{253,239,238}
+ \definecolor{deepgreen}{RGB}{32,105,80}
+ \definecolor{deeporange}{RGB}{174,87,20}
+-\definecolor{deepred}{RGB}{174,50,45}
+-\definecolor{purple}{RGB}{93,74,151}
+ \setbeamercolor{block title}{fg=white,bg=deepblue}
+ \setbeamercolor{block body}{bg=softblue,fg=black}
+ \setbeamercolor{block title example}{fg=white,bg=deepgreen}
+-\setbeamercolor{block body example}{fg=black,bg=softgreen}
++\setbeamercolor{block body example}{bg=softgreen,fg=black}
+ \setbeamercolor{block title alerted}{fg=white,bg=deeporange}
+-\setbeamercolor{block body alerted}{fg=black,bg=softorange}
++\setbeamercolor{block body alerted}{bg=softorange,fg=black}
+ \setbeamercolor{alerted text}{fg=deeporange}
++\newcommand{\E}{\mathbb E}
+ \newcommand{\R}{\mathbb R}
+-\newcommand{\E}{\mathbb E}
+-\newcommand{\dd}{\,\mathrm d}
++\newcommand{\N}{\mathcal N}
++\newcommand{\sg}{\operatorname{sg}}
+ \newcommand{\Cov}{\operatorname{Cov}}
+-\newcommand{\N}{\mathcal N}
+-\newcommand{\Lt}{L_t}
+-\newcommand{\Mtheta}{M_k^\theta}
+-\newcommand{\Mref}{M_k^\mathrm{ref}}
+-\newcommand{\hstar}{\Delta\tau_k^{\star}}
+-\newcommand{\Rstar}{R_k^{\star}}
+-\newcommand{\wtilde}{\widetilde w}
+ \newcommand{\KL}{\operatorname{KL}}
+ \newcommand{\ESS}{\operatorname{ESS}}
+-\newcommand{\sym}[1]{\begin{block}{变量与来源}\small #1\end{block}}
++\newcommand{\dd}{\,\mathrm d}
+ \newcommand{\takeaway}[1]{\begin{exampleblock}{本页结论}\small #1\end{exampleblock}}
+-\newcommand{\sourceline}[1]{\par{\scriptsize\color{gray}#1}\par}
+-\title[方案 A：YYPF 替代 Fake]{方案 A：用随机 \ensuremath{P_{\rm ref}} proposal 替代 Fake score}
+-\subtitle{RTDMD 少步蒸馏中的 YYPF 条件均值估计与路径律校正}
++\title[方案 A 修订：PC-MH]{方案 A 修订：教师引导后验 MH\\与后验去噪一致性}
++\subtitle{RTDMD 条件均值估计、可验证的局部校正与单卡实验\\v30：基于 v29 的理论修订与实验更新}
+ \author{组会讲解版}
+-\date{2026 年 10 月}
+-\hypersetup{pdftitle={RTDMD Scheme A reorganized},pdfauthor={YYPF}}
+-
+-
+-% Standalone vector illustration of gradual denoising; no external image files.
+-\newcommand{\noisepic}[1]{%
+-\begin{tikzpicture}[x=0.105cm,y=0.105cm]
+-\fill[blue!15] (0,0) rectangle (20,20);
+-\fill[green!40!black] (0,0) rectangle (20,5);
+-\fill[yellow!75!orange] (5,5) rectangle (15,12);
+-\fill[red!65!black] (3,12)--(10,18)--(17,12)--cycle;
+-\fill[brown!80!black] (9,5) rectangle (12,10);
+-\fill[blue!55] (6,8) rectangle (8,10);
+-\pgfmathsetseed{51}
+-\foreach \xx in {0,...,19}{\foreach \yy in {0,...,19}{%
+-\pgfmathtruncatemacro{\shade}{100*rnd}
+-\fill[black!\shade,opacity=#1] (\xx,\yy) rectangle ++(1,1);}}
+-\draw[gray] (0,0) rectangle (20,20);
+-\end{tikzpicture}}
+-
++\date{2026 年 10 月 21 日}
++\hypersetup{pdftitle={RTDMD v30 posterior MH and posterior consistency},pdfauthor={YYPF}}
+ \begin{document}
+ \maketitle
+ 
+-
+-
+-\section{背景：为什么需要替代 Fake}
+-
+-\begin{frame}{RTDMD 在一轮训练里做什么？}
++\section{目标、保留内容与需要修订的假设}
++\begin{frame}{v30 修改了什么，保留了什么}
+ \small
+ \begin{columns}[T,onlytextwidth]
+-\column{.54\textwidth}
+-\begin{enumerate}\itemsep3pt
+-\item 当前 Student $\theta_n$ 先给出一个中间状态 $X_{\theta_n}$。
+-\item 采样时间 $t$ 和查询噪声 $\varepsilon_q$，形成
+-\begin{equation}\label{eq:query-definition}
+- x_t=\alpha_tX_{\theta_n}+\sigma_t\varepsilon_q.
+-\end{equation}
+-\item \ensuremath{P_{\rm ref}} 和 Student 都在同一个 $(x_t,t,c)$ 上评价。
+-\item 计算 score 差，并用 surrogate gradient 更新 Student。
++\column{.49\textwidth}
++\begin{block}{保留 v29 的研究目标}
++\begin{itemize}
++\item 当前 Student 定义 target；教师参与 proposal 引导。
++\item 在线估计条件均值，通过 Tweedie 关系获得 score。
++\item 不额外训练 Fake；使用 score gap 的 surrogate 更新。
++\item 推理仍为原 CPS 四步，不添加终端噪声。
++\end{itemize}
++\end{block}
++\column{.49\textwidth}
++\begin{alertblock}{明确改写的部分}
++\begin{itemize}
++\item 在真实生成随机变量空间定义 Bayes 后验。
++\item 全路径 IS 改为分块 MH；不使用奇异末步密度比。
++\item 明确同一查询点的 Student Jacobian。
++\item 新增去噪一致性正则，并报告主/敏感性两组实验。
++\end{itemize}
++\end{alertblock}
++\end{columns}
++\takeaway{v30 是方法修订版；不是对原 Pref 反向 CPS 全路径 IS 的严格复现。}
++\end{frame}
++
++\begin{frame}{RTDMD 的查询与目标 score}
++\small
++当前 Student 产生源 latent $X_{\rm src}$，独立加噪：
++\begin{equation}\label{eq:query}
++y=\alpha X_{\rm src}+\sigma\varepsilon,\qquad
++\alpha=1-\sigma,\quad \varepsilon\sim\N(0,I),\quad 0<\sigma<1.
++\end{equation}
++在固定条件 $c$ 下，所需条件均值与 score 为
++\begin{equation}\label{eq:tweedie}
++m_\theta(y)=\E_\theta[X_{\rm src}\mid y,c],\qquad
++s_{\theta,\sigma}(y)=\frac{\alpha m_\theta(y)-y}{\sigma^2}.
++\end{equation}
++\begin{block}{原 Fake 的作用}
++Fake 通过当前 Student 样本的去噪回归近似 $m_\theta(y)$ 或相应 score。
++省去 Fake 后，仍然必须估计\alert{这个前向加噪模型的条件均值}。
++\end{block}
++\takeaway{Tweedie 恒等式保留；本轮改变的是条件均值的构造与训练 surrogate。}
++\end{frame}
++
++\begin{frame}{源 latent 必须与实际训练采样器一致}
++\small
++\begin{equation}\label{eq:source-map}
++U=(Z,\xi_1,\ldots,\xi_{K-1},J)\sim P,\qquad
++X_{\rm src}=F_\theta(U,c).
++\end{equation}
++\begin{itemize}\itemsep4pt
++\item $Z,\xi_j$ 独立标准 Gaussian；$J$ 按原 DMD 的随机停止分布采样。
++\item $F_\theta$ 执行相同 SD3、sigma schedule、CPS 与单条件 Student 预测。
++\item 返回第 $J$ 个执行步的 \textbf{clean prediction}，不是噪声边界 $x_s$。
++\item 包括未使用的 $\xi_j$，使原始随机变量空间维数固定；它们被积分掉。
++\end{itemize}
++\begin{alertblock}{有限步训练分布与完整推理分布}
++训练源是随机停止的 clean prediction 混合分布；最终评估仍执行完整四步。
++两者采用原 DMD 的约定，但不能在理论中混用。
++\end{alertblock}
++\end{frame}
++
++\begin{frame}{v29 的两个数学缺口}
++\small
++\begin{block}{一：CPS 的零方差末步}
++CPS 创新标准差 $\nu_k=s_{k-1}\sin(\eta\pi/2)$。当 $s_{k-1}=0$，
++$M^a_k(\dd x'\mid y)=\delta_{D_a(y)}(\dd x')$。
++若两模型输出不同，给定 $y$ 的终端条件核可互相奇异，不能继续代入 Gaussian 密度比。
++\end{block}
++\begin{block}{二：反向路径终点不自动等于前向后验}
++路径比可恢复\emph{所定义的反向 Student 路径律}；仍需另证它的终点条件律等于
++式\eqref{eq:query} 的 Bayes 后验。有限步网络本身不提供该保证。
++\end{block}
++\takeaway{本版将 $F_\theta$ 看作生成映射，直接定义前向后验；不补终端噪声，也不省略末步后伪称原目标。}
++\end{frame}
++
++\begin{frame}{原路径比恒等式仍成立，但结论应附带条件}
++\small
++对正方差的可计算反向核，设
++\begin{equation}
++R_a(\dd y_{0:K-1}\mid y_K)=\prod_{k=1}^{K}M_k^a(\dd y_{k-1}\mid y_k),\qquad
++\Lambda=\frac{\dd R_\theta}{\dd R_{\rm ref}}.
++\end{equation}
++若绝对连续、可积，则
++\begin{equation}
++\E_{R_{\rm ref}}[\Lambda Y_0\mid y_K]
++=\E_{R_\theta}[Y_0\mid y_K].
++\end{equation}
++\begin{alertblock}{需要补充的关键条件}
++右侧等于 $m_\theta(y_K)$，还要求 $R_\theta(Y_0\mid y_K)$ 正好是
++\emph{实际源分布与指定 Gaussian 前向观测}的反向条件律。
++\end{alertblock}
++\takeaway{原桥分布消元和路径比推导可作为条件性背景；不是本版后验正确性的证明。}
++\end{frame}
++
++\section{真实源后验与教师引导局部校正}
++\begin{frame}{在原始随机轨迹空间定义真正的 Bayes 后验}
++\small
++\begin{equation}\label{eq:posterior}
++\Pi_\theta(\dd U\mid y,c)
++=\frac{P(\dd U)L_\sigma(y\mid F_\theta(U,c))}
++{\int L_\sigma(y\mid F_\theta(V,c))P(\dd V)},
++\end{equation}
++其中对固定 $y,\sigma$，与 $U$ 无关的 Gaussian 常数可消去：
++\begin{equation}\label{eq:likelihood}
++\ell(U)\equiv\log L_\sigma(y\mid F_\theta(U,c))
++=-\frac{\|y-\alpha F_\theta(U,c)\|^2}{2\sigma^2}.
++\end{equation}
++\begin{equation}\label{eq:true-mean}
++m_\theta(y)=\int F_\theta(U,c)\Pi_\theta(\dd U\mid y,c).
++\end{equation}
++\takeaway{$F_\theta$ 无需可逆，也无需有图像空间密度；确定性末步没有额外核比。}
++\end{frame}
++
++\begin{frame}{为什么无条件 Source-IS 在高维退化}
++\small
++上一版从 $Q_y$ 采样 $U_i$，使用
++\begin{equation}
++\ell_i=-\frac{\|y-\alpha F_\theta(U_i)\|^2}{2\sigma^2}
+++\log\frac{\dd P}{\dd Q_y}(U_i),\qquad
++\widetilde w_i=\operatorname{softmax}_i(\ell_i).
++\end{equation}
++\begin{itemize}\itemsep3pt
++\item 源 latent 为 $16\times64\times64=65536$ 维；误差必须逐坐标求和。
++\item 8 个近先验候选往往不能覆盖后验；小 $\sigma$ 还会放大失配。
++\item 教师估计的腐化噪声不保证等于 Student 的生成初始噪声。
++\end{itemize}
++\begin{alertblock}{已完成旧运行的定量证据}
++ESS 均值 $1.095/8$；96\% 更新 ESS$<2$；log-weight 跨度中位数 $1706.605$。
++减去最大 log-weight 只能稳定计算，不能恢复缺失的后验覆盖。
++\end{alertblock}
++\end{frame}
++
++\begin{frame}{成对源轨迹提供后验平稳初始化}
++\small
++每轮固定当前 $\theta$，重新生成
++\begin{equation}
++U^\star\sim P,\qquad X^\star=F_\theta(U^\star,c),\qquad
++Y=\alpha X^\star+\sigma\varepsilon.
++\end{equation}
++联合律为 $P(\dd U)L_\sigma(\dd y\mid F_\theta(U,c))$。由 Bayes 公式，
++\begin{equation}\label{eq:paired-stationary}
++\mathcal L(U^\star\mid Y=y,c,\theta)=\Pi_\theta(\cdot\mid y,c).
++\end{equation}
++\begin{block}{成立条件}
++必须用\alert{同一次生成的真实轨迹}和其 Gaussian 观测；参数更新后重新生成。
++教师图像、旧参数轨迹或独立的另一条源轨迹不能直接替代。
++\end{block}
++\takeaway{一个条件后验样本不等于精确条件均值；平稳初始化不等于链样本相互独立。}
++\end{frame}
++
++\begin{frame}{教师引导的 Gaussian-reference 分块提议}
++\small
++教师仍在相同 $y,\sigma,c$ 上以原 CFG 预测 $v_{\rm ref}$，固定
++\begin{equation}
++h_y=\kappa\{y+(1-\sigma)v_{\rm ref}(y,\sigma,c)\},\qquad\kappa=.01.
++\end{equation}
++固定 $J$，选择一个实际使用的 Gaussian 变量块，再选坐标集合 $C$：
++\begin{equation}\label{eq:pcn}
++u'_C=\rho u_C+(1-\rho)h_C+\beta\zeta,\qquad
++\rho=\sqrt{1-\beta^2},\quad\zeta\sim\N(0,I).
++\end{equation}
++初始噪声 $Z$ 使用 $h_C=(h_y)_C$；CPS 创新使用 $h_C=0$。
++其他坐标保持不变。
++\begin{alertblock}{教师中心的含义}
++这是可校正的启发式提议中心，不是已证明的生成噪声反演，也不保证优于零中心提议。
++\end{alertblock}
++\end{frame}
++
++\begin{frame}{接受比必须包含教师中心的校正项}
++\small
++提议对 $\N(h_C,I)$ 可逆，而真实先验对 $\N(0,I)$ 定义。
++故正反向提议比与先验比合并为
++\begin{equation}\label{eq:mh-accept}
++A(U,U')=\ell(U')-\ell(U)-h_y^\top(Z'-Z),\qquad
++a(U,U')=\min\{1,e^{A(U,U')}\}.
++\end{equation}
++\begin{itemize}\itemsep3pt
++\item 未变化的坐标对最后一项贡献为零；零中心创新块没有额外中心项。
++\item 活跃块的选择概率只依赖\alert{未改变的} $J$，正反向相同。
++\item $J$ 单独用均匀先验提议，保持 Gaussian 变量不变，接受比仅为似然差。
++\end{itemize}
++\takeaway{每个转移保持式\eqref{eq:posterior} 的后验不变；不能只按观测似然接受一个非零中心提议。}
++\end{frame}
++
++\begin{frame}{当前局部核：保持目标，也留下混合局限}
++\small
++\begin{equation}
++\beta=\operatorname{clip}\left(
++\frac{.25\sigma}{(1-\sigma)\sqrt{16}}\,b,\;10^{-4},\;.5\right),
++\qquad b\text{ 循环取 }(.5,1,2).
++\end{equation}
++\begin{itemize}\itemsep3pt
++\item 每次更新 8 个提议：7 次 Gaussian 分块更新，最后 1 次停止步提议。
++\item 块大小16；噪声相关尺度只依赖固定 $\sigma$，不按本链接受历史随意自适应。
++\item 最多提议 $7\times16=112$ 个连续坐标（可重复），远小于完整随机轨迹维数。
++\item BF16 网络、小噪声尖锐似然与局部更新可能共同限制移动；未单独做精度消融。
++\end{itemize}
++\takeaway{后验不变性与混合效率是两个问题；本轮正则化也不被宣称为解决链混合。}
++\end{frame}
++
++\begin{frame}{Rao--Blackwell 化接受／拒绝，得到在线均值}
++\small
++当前状态 $U_j$、提议 $U'_j$ 和接受概率 $a_j$ 给出
++\begin{equation}
++H_j=(1-a_j)F_\theta(U_j,c)+a_jF_\theta(U'_j,c),\qquad
++\widehat m=\frac1M\sum_{j=0}^{M-1}H_j.
++\end{equation}
++$H_j$ 是对接受随机数积分后的下一状态条件期望。
++由平稳初始化及不变核，理想连续算术模型下，
++\begin{equation}\label{eq:conditional-mean}
++\E[\widehat m\mid y,c,\sigma,\theta]=m_\theta(y).
++\end{equation}
++\begin{alertblock}{这条结论不包含什么}
++不表示一次估计精确，不表示8步已充分混合；浮点计算仍有数值近似。
++对任意非平稳初始化，也不能直接沿用式\eqref{eq:conditional-mean}。
++\end{alertblock}
++\end{frame}
++
++\section{同一观测点的更新与新增一致性正则}
++\begin{frame}{为什么要明确 Jacobian 的位置}
++\small
++上一版沿用生成源样本 Jacobian。成对轨迹均值估计与该源样本条件相关，
++一般不能将它们的期望乘开。例如 $X\mid y$ 的均值为 $m$、方差为 $v$，则
++\begin{equation}
++\E[X\cdot X\mid y]=m^2+v\ne m^2.
++\end{equation}
++本版按 v29 式(2)的一种明确解释，在同一查询点使用
++\begin{equation}\label{eq:denoiser}
++D_\theta(y)=y-\sigma v_\theta(y,\sigma,c),\qquad J_\theta D_\theta(y).
++\end{equation}
++给定 $y,c,\sigma,\theta$，这个 Jacobian 是确定的；查询、轨迹和目标均停止梯度。
++实现要求 Student 无正概率 Dropout。
++\takeaway{这不是原 DMD 源 Jacobian 的等价改写；实验收益尚需单独消融两种改动。}
++\end{frame}
++
++\begin{frame}{Posterior-MH 的基础 surrogate 与时间预条件}
++\small
++令教师 clean prediction $r=y-\sigma v_{\rm ref}$，定义
++\begin{equation}
++n_\theta(y)=\operatorname{mean}|D_\theta(y)-r|>0,\qquad
++G_\theta(y)=\frac{1}{d\,n_\theta(y)}\{J_\theta D_\theta(y)\}^\top.
++\end{equation}
++保留仓库 DMD 的 clean 差归一化形式，基础更新为
++\begin{equation}\label{eq:base-surrogate}
++\widehat g_0=G_\theta(y)(\widehat m-r).
++\end{equation}
++$r$ 是冻结教师的 CFG 网络预测，不是已经证明的精确后验均值；
++以下代数命题只要求给定观测后 $r$ 确定，不声称 CFG 目标的 score 精确。
++\begin{block}{与 Tweedie score 差的关系}
++真实 score 差还含 $\alpha/\sigma^2$。上述更新将其吸收于时间权重，
++另对状态相关的 $n_\theta$ 停止梯度；不是未指定时间权重下的等价 KL 梯度。
++\end{block}
++\takeaway{以下结论针对固定 $\theta,y$ 的裁剪前 surrogate 梯度，不是完整 KL 梯度或收敛定理。}
++\end{frame}
++
++\begin{frame}{v30 新增：后验去噪一致性}
++\small
++网络的 clean prediction 与其\emph{实际源分布}的条件均值不一定一致。
++在固定目标和归一化下，加入半梯度正则
++\begin{equation}\label{eq:consistency}
++\mathcal L_{\rm pc}=\frac{\|D_\theta(y)-\sg(\widehat m)\|^2}
++{2d\,\sg(n_\theta(y))}.
++\end{equation}
++其条件期望梯度为 $G_\theta(y)\{D_\theta(y)-m_\theta(y)\}$。
++和式\eqref{eq:base-surrogate} 合并得到
++\begin{equation}\label{eq:regularized}
++\widehat g_\lambda
++=G_\theta(y)\left\{(1-\lambda)\widehat m+\lambda D_\theta(y)-r\right\}.
++\end{equation}
++\takeaway{这是新增的 Student 后验一致性项，不是 v29 的 Fake 一致性正则 $\mathcal L_{\rm cons}$。
++本节 $\lambda$ 是正则强度，不是原稿的时间权重 $\lambda_t$。}
++\end{frame}
++
++\begin{frame}{新增命题：条件后验采样方差的精确缩放}
++\small
++\begin{block}{条件与结论}
++固定 $y,c,\sigma,\theta$；$G_\theta,D_\theta,r$ 确定，$\lambda$ 预先固定，
++后验均值估计二阶矩有限，归一化为正。则裁剪前
++\begin{equation}\label{eq:variance}
++\Cov(\widehat g_\lambda\mid y)
++=(1-\lambda)^2\Cov(\widehat g_0\mid y).
++\end{equation}
++\end{block}
++\begin{proof}[一行证明]
++将式\eqref{eq:regularized} 写成
++$(1-\lambda)G_\theta\widehat m+G_\theta(\lambda D_\theta-r)$；
++第二项给定观测后确定，取协方差即得。
++\end{proof}
++$\lambda=.25$ 时系数为 $.5625$；$\lambda=.50$ 时为 $.25$。
++\begin{alertblock}{严格限定}
++只缩放\alert{给定观测的后验估计噪声}；不等于总 SGD 方差、Adam 更新方差或图像指标的同幅改善。
++\end{alertblock}
++\end{frame}
++
++\begin{frame}{期望更新也改变了：不是无代价的方差缩减}
++\small
++由式\eqref{eq:conditional-mean}，
++\begin{equation}\label{eq:expected-regularized}
++\E[\widehat g_\lambda\mid y]
++=G_\theta(y)\{m_\theta(y)-r\}
+++\lambda G_\theta(y)\{D_\theta(y)-m_\theta(y)\}.
++\end{equation}
++\begin{itemize}\itemsep4pt
++\item 新增项正是去噪一致性修正；因此 $\lambda>0$ 是正则化扩展。
++\item 若同时 $m_\theta=r$、$D_\theta=m_\theta$，该目标点的两个项均为零。
++\item 不由此推出解唯一、参数稳定、KL 单调下降或全局收敛。
++\item 源分布随 $\theta$ 变化；本实现对采样数据和目标使用 stop-gradient。
++\end{itemize}
++\takeaway{方差命题与期望更新偏移必须同时报告，不能把它表述为保持原方法不变的无偏改进。}
++\end{frame}
++
++\begin{frame}{边界情形与本轮预先固定的实验}
++\small
++\begin{center}
++\begin{tabular}{cll}\toprule
++$\lambda$ & 更新中的向量 & 含义\\\midrule
++$0$ & $\widehat m-r$ & 上一版 Posterior-MH\\
++$.25$ & $.75\widehat m+.25D_\theta-r$ & 本轮主实验\\
++$.50$ & $.50\widehat m+.50D_\theta-r$ & 本轮敏感性实验\\
++$1$ & $D_\theta-r$ & 理论边界：后验项完全抵消\\\bottomrule
++\end{tabular}
++\end{center}
++\begin{alertblock}{实验选择规则}
++主实验 $.25$ 和敏感性 $.50$ 在最终测试评分前固定；两组均报告。
++不按最终2048条测试分数挑选一个强度，隐去另一组结果。
++\end{alertblock}
++\takeaway{$\lambda=1$ 不再保留后验均值的作用；不能把纯教师拟合的效果当成 MH 的贡献。}
++\end{frame}
++
++\begin{frame}{训练算法与实际实现的对应}
++\small
++\begin{enumerate}\itemsep4pt
++\item 用当前 $\theta$ 采样真实轨迹 $U^\star$，重放得到 $X^\star$；Gaussian 加噪得到 $y$。
++\item 教师在 $y$ 预测 $r,h_y$；固定 $\theta$，执行8次带校正的局部 MH，得到 $\widehat m$。
++\item Student 在\alert{同一固定 $y$}计算 $D_\theta(y)$；构造式\eqref{eq:regularized} 的停止梯度目标。
++\item 仅通过 $D_\theta(y)$ 反传；使用原学习率、优化器、梯度裁剪和 EMA。
++\item 原 DMD 每10外层轮一次生成器更新的日程保留；不执行 Fake 更新。
+ \end{enumerate}
+-\begin{block}{RTDMD 型更新}
+-若 Student 输出 clean prediction $X_{{\rm pred},\theta_n}$，则可写成
+-{\small
+-\begin{equation}
+-\begin{aligned}
+- g_n&=\lambda_t (J_{\theta_n}X_{{\rm pred},\theta_n})^{\top}\\
+- &\quad\cdot
+- \operatorname{sg}\!\left[\widehat s_{\theta_n}(x_t,t)-s_\mathrm{ref}(x_t,t)\right],\\[-1mm]
+- \theta_{n+1}&=\theta_n-\eta_n g_n.
+-\end{aligned}
+-\end{equation}
+-}
+-\end{block}
+-\column{.44\textwidth}
+-\begin{tikzpicture}[node distance=3mm, every node/.style={font=\scriptsize}]
+-\node[draw=deepblue,fill=softblue,rounded corners,align=center,inner sep=3pt,text width=31mm] (s) {Student $\theta_n$\\中间状态 $X_{\theta_n}$};
+-\node[draw=deepblue,fill=softblue,rounded corners,align=center,inner sep=3pt,text width=31mm,below=of s] (q) {查询 $x_t=\alpha_tX_{\theta_n}+\sigma_t\varepsilon_q$};
+-\node[draw=deepgreen,fill=softgreen,rounded corners,align=center,inner sep=3pt,text width=31mm,below=of q] (ys) {Student 条件 score\\原 fake 或 YYPF};
+-\node[draw=deeporange,fill=softorange,rounded corners,align=center,inner sep=3pt,text width=31mm,below=of ys] (ts) {\ensuremath{P_{\rm ref}} score\\$s_\mathrm{ref}(x_t,t,c)$};
+-\node[draw=purple,fill=white,rounded corners,align=center,inner sep=3pt,text width=31mm,below=of ts] (u) {score 差\\更新 $\theta$};
+-\draw[-Latex,thick] (s)--(q);
+-\draw[-Latex,thick] (q)--(ys);
+-\draw[-Latex,thick] (ys)--(ts);
+-\draw[-Latex,thick] (ts)--(u);
+-\end{tikzpicture}
++\begin{block}{额外计算}
++一致性项通过向量合并实现，不增加网络前向次数。MH 候选仍然需要额外回放；
++训练计算量与 DMD 不相等，推理 NFE 保持4。
++\end{block}
++\end{frame}
++
++\section{实验协议、结果与诊断}
++\begin{frame}{公平比较：保持的参数与必要差异}
++\small
++\begin{columns}[T,onlytextwidth]
++\column{.49\textwidth}
++\begin{block}{共同设置}
++原 SD3-Medium；512；BF16 网络；LoRA rank32/alpha64；batch1；seed42；
++学习率 $3\times10^{-5}$；相同优化器、EMA、裁剪、CFG4.5；CPS $\eta=.9$；
++四步 $[1000,750,500,250]$；随机停止；相同提示词与评估种子。
++\end{block}
++\column{.49\textwidth}
++\begin{alertblock}{必须披露的差异}
++无 Fake 训练；同点 Jacobian；8次 MH、16坐标块及一致性系数。
++源/观测 Gaussian 先以FP32采样，旧DMD直接BF16采样。
++只保存末轮 EMA LoRA，未保存完整可恢复训练状态。
++\end{alertblock}
+ \end{columns}
+-\end{frame}
+-
+-\begin{frame}{方案 A 要替代什么}
+-\begin{block}{RTDMD 需要的 Student score}
+-给定同一个 $(x_t,t,c)$，RTDMD 需要 Student 的条件 score
+-\begin{equation}\label{eq:student-target}
+- s_\theta(x_t,t)=\nabla_{x_t}\log p_{\theta,t}(x_t)
+- =\frac{\alpha_t m_{\theta,t}(x_t)-x_t}{\sigma_t^2},
+- \qquad m_{\theta,t}(x_t)=\E_\theta[X_{\rm src}\mid X_t=x_t].
+-\end{equation}
+-\end{block}
+-\begin{columns}[T,onlytextwidth]
+-\column{.46\textwidth}
+-\begin{alertblock}{原来的 fake}
+-用一个额外的 fake 网络或 fake score 直接近似 $m_{\theta,t}$ 或 $s_\theta$。
+-\end{alertblock}
+-\column{.08\textwidth}
+-\centering\Large $\longrightarrow$
+-\column{.46\textwidth}
+-\begin{exampleblock}{方案 A 的替代}
+-用 \ensuremath{P_{\rm ref}} 候选路径及 Student/\ensuremath{P_{\rm ref}} 路径比估计 $m_{\theta,t}$，再用 Tweedie 恒等式恢复 score；\ensuremath{P_{\rm ref}} 提供随机 proposal。
+-\end{exampleblock}
+-\end{columns}
+-{\small $X_{\rm src}$ 是 Student 的源 latent，$x_t$ 是其加噪查询点；固定条件 $c$。下文用干净端点讲解；若源 latent 是中间状态，应在对应节点停止。}\par
+-
+-\end{frame}
+-
+-\begin{frame}{原 Fake 的完整循环，和方案 A 的替代位置}
++\takeaway{相同外部配置与生成器更新数，不代表训练计算量相等；本轮没有启动16卡任务。}
++\end{frame}
++
++\begin{frame}{数据、评分与本轮资源使用}
++\small
++\begin{itemize}\itemsep5pt
++\item PickScore 训练提示词 25432 条；测试提示词 2048 条，原顺序、每条一张图。
++\item 1000外层轮，100次生成器更新；这不是默认长训练或收敛复现。
++\item 四项指标评分\alert{相同保存PNG}：CLIP、Aesthetic、PickScore、HPSv2.1。
++\item CLIP 与 HP 展示值乘100；Pick还原原始logit，Aesthetic不缩放。
++\item 两个新增实验共享同一A100并行运行；因此不比较它们与旧运行的墙钟速度。
++\item 完整图片暂存内存盘；权重、逐图分数、配置、报告保存在项目目录。
++\end{itemize}
++\takeaway{测试集用于最终报告；本轮正则强度预先固定。跨运行多次查看测试分数仍限制外部泛化结论。}
++\end{frame}
++
++\begin{frame}{完整2048条测试提示词：全部方法结果}
+ \small
+ \begin{center}
+-\begin{tikzpicture}[node distance=4mm,every node/.style={font=\small},
+-b/.style={draw=deepblue,fill=softblue,rounded corners,align=center,text width=39mm,inner sep=4pt}]
+-\node[b] (a) {当前 Student 样本\\构造加噪查询};
+-\node[b,right=of a] (b) {训练 Fake\\DSM 加一致性正则};
+-\node[b,right=of b] (c) {score gap 更新 Student\\分布变化后继续追踪};
+-\draw[-Latex,thick] (a)--(b);\draw[-Latex,thick] (b)--(c);
+-\end{tikzpicture}
+-\end{center}
+-\begin{equation}\label{eq:fake-total}
+-\mathcal L_{\rm fake,total}=\mathcal L_{\rm DSM}+\gamma\mathcal L_{\rm cons},
+-\qquad\gamma\geq0.
+-\end{equation}
+-\begin{columns}[T,onlytextwidth]
+-\column{.48\textwidth}
+-\begin{block}{原 Fake：学习一个随时可调用的估计器}
+-反复训练参数 $\phi$，用一次网络前向近似式 \eqref{eq:fake-optimum} 的条件平均。
+-Student 变化后，Fake 需要继续追踪。
+-\end{block}
+-\column{.48\textwidth}
+-\begin{exampleblock}{方案 A：在本次查询上估计条件平均}
+-\ensuremath{P_{\rm ref}} 提供候选路径，正确的路径权重提供 Student 后验均值，再代入同一个 score 公式。
+-\end{exampleblock}
+-\end{columns}
+-\begin{equation}\label{eq:replacement-interface}
+-s_\phi(x_t,t)\quad\longrightarrow\quad
+-\widehat m_{\theta,t}(x_t)\quad\longrightarrow\quad
+-\widehat s_\theta(x_t,t)=\frac{\alpha_t\widehat m_{\theta,t}(x_t)-x_t}{\sigma_t^2}.
+-\end{equation}
+-\sourceline{$\mathcal L_{\rm cons}$ 稳定 Fake 训练；替换 Fake 后无需把它另加到 Student。}
+-\end{frame}
+-
+-\begin{frame}{Fake 怎样训练：用已知标签学习未知的边缘 score}
+-\small
+-Student 产生源状态 $X_{\rm src}$，按 $X_t=\alpha_tX_{\rm src}+\sigma_t\varepsilon_q$ 独立加噪。高斯核给出可直接计算的标签：
+-\begin{equation}\label{eq:dsm-label}
+-q_t(x\mid x_{\rm src})=\N(x;\alpha_tx_{\rm src},\sigma_t^2I),\qquad
+-\nabla_x\log q_t(x\mid x_{\rm src})=\frac{\alpha_tx_{\rm src}-x}{\sigma_t^2}.
+-\end{equation}
+-\begin{block}{只更新 Fake 的参数 $\phi$}
+-\begin{equation}\label{eq:fake-dsm}
+-\mathcal L_{\rm DSM}(\phi)=
+-\E\!\left[\omega(t)\left\|s_\phi(X_t,t)-
+-\frac{\alpha_tX_{\rm src}-X_t}{\sigma_t^2}\right\|^2\right],\qquad\omega(t)>0.
+-\end{equation}
+-训练数据来自当前 Student；在这一步把 Student 样本固定，只拟合 $s_\phi$。
+-\end{block}
+-\begin{exampleblock}{平方回归为什么能学到 Student score}
+-\begin{equation}\label{eq:fake-optimum}
+-s_\phi^*(x_t,t)=\E\!\left[\frac{\alpha_tX_{\rm src}-x_t}{\sigma_t^2}\middle|X_t=x_t\right]
+-=\frac{\alpha_tm_{\theta,t}(x_t)-x_t}{\sigma_t^2}=s_\theta(x_t,t).
+-\end{equation}
+-$m_{\theta,t}(x_t)$ 就是给定查询点后，源 latent $X_{\rm src}$ 的条件均值。Fake 学的是条件平均，并非某一个样本的标签。
+-\end{exampleblock}
+-\sourceline{依据：RTDMD 附录 D。}
+-\end{frame}
+-
+-\begin{frame}{核心思想 1：先明确 Student 要估计的对象}
+-\small
+-\textbf{查询点固定为} $x_t$（以及条件 $c$）。Student 的随机变量统一记为 $X$。
+-式 \eqref{eq:student-target} 定义的目标，就是 Student 在查询点 $x_t$ 下的源端点条件均值。
+-
+-\begin{equation}
+-\boxed{
+-m_{\theta,t}(x_t)
+-=
+-\E_{P_\theta}[X_{\rm src}\mid X_t=x_t]
+-=
+-\E_{P_\theta}[X_0\mid X_t=x_t]
+-=
+-\int x_0\,p_\theta(x_0\mid x_t)\,\dd x_0 .
+-}
+-\label{eq:conditional-mean}
+-\end{equation}
+-
+-\begin{block}{式 \eqref{eq:student-target} 与式 \eqref{eq:conditional-mean} 的关系}
+-式 \eqref{eq:student-target} 与式 \eqref{eq:conditional-mean} 是\textbf{同一个目标}。式 \eqref{eq:conditional-mean} 只是把式 \eqref{eq:student-target} 中的
+-$X_{\rm src}$ 进一步记为 Student 的源端点 $X_0$，并把条件期望写成密度积分。
+-因此右边出现的变量应是 Student 的 $X_0$，而不是 $Y_0$。
+-\end{block}
+-
+-为了用 $P_{\rm ref}$ 产生样本，接下来把积分变量改成 $P_{\rm ref}$ rollout
+-产生的端点 $Y_0$。这是\textbf{同一个状态空间上的变量替换}，不是把 Student
+-变量改名成 $P_{\rm ref}$ 变量。
+-\end{frame}
+-
+-\begin{frame}{核心思想 2：由式 \eqref{eq:conditional-mean} 得到端点重要性采样}
+-\small
+-从式 \eqref{eq:conditional-mean} 的积分形式出发。用 $P_{\rm ref}$ 的端点条件密度作为 proposal，
+-在积分中乘上
+-$p_{\rm ref}(y_0\mid x_t)/p_{\rm ref}(y_0\mid x_t)$，得到
+-\begin{equation}
+-\boxed{
+-\begin{aligned}
+-m_{\theta,t}(x_t)
+-&=
+-\int
+-y_0\,
+-\frac{p_\theta(y_0\mid x_t)}
+-     {p_{\rm ref}(y_0\mid x_t)}
+-p_{\rm ref}(y_0\mid x_t)\,\dd y_0  \\
+-&=
+-\E_{P_{\rm ref}}
+-\left[
+-\frac{p_\theta(Y_0\mid x_t)}
+-     {p_{\rm ref}(Y_0\mid x_t)}
+-Y_0
+-\,\middle|\,Y_t=x_t
+-\right].
+-\end{aligned}
+-}
+-\label{eq:endpoint-is}
+-\end{equation}
+-
+-因此定义 endpoint weight：
+-\begin{equation}
+-\boxed{
+-w_{\rm end}(Y_0;x_t)
+-=
+-\frac{p_\theta(Y_0\mid x_t)}
+-     {p_{\rm ref}(Y_0\mid x_t)} .
+-}
+-\label{eq:endpoint-weight}
+-\end{equation}
+-
+-\begin{block}{符号约定}
+-Student 的随机变量始终写 $X$；$P_{\rm ref}$ rollout 的随机变量始终写 $Y$。
+-所以目标是 $\E_{P_\theta}[X_0\mid X_t=x_t]$，而实际加权的是 $P_{\rm ref}$
+-产生的 $Y_0$。$p_\theta(Y_0\mid x_t)$ 只是 Student 密度在该样本位置的取值。
+-\end{block}
+-\end{frame}
+-
+-\begin{frame}{核心思想 3：为什么不能直接算 endpoint weight？}
+-\small
+-式 \eqref{eq:endpoint-weight} 所需的是
+-$w_{\rm end}(Y_0;x_t)=p_\theta(Y_0\mid x_t)/p_{\rm ref}(Y_0\mid x_t)$。
+-但 Student 与 $P_{\rm ref}$ 的最终 endpoint marginal density 通常不能直接计算。
+-
+-\begin{block}{方案 A 的核心操作}
+-\textbf{不要直接计算 endpoint ratio。}
+-让 $P_{\rm ref}$ 从查询点 $x_t$ 出发生成一整条去噪路径，
+-然后计算 Student 与 $P_{\rm ref}$ 在整条路径上的 likelihood ratio。
+-\end{block}
+-
+-固定 $P_{\rm ref}$ 的起点为 $Y_K=x_t$，因此一条 rollout 的状态顺序为
+-$Y_K\to Y_{K-1}\to\cdots\to Y_1\to Y_0$。
+-
+-\begin{block}{为什么这样做可行？}
+-完整路径的概率可以按每一步 transition kernel 相乘；
+-因此 path ratio 可以由每一步的 kernel ratio 直接计算，而不需要先知道
+-最终的 endpoint marginal。
+-\end{block}
+-
+-\textbf{下一步：}由 Markov 分解把 endpoint ratio 改写成可计算的 path ratio。
+-\end{frame}
+-
+-\begin{frame}{核心思想 4：由式 \eqref{eq:endpoint-is}--\eqref{eq:endpoint-weight} 转到完整路径权重}
+-\footnotesize
+-固定 $Y_K=x_t$，令中间路径为 $H=(Y_1,\ldots,Y_{K-1})$。
+-由 Markov 分解，
+-\begin{equation}
+-\boxed{
+-p_\theta(y_{0:K-1}\mid x_t)
+-=
+-\prod_{k=1}^{K}M_k^\theta(y_{k-1}\mid y_k),
+-\qquad
+-p_{\rm ref}(y_{0:K-1}\mid x_t)
+-=
+-\prod_{k=1}^{K}M_k^{\rm ref}(y_{k-1}\mid y_k).
+-}
+-\label{eq:path-factorization}
+-\end{equation}
+-
+-因此由式 \eqref{eq:path-factorization}，一条 $P_{\rm ref}$ rollout 的 path weight 为
+-\begin{equation}
+-\boxed{
+-\begin{aligned}
+-\Lambda_A
+-&=
+-\frac{p_\theta(Y_{0:K-1}\mid x_t)}
+-     {p_{\rm ref}(Y_{0:K-1}\mid x_t)}
+-=
+-\prod_{k=1}^{K}
+-\frac{M_k^\theta(Y_{k-1}\mid Y_k)}
+-     {M_k^{\rm ref}(Y_{k-1}\mid Y_k)}
+-\\
+-&=
+-\frac{p_\theta(Y_0\mid x_t)}
+-     {p_{\rm ref}(Y_0\mid x_t)}
+-\frac{p_\theta(H\mid Y_0,x_t)}
+-     {p_{\rm ref}(H\mid Y_0,x_t)} .
+-\end{aligned}
+-}
+-\label{eq:path-weight}
+-\end{equation}
+-
+-第二行只是把完整路径写成 $(Y_0,H)$，即“端点 $\times$ 中间 bridge”。
+-因此式 \eqref{eq:path-weight} 已经把式 \eqref{eq:endpoint-weight} 的 endpoint weight
+-与一个中间路径的 bridge ratio 联系起来。
+-
+-\begin{block}{下一步}
+-对固定 $Y_0=y_0$ 和 $Y_t=x_t$，在 $P_{\rm ref}$ 的 bridge distribution
+-下对式 \eqref{eq:path-weight} 取条件期望，就能把中间路径积分掉。
+-\end{block}
+-\end{frame}
+-
+-\begin{frame}{核心思想 5：由 path weight 边缘化中间路径，恢复 endpoint ratio}
+-\small
+-固定 $Y_0=y_0$ 和 $Y_t=x_t$，在 $P_{\rm ref}$ 的 bridge distribution
+-$p_{\rm ref}(H\mid y_0,x_t)$ 下，对式 \eqref{eq:path-weight} 取条件期望：
+-\begin{equation}
+-\boxed{
+-\begin{aligned}
+-\E_{P_{\rm ref}}[\Lambda_A\mid Y_0=y_0,Y_t=x_t]
+-&=
+-\frac{p_\theta(y_0\mid x_t)}
+-     {p_{\rm ref}(y_0\mid x_t)}
+-\E_{P_{\rm ref}}
+-\left[
+-\frac{p_\theta(H\mid y_0,x_t)}
+-     {p_{\rm ref}(H\mid y_0,x_t)}
+-\middle|Y_0=y_0,Y_t=x_t
+-\right] \\
+-&=
+-\frac{p_\theta(y_0\mid x_t)}
+-     {p_{\rm ref}(y_0\mid x_t)}
+-\int
+-p_\theta(H\mid y_0,x_t)\,\dd H \\
+-&=
+-\frac{p_\theta(y_0\mid x_t)}
+-     {p_{\rm ref}(y_0\mid x_t)} .
+-\end{aligned}
+-}
+-\label{eq:endpoint-recovery}
+-\end{equation}
+-
+-其中第二步使用了
+-$H\sim p_{\rm ref}(H\mid y_0,x_t)$，所以 $P_{\rm ref}$ density 在积分中消去，
+-最后利用 Student 的条件路径密度归一化为 $1$。
+-
+-\begin{block}{式 \eqref{eq:endpoint-recovery} 的结论}
+-\textbf{path weight 的 bridge 条件平均 = endpoint weight。}
+-因此式 \eqref{eq:endpoint-weight} 中难以直接计算的 endpoint ratio，可以通过整条
+-$P_{\rm ref}$ rollout 的 path ratio 来实现。
+-\end{block}
+-\end{frame}
+-
+-\begin{frame}{核心思想 6：由 endpoint ratio 提升到有限 rollout 的路径估计}
+-\small
+-把式 \eqref{eq:endpoint-recovery} 代回式 \eqref{eq:endpoint-is}，等价地把 endpoint importance sampling 提升到路径空间：
+-\begin{equation}
+-\boxed{
+-m_{\theta,t}(x_t)
+-=
+-\frac{
+-\E_{P_{\rm ref}}[\Lambda_A Y_0\mid Y_t=x_t]
+-}{
+-\E_{P_{\rm ref}}[\Lambda_A\mid Y_t=x_t]
+-}.
+-}
+-\label{eq:path-identity}
+-\end{equation}
+-
+-实际只生成 $N$ 条 $P_{\rm ref}$ rollout。对第 $i$ 条路径，
+-$Y_K^{(i)}=x_t$，并逐步采样
+-$Y_{k-1}^{(i)}\sim M_k^{\rm ref}(\cdot\mid Y_k^{(i)})$。
+-根据式 \eqref{eq:path-weight}，其 log-weight 为
+-$\ell^{(i)}=\sum_k\log\!\bigl[M_k^\theta(Y_{k-1}^{(i)}\mid Y_k^{(i)})/
+-M_k^{\rm ref}(Y_{k-1}^{(i)}\mid Y_k^{(i)})\bigr]$。
+-
+-对有限 rollout 使用 self-normalized Monte Carlo，得到
+-\begin{equation}
+-\boxed{
+-\widehat m_{\theta,t}(x_t)
+-=
+-\frac{\sum_{i=1}^{N}\Lambda_A^{(i)}Y_0^{(i)}}
+-     {\sum_{i=1}^{N}\Lambda_A^{(i)}}
+-=
+-\sum_{i=1}^{N}\widetilde w_iY_0^{(i)},
+-\qquad
+-\widetilde w_i
+-=
+-\frac{\Lambda_A^{(i)}}{\sum_{j=1}^{N}\Lambda_A^{(j)}} .
+-}
+-\label{eq:mc-estimator}
+-\end{equation}
+-
+-\begin{exampleblock}{实际计算链}
+-$P_{\rm ref}$ 负责 rollout $\rightarrow$ 式 \eqref{eq:path-weight} 计算 path weight
+-$\rightarrow$ 式 \eqref{eq:endpoint-recovery} 说明它对应 endpoint weight $\rightarrow$
+-式 \eqref{eq:mc-estimator} 得到 Student 条件均值估计。
+-\end{exampleblock}
+-\end{frame}
+-
+-
+-
+-
+-
+-
+-\begin{frame}{方案 A：进入实际计算}
+-\begin{center}
+-\vfill
+-{\Large\bfseries 从理论恒等式进入可计算的路径权重}
+-\vspace{5mm}
+-\begin{block}{接下来计算什么？}
+-固定查询点 $x_t$，由 $P_{\rm ref}$ 生成候选路径；随后逐步计算
+-$M_k^\theta(Y_{k-1}\mid Y_k)/M_k^{\rm ref}(Y_{k-1}\mid Y_k)$，
+-并累乘得到 path weight $\Lambda_A$，再用归一化权重估计 Student 条件均值。
+-\end{block}
+-\vfill
+-\end{center}
+-\end{frame}
+-\begin{frame}{步骤 1：得到 \ensuremath{P_{\rm ref}} 的候选去噪路径}
+-\small
+-\ensuremath{P_{\rm ref}} 从带噪图像 $Y_t$ 出发，逐步降低噪声，最终到达干净图像 $Y_0$。以四步采样为例：
+-\begin{center}
+-\begin{tikzpicture}[node distance=5mm,every node/.style={font=\small}]
+-\node (a) {\noisepic{0.94}};
+-\node[right=of a] (b) {\noisepic{0.70}};
+-\node[right=of b] (c) {\noisepic{0.43}};
+-\node[right=of c] (d) {\noisepic{0.18}};
+-\node[right=of d] (e) {\noisepic{0}};
+-\node[above=1mm of a] {$Y_t=Y_4$};\node[above=1mm of b] {$Y_3$};
+-\node[above=1mm of c] {$Y_2$};\node[above=1mm of d] {$Y_1$};\node[above=1mm of e] {$Y_0$};
+-\draw[-Latex,thick] (a)--(b);\draw[-Latex,thick] (b)--(c);
+-\draw[-Latex,thick] (c)--(d);\draw[-Latex,thick] (d)--(e);
+-\node[below=0mm of a] {带噪起点};\node[below=0mm of e] {干净终点};
+-\end{tikzpicture}
+-\end{center}
+-\vspace{2mm}
+-一般用 $K$ 表示步数，状态下标按 $K,K-1,\ldots,0$ 递减：
+-\begin{equation}\label{eq:ref-path}
+-Y_{k-1}^{(i)}\sim M_k^\mathrm{ref}(\cdot\mid Y_k^{(i)}),\qquad
+-Y^{(i)}=(Y_K^{(i)},\ldots,Y_0^{(i)}),\quad i=1,\ldots,N.
+-\end{equation}
+-保存每一步的起点、终点和 \ensuremath{P_{\rm ref}} 预测均值。Student 随后在这些路径点上评价。
+-
+-\end{frame}
+-
+-\begin{frame}{步骤2：求 YYPF 权重 $w$\\[-1mm]\normalsize 步骤2.1：计算 Student 的漂移项}
+-\footnotesize
+-将 \ensuremath{P_{\rm ref}} 路径点 $Y_k$ 输入 Student 网络 $D_\theta$。$D_\theta(Y_k,s_k)$ 是对干净端点的预测（clean prediction）；由它重构旧噪声估计：
+-\begin{equation}\label{eq:cps-prediction}
+-X_{{\rm pred},k}=D_\theta(Y_k,s_k)=\widehat X_0^{(k)},\qquad
+-\widehat\varepsilon_k^{\rm old}=
+-\frac{Y_k-(1-s_k)X_{{\rm pred},k}}{s_k}.
+-\end{equation}
+-沿用式 \eqref{eq:cps-prediction} 的记号，将式 \eqref{eq:cps-prediction} 中的 $X_{{\rm pred},k}$ 暂记为 $\widehat X$。\par
+-将旧噪声的定义乘以 $s_k$，移项后得到：
+-\begin{equation}\label{eq:state-decomposition}
+-\boxed{Y_k=(1-s_k)\widehat X+s_k\widehat\varepsilon_k^{\rm old}.}
+-\end{equation}
+-\begin{block}{节点顺序与时间方向}
+-\begin{equation}
+-s_K=t>s_{K-1}>\cdots>s_0=0,\qquad
+-\Delta\tau_k=s_k-s_{k-1}>0.
+-\end{equation}
+-$s_k$ 是当前点的噪声水平，$s_{k-1}$ 是下一点的噪声水平；$\tau$ 随反向采样递增。每一步从 $k$ 到 $k-1$；噪声水平下降，采样时钟 $\tau$ 增加。
+-\end{block}
+-{\small \ensuremath{P_{\rm ref}} 状态用 $Y$，Student 状态用 $X$；参数仍用 $\mathrm{ref},\theta$。$D_\theta(Y_k,s_k)$ 是 Student 在 \ensuremath{P_{\rm ref}} 状态上的评价。}
+-\end{frame}
+-
+-
+-\begin{frame}{步骤2.1：计算 Student 的漂移项}
+-\begin{center}
+-\vfill
+-{\Large\bfseries 目标：得到 Student 每一步的有效漂移}
+-\vspace{5mm}
+-\begin{block}{本阶段输出}
+-从 Student 网络在 $P_{\rm ref}$ 路径点上的预测出发，得到一步均值
+-$\mu_{\theta,k}(Y_k)$，进一步得到 Student 有效漂移 $b_{\theta,k}(Y_k)$
+-以及可评价的 Student 转移核 $M_k^\theta$。
+-\end{block}
+-\vfill
+-\end{center}
+-\end{frame}
+-\begin{frame}{步骤2.1：计算 Student 的漂移项}
+-\small
+-在当前点令 $X_k=Y_k$。按线性时间表，下一节点的信号系数是 $1-s_{k-1}$，噪声系数是 $s_{k-1}$：
+-\begin{equation}\label{eq:deterministic-cps}
+-X_{k-1}=(1-s_{k-1})\widehat X+s_{k-1}\widehat\varepsilon_k^{\rm old}.
+-\end{equation}
+-代入式 \eqref{eq:cps-prediction} 的旧噪声定义并合并 $\widehat X$ 的系数：
+-\begin{equation}\label{eq:deterministic-interpolation}
+-\begin{aligned}
+-X_{k-1}
+-&=(1-s_{k-1})\widehat X+\frac{s_{k-1}}{s_k}\bigl[Y_k-(1-s_k)\widehat X\bigr]\\
+-&=\boxed{\frac{s_{k-1}}{s_k}Y_k+\left(1-\frac{s_{k-1}}{s_k}\right)\widehat X}.
+-\end{aligned}
+-\end{equation}
+-\begin{block}{从当前位置向预测端点移动一段距离}
+-$X_{k-1}$ 表示 Student 在噪声水平 $s_{k-1}$ 的下一步状态，也可记作 $X_{s_{k-1}}$。这里没有新噪声，给定 $Y_k$ 后结果确定；加入 CPS 随机噪声后，它表示实际抽到的下一步状态。
+-\end{block}
+-由于 $0\le s_{k-1}/s_k<1$，这一步位于 $Y_k$ 与预测端点 $\widehat X$ 之间。接下来保留时间表，改用新旧噪声的混合来生成不同路径。
+-\end{frame}
+-
+-\begin{frame}{步骤2.1：计算 Student 的漂移项}
+-\small
+-CPS（coefficient-preserving sampling，系数保持采样）统一了 Euler 与一致性模型（CM）的多步采样，沿用 CM 的“预测信号、再加噪”方式。
+-
+-为了让同一当前状态产生不同路径，先将旧噪声替换为：
+-\begin{equation}\label{eq:cps-noise-mix}
+-\zeta_k=\cos(\eta\pi/2)\widehat\varepsilon_k^{\rm old}
+-+\sin(\eta\pi/2)\xi_k,\qquad\xi_k\sim\N(0,I).
+-\end{equation}
+-再按下一节点的系数组合信号与混合噪声：
+-\begin{equation}\label{eq:cps-combination}
+-X_{k-1}=(1-s_{k-1})\widehat X+s_{k-1}\zeta_k.
+-\end{equation}
+-代入式 \eqref{eq:cps-noise-mix}，并用 $X_{{\rm pred},k}$ 写回 $\widehat X$：
+-\begin{equation}\label{eq:cps-step}
+-\boxed{X_{k-1}=(1-s_{k-1})X_{{\rm pred},k}
+-+s_{k-1}\cos(\eta\pi/2)\widehat\varepsilon_k^{\rm old}
+-+s_{k-1}\sin(\eta\pi/2)\xi_k.}
+-\end{equation}
+-$\eta\in[0,1]$ 控制新噪声比例；$\xi_k$ 与当前状态和旧噪声估计独立。$X_{k-1}$ 是加上本步随机噪声后，实际得到的下一步状态。
+-\sourceline{RTDMD 附录 C；CPS 并不要求 Student 本身是一致性模型。}
+-\end{frame}
+-
+-\begin{frame}{步骤2.1：计算 Student 的漂移项}
+-\small
+-给定 $X_k=Y_k$，端点预测和旧噪声估计固定，新噪声均值为零。因此 CPS 的下一步平均位置为：
+-\begin{equation}\label{eq:cps-mean}
+-\mu_{\theta,k}(Y_k)=\E[X_{k-1}\mid X_k=Y_k]
+-=(1-s_{k-1})X_{{\rm pred},k}
+-+s_{k-1}\cos(\eta\pi/2)\widehat\varepsilon_k^{\rm old}.
+-\end{equation}
+-$\mu_{\theta,k}$ 是 \textbf{CPS 下一步的平均位置}，不是网络的干净端点预测。记新噪声的系数为 $\nu_k$，则
+-\begin{equation}\label{eq:cps-sample-mean}
+-\nu_k=s_{k-1}\sin(\eta\pi/2),\qquad
+-X_{k-1}=\mu_{\theta,k}(Y_k)+\nu_k\xi_k.
+-\end{equation}
+-\begin{equation}\label{eq:cps-kernel}
+-M_k^\theta(x'\mid X_k=Y_k)=\N(x';\mu_{\theta,k}(Y_k),\nu_k^2I).
+-\end{equation}
+-\begin{center}
+-\begin{tabular}{ll}
+-\toprule
+-$D_\theta(Y_k,s_k)$ & 网络预测的干净端点\\
+-$\mu_{\theta,k}(Y_k)$ & CPS 下一步的平均位置\\
+-$X_{k-1}$ & 加入本步随机噪声后实际得到的下一步状态\\
++\setlength{\tabcolsep}{4pt}
++\begin{tabular}{lrrrrr}\toprule
++Post-Train（均无奖励） & NFE & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HP$\uparrow$\\\midrule
++DMD & 4 & 25.5374 & 5.9152 & 20.3478 & 27.2742 \\
++Source-IS & 4 & 19.5789 & 4.5526 & 17.9098 & 16.0197 \\
++Posterior-MH & 4 & 25.4264 & 5.9660 & 20.5580 & 28.3938 \\
++PC-MH, $\lambda=.25$ & 4 & 26.1713 & 6.0386 & 20.8326 & 28.0147 \\
++PC-MH, $\lambda=.50$ & 4 & 26.2382 & 5.9494 & 20.7121 & 26.5751 \\
+ \bottomrule
+ \end{tabular}
+ \end{center}
+-\sourceline{这里固定当前参数 $\theta$，省略训练轮次 $n$；$X_k$ 是 $X_{s_k}$ 的简写。$s_{k-1}=0$ 时末步确定，不适用非退化高斯密度式。}
+-\end{frame}
+-
+-\begin{frame}{步骤2.1：计算 Student 的漂移项}
+-\small
+-上一步已经得到 $\mu_{\theta,k}(Y_k)$ 和 $\nu_k^2I$。接下来要与 \ensuremath{P_{\rm ref}} 比较漂移，先把 Student 的平均位移写出来。
+-\begin{equation}\label{eq:cps-displacement}
+-\E[X_{k-1}-Y_k\mid X_k=Y_k]=\mu_{\theta,k}(Y_k)-Y_k.
+-\end{equation}
+-一步耗时为 $\Delta\tau_k=s_k-s_{k-1}>0$。平均位移除以耗时，就是该步的有效漂移：
+-\begin{equation}\label{eq:cps-drift}
+-b_{\theta,k}^{\rm CPS}(Y_k)=\frac{\mu_{\theta,k}(Y_k)-Y_k}{\Delta\tau_k},\qquad
+-G_k=\frac{\nu_k}{\sqrt{\Delta\tau_k}}I.
+-\end{equation}
+-\begin{block}{现在可以用同一种形式比较 \ensuremath{P_{\rm ref}} 和 Student}
+-\begin{equation}\label{eq:student-euler}
+-X_{k-1}=\underbrace{Y_k+b_{\theta,k}^{\rm CPS}(Y_k)\Delta\tau_k}_{\text{Student 一步均值}}
+-+\underbrace{G_k\sqrt{\Delta\tau_k}\,\xi_k}_{\text{一步随机波动}}.
+-\end{equation}
+-这只是 CPS 离散核的等价改写，尚未假设它存在连续时间极限。
+-\end{block}
+-下一页将这两个表达逐项对照，并说明它与 SDE 离散化的关系。
+-\end{frame}
+-
+-\begin{frame}{步骤2.1：计算 Student 的漂移项}
+-\small
+-为了使用 Girsanov 路径赋权，\ensuremath{P_{\rm ref}} proposal 与 Student target 都采用随机动力学：
+-\begin{align}
+-\dd \bar Y_\tau&=b_{\rm ref}(\tau,\bar Y_\tau)\dd\tau+G_\tau\dd W_\tau^\mathrm{ref}
+-&&\text{proposal: }P_{\rm ref},\label{eq:ref-sde-overview}\\
+-\dd \bar X_\tau&=b_\theta(\tau,\bar X_\tau)\dd\tau+G_\tau\dd W_\tau^\theta
+-&&\text{Student：}P_\theta,\label{eq:student-sde-overview}
+-\end{align}
+-$\tau$ 是递增的采样时钟，$\tau_k=t-s_k$；$\bar Y_{\tau_k}=Y_k$、$\bar X_{\tau_k}=X_k$。$W^\mathrm{ref},W^\theta$ 分别是各自路径律下的布朗运动。
+-\begin{block}{两边都加噪声，并采用相同的扩散系数}
+-Student 使用 CPS 随机转移，\ensuremath{P_{\rm ref}} 也需指定随机 proposal。这里让两者采用同一个 $G_\tau$，使单位时间噪声协方差都是 $G_\tau G_\tau^\top$，只比较漂移差。
+-
+-“相同”指噪声强度与协方差相同，不要求两者使用同一次随机取值。实际只采样 \ensuremath{P_{\rm ref}} 路径，Student 在这条路径上评价转移密度。
+-\end{block}
+-\small 原 \ensuremath{P_{\rm ref}} ODE 不会自动满足这两式；本方案另外构造随机 \ensuremath{P_{\rm ref}}。对于实际 CPS，先按共同网格和随机强度匹配单步协方差；能否取连续极限还需额外条件。下一页先给出 SDE 的离散形式。
+-\end{frame}
+-
+-\begin{frame}{步骤2.1：计算 Student 的漂移项}
+-\small
+-对一般 Student SDE（式 \eqref{eq:student-sde}），在一个小区间内冻结漂移与扩散系数。Euler--Maruyama 离散给出：
+-\begin{equation}\label{eq:euler-general}
+-X_{k-1}\approx X_k+b_\theta(\tau_k,X_k)\Delta\tau_k
+-+G_k\sqrt{\Delta\tau_k}\,\xi_k,\qquad \xi_k\sim\N(0,I).
+-\end{equation}
+-令 $X_k=Y_k$，与 CPS 式 \eqref{eq:cps-step} 对照：
+-\begin{equation}
+-\begin{aligned}
+-\text{CPS：}\quad X_{k-1}
+-&=\underbrace{(1-s_{k-1})X_{{\rm pred},k}+s_{k-1}\cos(\eta\pi/2)\widehat\varepsilon_k^{\rm old}}_{\mu_{\theta,k}(Y_k)}
+-+\underbrace{\nu_k\xi_k}_{\text{噪声}},\\[3mm]
+-\text{SDE 小步：}\quad X_{k-1}
+-&=\underbrace{Y_k+b_{\theta,k}(Y_k)\Delta\tau_k}_{\text{均值}}
+-+\underbrace{G_k\sqrt{\Delta\tau_k}\,\xi_k}_{\text{噪声}}.
+-\end{aligned}
+-\end{equation}
+-\begin{block}{匹配均值与协方差}
+-\begin{equation}
+-\mu_{\theta,k}=Y_k+b_{\theta,k}\Delta\tau_k,\qquad
+-G_kG_k^\top\Delta\tau_k=\nu_k^2I.
+-\end{equation}
+-因此式 \eqref{eq:cps-drift} 给出的漂移与扩散恰好还原 CPS 核。后面先用该核计算离散密度比，再解释它在连续时间下对应的 Girsanov 权重。
+-\end{block}
+-\end{frame}
+-
+-\begin{frame}{步骤2.2：计算 \ensuremath{P_{\rm ref}} 的漂移项}
+-\small
+-\ensuremath{P_{\rm ref}} 原来的 ODE 是确定性的。要得到可计算的高斯 proposal，另外为 \ensuremath{P_{\rm ref}} 指定 CPS 随机采样规则。先把速度输出转成端点预测。
+-\begin{equation}\label{eq:ref-velocity}
+-Y_k=y,\qquad v_k=v_{\rm ref}(y,s_k).
+-\end{equation}
+-\begin{block}{采用 rectified flow 的速度约定}
+-\begin{equation}\label{eq:rf-convention}
+-y_s=(1-s)y_0+s\varepsilon,\qquad v=\varepsilon-y_0,
+-\qquad y_s=y_0+sv.
+-\end{equation}
+-因此，当前位置减去“噪声水平乘以速度”，得到 \ensuremath{P_{\rm ref}} 的干净端点预测：
+-\begin{equation}\label{eq:ref-prediction}
+-\boxed{y_{{\rm pred},k}^{\rm ref}=y-s_kv_k},\qquad
+-\widehat\varepsilon_{\mathrm{ref},k}^{\rm old}
+-=\frac{y-(1-s_k)y_{{\rm pred},k}^{\rm ref}}{s_k}.
+-\end{equation}
+-\end{block}
+-\ensuremath{P_{\rm ref}} 的端点预测用 $y_{{\rm pred},k}^{\rm ref}$ 表示，与 Student 的 $X_{{\rm pred},k}$ 区分。二者都是信号预测，随后分别送入相同形式的 CPS 更新。
+-\sourceline{这里的 $v_{\rm ref}$ 是随噪声水平 $s$ 变化的速度；它不等于采样时钟 $\tau$ 下的有效漂移 $b_{\mathrm{ref},k}$。}
+-\end{frame}
+-
+-\begin{frame}{步骤2.2：计算 \ensuremath{P_{\rm ref}} 的漂移项}
+-\small
+-对 Student 的同一步 $s_k\to s_{k-1}$，选择相同的随机强度 $\eta>0$，并定义 \ensuremath{P_{\rm ref}} 的 CPS 均值：
+-\begin{equation}\label{eq:ref-cps-mean}
+-\mu_{\mathrm{ref},k}^{\rm prop}(y)=(1-s_{k-1})y_{{\rm pred},k}^{\rm ref}
+-+s_{k-1}\cos(\eta\pi/2)\widehat\varepsilon_{\mathrm{ref},k}^{\rm old},\qquad
+-\nu_k=s_{k-1}\sin(\eta\pi/2).
+-\end{equation}
+-\begin{equation}\label{eq:ref-cps-sample}
+-Y_{k-1}=\mu_{\mathrm{ref},k}^{\rm prop}(Y_k)+\nu_k\xi_k^\mathrm{ref},
+-\qquad \xi_k^\mathrm{ref}\sim\N(0,I).
+-\end{equation}
+-新噪声使这条采样规则具有高斯转移核，后文简记为 $M_k^\mathrm{ref}$：
+-\begin{equation}\label{eq:ref-cps-kernel}
+-\boxed{M_k^\mathrm{ref}(y'\mid y)\equiv M_{\mathrm{ref},k}^{\rm prop}(y'\mid y)
+-=\N(y';\mu_{\mathrm{ref},k}^{\rm prop}(y),\nu_k^2I)},\quad\nu_k>0.
+-\end{equation}
+-\begin{equation}\label{eq:ref-effective-drift}
+-b_{\mathrm{ref},k}(y)=\frac{\mu_{\mathrm{ref},k}^{\rm prop}(y)-y}{\Delta\tau_k},
+-\qquad G_kG_k^\top\Delta\tau_k=\nu_k^2I.
+-\end{equation}
+-\begin{block}{分子与分母使用同一个 Student 步长}
+-比值 $M_k^\theta(Y_{k-1}\mid Y_k)/M_k^\mathrm{ref}(Y_{k-1}\mid Y_k)$ 的两种核，都对应 Student 的第 $k$ 个区间 $s_k\to s_{k-1}$。\ensuremath{P_{\rm ref}} 也按这套 $K$ 步网格构造 proposal，不使用其原来多步 ODE 求解器的内部小步。
+-\end{block}
+-\sourceline{相同的 $\eta$ 与时间网格保证协方差相同，不要求两条路径使用相同的噪声实现。零噪声末步仍需单独处理。}
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
++\begin{block}{预先指定的主实验比较}
++预先指定的主实验相对 DMD：CLIP +0.6339；Aesthetic +0.1234；Pick +0.4848；HP +0.7405。\par 相对上一版 Posterior-MH：CLIP +0.7448；Aesthetic +0.0726；Pick +0.2746；HP -0.3790。
++\end{block}
++\begin{alertblock}{结论边界}
++一个训练种子、100次生成器更新。指标更高也不构成稳定优越性、理论正确性或充分收敛的证明。
++\end{alertblock}
++\end{frame}
++
++\begin{frame}{本轮结果怎样支持下一步，而不是过度归因}
++\small
++\begin{itemize}\itemsep6pt
++\item 主实验 $\lambda=.25$ 相对 DMD 四项提高；相对上一版 MH，CLIP、Aesthetic、Pick 提高，但 HP 下降。
++\item 敏感性 $\lambda=.50$ 进一步提高 CLIP，但 HP 低于 DMD；说明正则强度存在指标之间的权衡。
++\item 选择规则保持不变：$.25$ 是预先指定的主实验；$.50$ 是敏感性实验，不改成事后最优方法。
++\item 这些观测支持继续检验一致性正则，但不能证明收益来自条件方差缩减，更不能证明 MH 的独立贡献。
++\end{itemize}
++\takeaway{先补独立验证集、多训练种子及0步MH消融；当前单次短跑不支持直接推断16卡长训练的收益。}
++\end{frame}
++
++\begin{frame}{链诊断：接受不等于实际移动，更不等于ESS}
++\small
++\begin{center}
++\begin{tabular}{lrrr}\toprule
++方法 & 平均接受率 & 实际图像移动率 & 无实际移动的更新比例\\\midrule
++Posterior-MH & 28.75\% & 25.75\% & 50.0\% \\
++PC-MH, $\lambda=.25$ & 33.50\% & 30.50\% & 44.0\% \\
++PC-MH, $\lambda=.50$ & 36.75\% & 33.75\% & 40.0\% \\
++\bottomrule
++\end{tabular}
++\end{center}
++\begin{itemize}\itemsep4pt
++\item 上一版低于 $.5$ 的噪声段没有实际图像移动；全体50\%更新无图像移动。
++\item BF16舍入可能使原始噪声改变而输出图像不变；接受率会高于实际移动率。
++\item 一致性正则不改变 MH 的目标或核，不应被宣称为修复混合。
++\item 8次转移不足以可靠估计MCMC ESS；不把等权平均报告为 ESS$=8$。
++\end{itemize}
++\end{frame}
++
++\begin{frame}{数学验证与代码证据}
++\small
++\begin{block}{20项测试通过}
++原6项：Gaussian密度比、解析后验/Tweedie、非可逆末步、维度求和等；
++MH8项：Hastings比、平稳性、随机停止、轨迹重放、相关Gaussian块、冻结诊断等；
++新增6项：$\lambda=0/1$边界、方差系数、期望方向改变、目标停止梯度、参数范围。
++\end{block}
++\begin{itemize}\itemsep4pt
++\item 实际代码、数据SHA256与配置均保存；旧DMD和上一版结果未覆盖。
++\item 完整逐图评分与提示词索引可核验，不只保存均值。
++\item 测试验证实现中的指定关系，不替代神经网络全局训练收敛分析。
++\end{itemize}
++\takeaway{论文数值表从实际评分JSON生成；缺失结果不会以估计数字填充。}
++\end{frame}
++
++\begin{frame}{当前仍缺少的消融与统计证据}
++\small
++\begin{enumerate}\itemsep5pt
++\item 0步MH：直接使用成对源样本，判断MH在同点Jacobian下的增量作用。
++\item 教师偏移设为0：判断当前 $\kappa=.01$ 是否改善采样而非仅由教师目标起作用。
++\item 分别改变后验估计、Jacobian及一致性项，避免把所有收益归给一个因素。
++\item 多个训练种子；独立验证提示词；等更新数和GPU小时两种成本比较。
++\item 对低噪声的BF16回放、块大小/步长、长链相关性进行独立诊断。
++\end{enumerate}
++\takeaway{本轮为有理论定义的实验修订；没有完成这些消融，因此不作完整因果归因。}
++\end{frame}
++
++\begin{frame}{扩大到16卡之前应完成什么}
++\small
++\begin{itemize}\itemsep5pt
++\item 优先将可用GPU用于独立种子与关键消融，避免只放大单次试跑。
++\item 先验证2--4卡同步、每卡独立轨迹随机数、梯度平均和EMA一致性。
++\item 补齐原始参数、优化器、调度器、EMA、随机数和数据位置的完整断点恢复。
++\item 正式16卡对照需匹配全局batch、生成器更新数、数据暴露量，并报告GPU小时。
++\end{itemize}
++\begin{alertblock}{当前代码能力}
++当前回放入口明确限制单卡batch1；导出的EMA LoRA不是完整训练恢复。
++16卡数据并行也不会自动改善每个观测的后验链混合。
++\end{alertblock}
++\end{frame}
++
++\appendix
++\section{附录：原CPS与路径比背景的适用边界}
++\begin{frame}{附录 A：原CPS生成映射保持不变}
++\small
++对RF速度 $v_\theta(y,s)$，令
++\begin{equation}
++D_\theta(y,s)=y-sv_\theta(y,s),\qquad
++\widehat\varepsilon=y+(1-s)v_\theta(y,s).
++\end{equation}
++CPS 从 $s$ 到 $t<s$：
++\begin{equation}
++x_t=(1-t)D_\theta(y,s)+t\cos(\eta\pi/2)\widehat\varepsilon
+++t\sin(\eta\pi/2)\xi.
++\end{equation}
++$t=0$ 时得到确定性clean输出。该映射可以直接重放；不需要把最后一步当成有密度的Gaussian核。
++\takeaway{v30 不修改推理CPS、噪声强度或NFE；修改发生在在线估计和训练更新。}
++\end{frame}
++
++\begin{frame}{附录 B：正方差共同协方差核的比值}
++\small
++若两种辅助反向核确有共同正定协方差 $\Sigma_k$，且均值为 $\mu_a$，则
++\begin{equation}
++\log\frac{M_k^\theta(y'\mid y)}{M_k^{\rm ref}(y'\mid y)}
++=-\frac12\left[\|y'-\mu_\theta(y)\|_{\Sigma_k^{-1}}^2
++-\|y'-\mu_{\rm ref}(y)\|_{\Sigma_k^{-1}}^2\right].
++\end{equation}
++这是 v29 Gaussian核比与离散Girsanov型展开的代数起点。
++\begin{alertblock}{边界}
++协方差退化时不能直接套用；即使路径校正精确，也只恢复所定义辅助反向路径律。
++它是否对应真正前向后验仍需证明。本版MH不以此式作核心实现。
++\end{alertblock}
++\end{frame}
++
++\begin{frame}{附录 C：一致性正则的实际surrogate实现}
++\small
++将所需向量合并为
++\begin{equation}
++b_\lambda=\sg\!\left[
++\frac{(1-\lambda)\widehat m+\lambda D_\theta(y)-r}{n_\theta(y)}\right],
++\quad
++\widetilde L_\lambda=\frac12\operatorname{MSE}\left(D_\theta(y),\sg[D_\theta(y)-b_\lambda]\right).
++\end{equation}
++\begin{itemize}\itemsep4pt
++\item 目标分支整体停止梯度；只更新Student同一点预测。
++\item 原代码的有限性处理、梯度裁剪和Adam继续沿用。
++\item 方差命题针对裁剪前；非线性裁剪和优化器之后不能直接套同一系数。
++\item $n_\theta=0$等退化点需要数值处理，理想命题假定正归一化。
++\end{itemize}
++\end{frame}
++
++\begin{frame}{参考与可复现材料}
+ \footnotesize
+-\begin{block}{承接前面的核心思想：现在开始计算哪个量？}
+-由式 \eqref{eq:endpoint-recovery}，endpoint ratio 可由 path weight 的 bridge 条件平均恢复；式
+-\eqref{eq:path-weight} 给出 path weight 的定义。因此从本页开始，\textbf{进入实际计算阶段}：
+-我们实际计算每条 $P_{\rm ref}$ rollout 的 path weight $\Lambda_A$，再用它完成 Student 条件均值的路径空间估计。
+-\end{block}
+-\begin{block}{proposal 与 target}
+-\ensuremath{P_{\rm ref}} 产生的路径来自 $P_{\rm ref}$，但目标来自 Student $P_\theta$。重要性采样的基本修正是
+-\begin{equation}
+-\text{weight}=\frac{\text{目标密度}}{\text{提议密度}}.
+-\end{equation}
+-\end{block}
+-\begin{center}
+-\begin{tikzpicture}[node distance=8mm, every node/.style={font=\small},
+- box/.style={draw=deepblue,fill=softblue,rounded corners,align=center,inner sep=5pt,text width=38mm}]
+-\node[box] (q) {\ensuremath{P_{\rm ref}} 产生\\候选路径 $P_{\rm ref}$};
+-\node[box,right=of q] (ratio) {乘上\\$P_\theta/P_{\rm ref}$};
+-\node[box,right=of ratio] (p) {加权后\\回到 Student $P_\theta$};
+-\draw[-Latex,thick] (q)--(ratio)--(p);
+-\end{tikzpicture}
+-\end{center}
+-\begin{exampleblock}{为什么不能直接平均}
+-直接平均只得到 \ensuremath{P_{\rm ref}} 的终点均值；ratio 会把 \ensuremath{P_{\rm ref}} 更常走的地方降权，把 Student 更偏好的地方升权。
+-\end{exampleblock}
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-高斯密度中的残差是“实际下一步位置减去模型预测均值”。在同一个 \ensuremath{P_{\rm ref}} 小步上，分别用两种模型评价：
+-\begin{equation}\label{eq:residual-derivation}
+-\begin{aligned}
+-r_{a,k}&=Y_{k-1}-\bigl[Y_k+b_{a,k}(Y_k)\Delta\tau_k\bigr]\\
+-&=\underbrace{Y_{k-1}-Y_k}_{\Delta Y_k}-b_{a,k}(Y_k)\Delta\tau_k,
+-\qquad a\in\{\theta,\mathrm{ref}\}.
+-\end{aligned}
+-\end{equation}
+-$a=\theta$ 对应 Student，$a=\mathrm{ref}$ 对应 \ensuremath{P_{\rm ref}}；$\Delta Y_k=Y_{k-1}-Y_k$。两者评价同一个终点，但预测均值不同。
+-\begin{equation}\label{eq:gaussian-density}
+-\boxed{M_k^a(Y_{k-1}\mid Y_k)=
+-\frac{1}{(2\pi)^{d/2}|A_k\Delta\tau_k|^{1/2}}
+-\exp\!\left(-\frac12 r_{a,k}^{\top}(A_k\Delta\tau_k)^{-1}r_{a,k}\right).}
+-\end{equation}
+-\begin{block}{取对数}
+-\begin{equation}\label{eq:log-gaussian}
+-\log M_k^a=-\frac d2\log(2\pi)-\frac12\log|A_k\Delta\tau_k|
+--\frac12r_{a,k}^{\top}(A_k\Delta\tau_k)^{-1}r_{a,k}.
+-\end{equation}
+-两种核协方差相同，作差时前两项抵消，得到下一页的式 \eqref{eq:one-step-ratio}。
+-
+-$d$ 是状态维数，$A_k=G_kG_k^\top$，$|\cdot|$ 表示行列式；$a=\theta$ 对应 Student，$a=\mathrm{ref}$ 对应 \ensuremath{P_{\rm ref}}。
+-\end{block}
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-将两种核的对数密度相减；共同协方差使归一化项抵消，留下残差二次型之差：
+-
+-\begin{equation}\label{eq:one-step-ratio}
+-\log\rho_k\equiv\log\frac{M_k^\theta(Y_{k-1}\mid Y_k)}{M_k^\mathrm{ref}(Y_{k-1}\mid Y_k)}
+-=-\frac12\left[r_{\theta,k}^{\top}(A_k\Delta\tau_k)^{-1}r_{\theta,k}
+--r_{\mathrm{ref},k}^{\top}(A_k\Delta\tau_k)^{-1}r_{\mathrm{ref},k}\right].
+-\end{equation}
+-
+-一条路径包含 $K$ 个小步。将单步密度比相乘，得到整条路径的权重：
+-\begin{equation}
+-\Lambda_A^{(i)}=\prod_{k=1}^{K}
+-\frac{M_k^\theta(Y_{k-1}^{(i)}\mid Y_k^{(i)})}
+-{M_k^\mathrm{ref}(Y_{k-1}^{(i)}\mid Y_k^{(i)})}.
+-\end{equation}
+-相应的对数权重为：
+-\begin{equation}
+-\ell^{(i)}=\log\Lambda_A^{(i)}
+-=\sum_{k=1}^{K}\log\frac{M_k^\theta(Y_{k-1}^{(i)}\mid Y_k^{(i)})}
+-{M_k^\mathrm{ref}(Y_{k-1}^{(i)}\mid Y_k^{(i)})}.
+-\end{equation}
+-
+-\small 上式要求每一步的密度比存在。CPS 的零噪声末步是确定映射；若两模型末步不同，不能直接套高斯核比，需要单独处理终端映射或采用可评价的条件路径核。
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-离散核比已经能赋权。Girsanov 解释：在共同扩散下，为什么只调整漂移就能改变路径分布？
+-\begin{align}
+-\dd \bar Y_\tau&=b_{\rm ref}(\tau,\bar Y_\tau)\dd\tau+G_\tau\dd W_\tau^\mathrm{ref}
+-&&\text{proposal：}P_{\rm ref},\label{eq:ref-sde}\\
+-\dd \bar X_\tau&=b_\theta(\tau,\bar X_\tau)\dd\tau+G_\tau\dd W_\tau^\theta
+-&&\text{target：}P_\theta.\label{eq:student-sde}
+-\end{align}
+-这里 $\tau$ 是递增的采样时钟，$\tau_k=t-s_k$；$\bar Y_{\tau_k}=Y_k$、$\bar X_{\tau_k}=X_k$。实际模拟 \ensuremath{P_{\rm ref}}，在同一状态处评价两个漂移。
+-\begin{equation}\label{eq:u-definition}
+-\delta b_\tau=b_\theta(\tau,\bar Y_\tau)-b_{\rm ref}(\tau,\bar Y_\tau),\qquad
+-u_\tau=G_\tau^{-1}\delta b_\tau.
+-\end{equation}
+-\begin{block}{为什么把漂移差除以扩散矩阵}
+-$\delta b$ 表示 Student 比 \ensuremath{P_{\rm ref}} 每单位时间多移动多少；$u$ 用噪声尺度衡量这个差异。噪声很小时，同样的漂移差更难靠 proposal 的随机波动覆盖。
+-\end{block}
+-{\small 共同扩散是连续 Girsanov 的前提。本稿采用可逆 $G$，并要求绝对连续及适当可积性；例如 Novikov 条件是一个充分条件。}
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-\ensuremath{P_{\rm ref}} 的实际移动由两部分组成：预测的平均移动，以及随机偏移。
+-\begin{equation}
+-\Delta Y_k=b_{\mathrm{ref},k}(Y_k)\Delta\tau_k+G_k\sqrt{\Delta\tau_k}\,\varepsilon_k^\mathrm{ref}.
+-\end{equation}
+-\begin{block}{先减去 \ensuremath{P_{\rm ref}} 已经预测到的部分}
+-\begin{equation}\label{eq:innovation-detail}
+-r_{\mathrm{ref},k}=\Delta Y_k-b_{\mathrm{ref},k}(Y_k)\Delta\tau_k
+-=G_k\sqrt{\Delta\tau_k}\,\varepsilon_k^\mathrm{ref}.
+-\end{equation}
+-\end{block}
+-\begin{equation}\label{eq:whiten}
+-\Delta\widehat W_k=G_k^{-1}r_{\mathrm{ref},k},\quad
+-\Cov(\Delta\widehat W_k\mid Y_k)=\Delta\tau_kI,\qquad
+-\widehat\varepsilon_k=\frac{\Delta\widehat W_k}{\sqrt{\Delta\tau_k}}\sim\N(0,I).
+-\end{equation}
+-{\small 权重应判断“这次随机偏移是否更符合 Student”。直接使用 $\Delta Y_k$ 会把 \ensuremath{P_{\rm ref}} 的平均移动也当作随机残差；标准正态噪声与 布朗增量相差 $\sqrt{\Delta\tau_k}$。}
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-从式 \eqref{eq:one-step-ratio} 的高斯对数密度比出发，将 Student 残差写成 \ensuremath{P_{\rm ref}} 残差减去漂移差：
+-\begin{equation}
+-r_{\theta,k}=r_{\mathrm{ref},k}-\delta b_k \Delta\tau_k,\qquad
+-\delta b_k=b_{\theta,k}(Y_k)-b_{\mathrm{ref},k}(Y_k).
+-\end{equation}
+-\begin{equation}\label{eq:expanded-ratio}
+-\begin{aligned}
+-\log\rho_k
+-&=-\frac{(r_{\mathrm{ref},k}-\delta b_k\Delta\tau_k)^\top A_k^{-1}(r_{\mathrm{ref},k}-\delta b_k\Delta\tau_k)
+--r_{\mathrm{ref},k}^\top A_k^{-1}r_{\mathrm{ref},k}}{2\Delta\tau_k}\\
+-&=\delta b_k^\top A_k^{-1}r_{\mathrm{ref},k}
+--\frac12\delta b_k^\top A_k^{-1}\delta b_k \Delta\tau_k.
+-\end{aligned}
+-\end{equation}
+-\begin{block}{代入白化后的漂移差和 布朗增量}
+-\begin{equation}\label{eq:whitened-ratio}
+-\boxed{\log\rho_k=u_k^\top\Delta\widehat W_k-\tfrac12\|u_k\|^2\Delta\tau_k}
+-=\sqrt{\Delta\tau_k}\,u_k^\top\widehat\varepsilon_k-\tfrac12\|u_k\|^2\Delta\tau_k.
+-\end{equation}
+-\end{block}
+-式 \eqref{eq:expanded-ratio} 由式 \eqref{eq:one-step-ratio} 代入残差关系并展开二次型得到；接下来分别推导两项如何白化。
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-式 \eqref{eq:expanded-ratio} 的第二项衡量漂移差的大小。先用噪声尺度统一度量：
+-\begin{equation}
+-A_k=G_kG_k^\top,\qquad
+-A_k^{-1}=G_k^{-\top}G_k^{-1},\qquad
+-u_k=G_k^{-1}\delta b_k.
+-\end{equation}
+-\begin{block}{把矩阵二次型写成向量长度的平方}
+-\begin{equation}
+-\begin{aligned}
+-\delta b_k^\top A_k^{-1}\delta b_k
+-&=\delta b_k^\top G_k^{-\top}G_k^{-1}\delta b_k\\
+-&=(G_k^{-1}\delta b_k)^\top(G_k^{-1}\delta b_k)
+-=u_k^\top u_k=\|u_k\|^2.
+-\end{aligned}
+-\end{equation}
+-\end{block}
+-因此，第二项直接变为
+-\begin{equation}
+-\boxed{-\frac12\delta b_k^\top A_k^{-1}\delta b_k\Delta\tau_k
+-=-\frac12\|u_k\|^2\Delta\tau_k.}
+-\end{equation}
+-$G_k$ 为可逆扩散矩阵；$A_k$ 是单位时间协方差；$\delta b_k$ 是同一 $Y_k$ 处的 Student 减 \ensuremath{P_{\rm ref}} 漂移；$u_k$ 是白化漂移差。
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-式 \eqref{eq:expanded-ratio} 的第一项使用 \ensuremath{P_{\rm ref}} 实际小步中的随机残差：
+-\begin{equation}
+-\Delta Y_k=b_{\mathrm{ref},k}(Y_k)\Delta\tau_k
+-+G_k\sqrt{\Delta\tau_k}\,\varepsilon_k^\mathrm{ref},\qquad
+-r_{\mathrm{ref},k}=G_k\sqrt{\Delta\tau_k}\,\varepsilon_k^\mathrm{ref}.
+-\end{equation}
+-\begin{block}{代入残差，再用 $A_k^{-1}=G_k^{-\top}G_k^{-1}$}
+-\begin{equation}
+-\begin{aligned}
+-\delta b_k^\top A_k^{-1}r_{\mathrm{ref},k}
+-&=\delta b_k^\top G_k^{-\top}G_k^{-1}G_k
+-\sqrt{\Delta\tau_k}\,\varepsilon_k^\mathrm{ref}\\
+-&=(G_k^{-1}\delta b_k)^\top\sqrt{\Delta\tau_k}\,\varepsilon_k^\mathrm{ref}
+-=u_k^\top\Delta\widehat W_k.
+-\end{aligned}
+-\end{equation}
+-\end{block}
+-\begin{equation}
+-\Delta\widehat W_k=\sqrt{\Delta\tau_k}\,\varepsilon_k^\mathrm{ref}
+-=G_k^{-1}r_{\mathrm{ref},k},\qquad
+-\boxed{\log\rho_k=u_k^\top\Delta\widehat W_k
+--\frac12\|u_k\|^2\Delta\tau_k.}
+-\end{equation}
+-$\varepsilon_k^\mathrm{ref}\sim\N(0,I)$ 是 \ensuremath{P_{\rm ref}} 的标准正态噪声；$\Delta\widehat W_k$ 是对应 布朗增量，协方差为 $\Delta\tau_k I$。第一项衡量实际随机偏移与漂移差的对齐程度。
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-\begin{columns}[T,onlytextwidth]
+-\column{.48\textwidth}\begin{block}{随机对齐项}
+-\begin{equation}
+-u_k^\top\Delta\widehat W_k
+-\end{equation}
+-随机残差与漂移差同向时，Student 对这一步给出的相对密度更高，权重随之增大；反向时减小。
+-\end{block}
+-\column{.48\textwidth}\begin{exampleblock}{二次校正项}
+-\begin{equation}
+--\tfrac12\|u_k\|^2\Delta\tau_k
+-\end{equation}
+-漂移差越大，需要扣除的量越大。它让指数权重具有正确的归一化，不能省略。
+-\end{exampleblock}\end{columns}
+-\begin{equation}
+-\E_{P_{\rm ref}}\!\left[\exp\!\left(u_k^\top\Delta\widehat W_k-\tfrac12\|u_k\|^2\Delta\tau_k\right)\middle|Y_k\right]=1.
+-\end{equation}
+-\begin{block}{一维例子：同样的 drift gap，不同随机移动得到不同权重}
+-\begin{equation}
+-\Delta\tau_k=0.1,\quad G_k=1,\quad b_{\theta,k}-b_{\mathrm{ref},k}=2:
+-\qquad\log\rho_k=2r_{\mathrm{ref},k}-0.2.
+-\end{equation}
+-残差为 $0.3$ 时，log-weight 为 $0.4$；残差为 $-0.3$ 时，log-weight 为 $-0.8$。Student 更支持第一种移动。
+-\end{block}
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-\small
+-沿每条实际 \ensuremath{P_{\rm ref}} 路径，累加刚才得到的单步 log-weight：
+-\begin{equation}\label{eq:path-girsanov-discrete}
+-\ell^{(i)}=\sum_{k=1}^{K}\left[(u_k^{(i)})^\top\Delta\widehat W_k^{(i)}
+--\tfrac12\|u_k^{(i)}\|^2\Delta\tau_k\right],\qquad \Lambda_A^{(i)}=e^{\ell^{(i)}}.
+-\end{equation}
+-\begin{block}{当这些小步来自一个适定连续扩散的离散化}
+-\begin{equation}\label{eq:girsanov}
+-\Lambda_A=\frac{\mathrm dP_\theta}{\mathrm dP_{\rm ref}}
+-=\exp\!\left(\int_0^{\tau_*}u_\tau^\top\dd W_\tau^\mathrm{ref}
+--\frac12\int_0^{\tau_*}\|u_\tau\|^2\dd\tau\right).
+-\end{equation}
+-\begin{equation}\label{eq:change-of-measure}
+-\E_{P_\theta}[f(\bar X_{\tau_*})]=\E_{P_{\rm ref}}[\Lambda_A f(\bar Y_{\tau_*})].
+-\end{equation}
+-\end{block}
+-{\small 这就是赋权的用途：用 \ensuremath{P_{\rm ref}} 样本估计目标路径下的平均。高斯核比与离散 Girsanov 写法计算同一份权重，不能重复相乘。}
+-\sourceline{固定 CPS 随机强度未必存在有限扩散的连续极限；CPS 实现优先使用其实际离散核，上述连续式提供满足条件时的理论解释。}
+-\end{frame}
+-
+-\begin{frame}{步骤2.3：计算 \ensuremath{P_{\rm ref}} 到 Student 的重要性校正}
+-对 $N$ 条路径得到 $\ell^{(1)},\ldots,\ell^{(N)}$。先减去最大值 $\ell_{\max}$：
+-\begin{equation}
+-\widetilde w_i
+-=\frac{\exp(\ell^{(i)}-\ell_{\max})}
+-{\sum_{j=1}^N\exp(\ell^{(j)}-\ell_{\max})}.
+-\end{equation}
+-\begin{block}{归一化权重的含义}
+-\small
+-$\ell^{(i)}$ 衡量路径像 Student 的程度；$\ell_{\max}$ 只为数值稳定；$\widetilde w_i$ 是和为 1 的路径比例。
+-\end{block}
+-\begin{alertblock}{ESS：有效样本数}
+-\begin{equation}
+-\ESS=\left(\sum_i\widetilde w_i^2\right)^{-1}.
+-\end{equation}
+-ESS 衡量权重集中程度：全部权重相等时为 $N$；一条路径几乎占据全部权重时接近 $1$。它是常用的近似诊断量，不等于独立样本的精确数量。
+-\end{alertblock}
+-\end{frame}
+-
+-\begin{frame}{步骤3：得到 Student score 并替代 Fake}
+-查询通道满足
+-\begin{equation}
+-X_t=\alpha_tX_{\rm src}+\sigma_t\varepsilon,
+-\qquad \varepsilon\sim\N(0,I).
+-\end{equation}
+-在高斯查询模型下
+-\begin{equation}
+-s_\theta(x_t,t)=
+-\frac{\alpha_t m_{\theta,t}(x_t)-x_t}{\sigma_t^2}.
+-\end{equation}
+-所以 YYPF 估计器直接给出
+-\begin{equation}
+-\boxed{\widehat s_\theta(x_t,t)=
+-\frac{\alpha_t\widehat m_{\theta,t}(x_t)-x_t}{\sigma_t^2}}.
+-\end{equation}
+-\begin{block}{为什么不再训练 Fake}
+-Fake 原本就是为了近似 $m_{\theta,t}$。现在均值由当前 Student 路径律在线估计，Tweedie 公式只负责把均值转换成 RTDMD 需要的 score。
+-\end{block}
+-\end{frame}
+-
+-\begin{frame}{步骤3：得到 Student score 并替代 Fake}
+-\begin{enumerate}\itemsep3pt
+-\item 当前 Student 参数 $\theta_n$ 生成少步状态 $X_{\theta_n}$，构造 $x_t$。
+-\item 用随机化后的 \ensuremath{P_{\rm ref}} 生成 $N$ 条 proposal，累计离散 kernel ratio。
+-\item 归一化权重，计算 $\widehat m_{\theta_n,t}$ 和 $\widehat s_{\theta_n}$。
+-\item 与 \ensuremath{P_{\rm ref}} score 比较：
+-\begin{equation}
+-\Delta s_n=\operatorname{sg}\left[\widehat s_{\theta_n}(x_t,t)-s_\mathrm{ref}(x_t,t)\right].
+-\end{equation}
+-\item 用原 RTDMD generator gradient 更新 $\theta_n\to\theta_{n+1}$。
+-\end{enumerate}
+-\begin{block}{梯度边界}
+-建议对 proposal 路径、路径权重、加权均值和 target score 做 stop-gradient。参数更新后重新评价 transition，旧权重不能直接复用。
+-\end{block}
+-{\small YYPF 只替换 Fake score 的产生方式，后面的 RTDMD score gap 和更新保持不变。}
+-\end{frame}
+-
+-\begin{frame}{数值诊断：权重是否可信}
+-\begin{block}{有效样本数}
+-\begin{equation}
+-\ESS=\left(\sum_{i=1}^N\widetilde w_i^2\right)^{-1}.
+-\end{equation}
+-同时记录每一步 log-weight、漂移差范数和权重熵。
+-\end{block}
+-\begin{columns}[T,onlytextwidth]
+-\column{.48\textwidth}
+-\begin{exampleblock}{ESS 低通常意味着}
+-\ensuremath{P_{\rm ref}} 与 Student 差异过大、反向窗口太长、粒子数不足，或 $G_k$ 太小导致指数权重爆炸。
+-\end{exampleblock}
+-\column{.48\textwidth}
+-\begin{exampleblock}{可操作的改进}
+-增加粒子数；分段 rollout 与正确重采样；缩短反向窗口；让 \ensuremath{P_{\rm ref}} 更接近 Student；设计 bridge proposal。
+-\end{exampleblock}
+-\end{columns}
+-\begin{alertblock}{无法直接使用的情况}
+-支持不重叠、扩散不一致且没有可计算离散核比，或 Student transition 完全不可评价时，A 不能可靠执行。
+-\end{alertblock}
+-\end{frame}
+-
+-\begin{frame}{方案 A 的收益与代价}
+-\begin{columns}[T,onlytextwidth]
+-\column{.48\textwidth}
+-\begin{exampleblock}{收益}
+-\begin{itemize}\itemsep2pt
+-\item 不再维护一个滞后的独立 Fake 网络。
+-\item target score 每轮都由当前 Student 参数定义。
+-\item \ensuremath{P_{\rm ref}} rollout 可复用成熟随机 diffusion 的采样器。
+-\item 离散核比给出可执行、可诊断的基线。
+-\end{itemize}
+-\end{exampleblock}
+-\column{.48\textwidth}
+-\begin{alertblock}{代价}
+-\begin{itemize}\itemsep2pt
+-\item 每个查询点要生成多条 \ensuremath{P_{\rm ref}} 路径。
+-\item 权重可能退化，需监控 ESS。
+-\item 连续 Girsanov 对共同扩散和绝对连续有严格要求。
+-\item Student kernel 不可评价时，就无法计算该路径权重。
+-\end{itemize}
+-\end{alertblock}
+-\end{columns}
+-{\small 方案 A 省去 Fake 网络训练，但增加了路径采样的计算量，并需要控制重要性权重的方差。}
+-\end{frame}
+-
+-\begin{frame}{方案 A 的计算流程}
+-\begin{enumerate}\itemsep6pt
+-\item RTDMD 需要的是 Student 条件均值 $\E_\theta[X_{\rm src}\mid X_t=x_t]$，Fake 只是这个量的一个独立估计器。
+-\item 方案 A 用随机 \ensuremath{P_{\rm ref}} 产生候选，再用 Student/\ensuremath{P_{\rm ref}} 路径律比把均值纠正回 Student；离散核比是实现起点，Girsanov 是连续极限。
+-\item 接入位置就在 Fake score 输出处：$\widehat m\to\widehat s$ 后，后面的 RTDMD score gap 和参数更新保持原样。
+-\end{enumerate}
+-\vspace{3mm}
+-\begin{center}
+-\begin{tikzpicture}[node distance=4mm, every node/.style={font=\small},
+- box/.style={draw=deepblue,fill=softblue,rounded corners,align=center,inner sep=4pt,text width=27mm}]
+-\node[box] (p) {随机 proposal};
+-\node[box,right=of p] (w) {路径律校正};
+-\node[box,right=of w] (m) {条件均值};
+-\node[box,right=of m] (r) {RTDMD 更新};
+-\draw[-Latex,thick] (p)--(w);\draw[-Latex,thick] (w)--(m);\draw[-Latex,thick] (m)--(r);
+-\end{tikzpicture}
+-\end{center}
+-\sourceline{来源：用户提供的方案 A 论文、原 Beamer 和 YYPF 模板。}
+-\end{frame}
+-
++\begin{itemize}\itemsep5pt
++\item 用户提供的 \texttt{RTDMD\_SchemeA\_Reorganized\_Final\_CN\_v29.tex}：v30的背景、符号和原始方案来源。
++\item Cotter, Roberts, Stuart, White. \emph{MCMC Methods for Functions}. Statistical Science, 2013.
++\url{https://arxiv.org/abs/1202.0709}
++\item Snyder et al. \emph{Obstacles to High-Dimensional Particle Filtering}. Monthly Weather Review, 2008.
++\url{https://doi.org/10.1175/2008MWR2529.1}
++\item 实验入口：\texttt{train\_rtdmd\_pcmh\_sd3.py}；正则模块：\texttt{posterior\_consistency.py}。
++\item 报告：\texttt{logs/rtdmd-pcmh/comparison-v30/}；逐图评分、参数差异、SHA256与存储说明随代码包提供。
++\end{itemize}
++\end{frame}
+ \end{document}
+-\end{document}
+-\end{document}
