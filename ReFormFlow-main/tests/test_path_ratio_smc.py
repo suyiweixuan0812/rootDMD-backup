@@ -7,6 +7,7 @@ from flow_grpo.path_ratio_smc import (
     PathEvaluation, TemperingBudgetExceeded, annealed_path_smc, cps_mean,
     effective_sample_size, evaluate_teacher_path, gaussian_log_ratio_at,
     normalized_log_weights,
+    bf16_gaussian_log_mass, bf16_gaussian_log_ratio_at,
 )
 
 
@@ -34,6 +35,31 @@ class PathRatioTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             evaluate_teacher_path(torch.zeros(2,2,1),torch.ones(2,dtype=torch.long),
                 torch.zeros(1,1),.4,[1.,0.],.9,lambda x,s:x,lambda x,s:x)
+
+    def test_bf16_probability_mass_matches_normal_cell_integral(self):
+        x=torch.tensor([[.5,-.3]],dtype=torch.bfloat16)
+        lower=.5*(torch.nextafter(x,torch.full_like(x,-float('inf'))).double()+x.double())
+        upper=.5*(torch.nextafter(x,torch.full_like(x,float('inf'))).double()+x.double())
+        normal=torch.distributions.Normal(torch.tensor(.1,dtype=torch.float64),torch.tensor(.3,dtype=torch.float64))
+        expected=(normal.cdf(upper)-normal.cdf(lower)).log()
+        torch.testing.assert_close(bf16_gaussian_log_mass(x,torch.full_like(x,.1).double(),.3),
+            (torch.distributions.Normal(torch.full_like(x,.1).double(),.3).cdf(upper)
+             -torch.distributions.Normal(torch.full_like(x,.1).double(),.3).cdf(lower)).log(),atol=1e-10,rtol=1e-10)
+
+    def test_bf16_zero_cell_mass_stays_finite(self):
+        x=torch.zeros(1,2,dtype=torch.bfloat16)
+        value=bf16_gaussian_log_mass(x,torch.ones(1,2),.3)
+        self.assertTrue(torch.isfinite(value).all())
+        ratio=bf16_gaussian_log_ratio_at(x,torch.zeros(1,2),torch.ones(1,2),.3)
+        self.assertAlmostEqual(float(ratio),1/.3**2,places=8)
+
+    def test_bf16_identical_teacher_student_has_unit_path_ratio(self):
+        g=torch.Generator().manual_seed(72014)
+        e=torch.randn(32,3,2,generator=g)
+        result=evaluate_teacher_path(e,torch.arange(32)%3,torch.zeros(1,2),.4,[1.,.7,.3],.9,
+            lambda x,s:.4*x,lambda x,s:.4*x,state_dtype=torch.bfloat16)
+        self.assertEqual(result.source.dtype,torch.bfloat16)
+        torch.testing.assert_close(result.log_path_ratio,torch.zeros(32,dtype=torch.float64))
 
     def test_last_readout_is_student_not_teacher(self):
         e = torch.tensor([[[.4],[.2]],[[.8],[-.2]]],dtype=torch.float64)

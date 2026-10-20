@@ -52,10 +52,47 @@ def gaussian_log_ratio_at(value, target_mean, proposal_mean, std):
     return (-.5 * (a - b)).flatten(1).sum(1)
 
 
+def bf16_gaussian_log_mass(value, mean, std):
+    """Gaussian mass in the BF16 round-to-nearest cell, not density at value.
+
+    Ideal Gaussian innovations are assumed; finite-RNG/multiply rounding remains
+    a numerical approximation. Tiny cells use a midpoint evaluation with
+    standardized width*max(1,|center|)<1e-4 (relative error of order 1e-8).
+    """
+    if value.dtype != torch.bfloat16 or std <= 0 or not torch.isfinite(value).all():
+        raise ValueError('Need finite BF16 states and positive Gaussian standard deviation')
+    previous=torch.nextafter(value,torch.full_like(value,-float('inf'))).double()
+    following=torch.nextafter(value,torch.full_like(value,float('inf'))).double()
+    midpoint=value.double()
+    lower=.5*(previous+midpoint)
+    upper=.5*(following+midpoint)
+    if not torch.isfinite(lower).all() or not torch.isfinite(upper).all():
+        raise ValueError('Extreme overflow BF16 cells are outside this prototype')
+    width=(upper-lower)/std
+    center=(.5*(lower+upper)-mean.double())/std
+    lo=(lower-mean.double())/std
+    hi=(upper-mean.double())/std
+    tiny=width*torch.maximum(torch.ones_like(center),center.abs())<1e-4
+    # Right tails use survival probabilities to avoid subtracting values near 1.
+    large=torch.where(lo>=0,torch.special.log_ndtr(-lo),torch.special.log_ndtr(hi))
+    small=torch.where(lo>=0,torch.special.log_ndtr(-hi),torch.special.log_ndtr(lo))
+    delta=(small-large).clamp(max=0)
+    cdf_difference=large+torch.log(-torch.expm1(delta))
+    midpoint_mass=width.log()-.5*center.square()-.5*math.log(2*math.pi)
+    return torch.where(tiny,midpoint_mass,cdf_difference)
+
+
+def bf16_gaussian_log_ratio_at(value,target_mean,proposal_mean,std):
+    difference=(bf16_gaussian_log_mass(value,target_mean,std)
+                -bf16_gaussian_log_mass(value,proposal_mean,std))
+    return difference.flatten(1).sum(1)
+
+
 @torch.no_grad()
 def evaluate_teacher_path(innovations, stops, observation, sigma_observation,
                           positive_sigmas, eta, student_velocity, teacher_velocity,
-                          initial_mean=None, target_stop_probs=None, proposal_stop_probs=None):
+                          initial_mean=None, target_stop_probs=None, proposal_stop_probs=None,
+                          state_dtype=None):
     """Map iid Gaussian innovations through a *Teacher* prefix and weigh it.
 
     innovations: [N,K,...], with K strictly positive generator sigma nodes.
@@ -77,22 +114,29 @@ def evaluate_teacher_path(innovations, stops, observation, sigma_observation,
     sample = innovations[:, 0]
     shift = torch.zeros_like(sample) if initial_mean is None else torch.broadcast_to(initial_mean, sample.shape)
     sample = sample + shift
-    initial_ratio = (.5 * shift.double().square() - sample.double() * shift.double()).flatten(1).sum(1)
+    quantized=state_dtype==torch.bfloat16
+    if state_dtype is not None:
+        sample=sample.to(state_dtype)
+    initial_ratio = (bf16_gaussian_log_ratio_at(sample,torch.zeros_like(shift),shift,1.) if quantized
+        else (.5 * shift.double().square() - sample.double() * shift.double()).flatten(1).sum(1))
     cumulative = torch.zeros(n, device=sample.device, dtype=torch.float64)
     reads, prefixes = [], []
     for k, s in enumerate(grid):
         student = student_velocity(sample, s)
-        reads.append(sample - s * student)
+        x=sample.float() if quantized else sample
+        student=student.to(x.dtype)
+        reads.append((x - s * student).to(sample.dtype))
         prefixes.append(cumulative)
         if k + 1 == count:
             break  # Shared Student clean readout: NO terminal Gaussian ratio.
         t = grid[k + 1]
-        teacher = teacher_velocity(sample, s)
-        target_mean = cps_mean(sample, student, s, t, eta)
-        proposal_mean = cps_mean(sample, teacher, s, t, eta)
+        teacher = teacher_velocity(sample, s).to(x.dtype)
+        target_mean = cps_mean(x, student, s, t, eta)
+        proposal_mean = cps_mean(x, teacher, s, t, eta)
         std = t * math.sin(eta * math.pi / 2)
-        proposed = proposal_mean + std * innovations[:, k + 1]
-        cumulative = cumulative + gaussian_log_ratio_at(proposed, target_mean, proposal_mean, std)
+        proposed = (proposal_mean + std * innovations[:, k + 1]).to(sample.dtype)
+        ratio_function=bf16_gaussian_log_ratio_at if quantized else gaussian_log_ratio_at
+        cumulative = cumulative + ratio_function(proposed, target_mean, proposal_mean, std)
         sample = proposed
     rows = torch.arange(n, device=sample.device)
     source = torch.stack(reads, dim=1)[rows, stops]

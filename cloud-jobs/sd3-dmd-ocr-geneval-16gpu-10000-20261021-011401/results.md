@@ -2,10 +2,10 @@ OCR / GenEval：SD3-Medium，无奖励 DMD，每套 16 卡、10000 步。
 
 | 数据集 | 状态 | 已核实步数 | CLIP Score | Aesthetic Score | Pick Score | HP Score |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| ocr | Running | 85 | 待完成 | 待完成 | 待完成 | 待完成 |
+| ocr | Running | 725 | 待完成 | 待完成 | 待完成 | 待完成 |
 | geneval | Queueing | — | 待完成 | 待完成 | 待完成 | 待完成 |
 
-更新时间：2026-10-21T01:18:45.991472+08:00。
+更新时间：2026-10-21T01:28:54.416193+08:00。
 
 两个任务分别使用原始 SD3-Medium 初始化；原生 OCR / GenEval 专项分数不在本次四项指标内。
 
