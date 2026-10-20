@@ -21,6 +21,7 @@ ENTRIES = {
     'adaptive_bridge_time': ('scripts/train_rtdmd_path_is_adaptive_bridge_sd3.py', 'config/rtdmd_path_is_adaptive_bridge.py:adaptive_bridge_time', []),
     'last': ('scripts/train_rtdmd_path_is_last_sd3.py', 'config/rtdmd_path_is_last.py:last', []),
     'last_time': ('scripts/train_rtdmd_path_is_last_sd3.py', 'config/rtdmd_path_is_last.py:last_time', []),
+    'last_q2_time': ('scripts/train_rtdmd_path_is_query_views_sd3.py', 'config/rtdmd_path_is_query_views.py:last_q2_time', []),
 }
 
 

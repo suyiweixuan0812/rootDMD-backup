@@ -104,12 +104,14 @@ def comparisons(names, suffix, cases=None):
 
 
 def main():
-    record('WAITING_FOR_ALL_TWELVE_PREDECLARED_DEV_TRIALS')
+    record('WAITING_FOR_ALL_FOURTEEN_PREDECLARED_DEV_TRIALS')
     while True:
         statuses = [read(R/p).get('status') for p in ['deterministic-cohort-progress.json',
-                    'adaptive-extension-progress.json', 'last-innovation-extension-progress.json']]
+                    'adaptive-extension-progress.json', 'last-innovation-extension-progress.json',
+                    'query-view-extension-progress.json']]
         if statuses == ['ALL_FACTORIAL_AND_CONTROL_DEV_TRIALS_COMPLETED',
-                        'BOTH_ADAPTIVE_DEV_TRIALS_COMPLETED', 'BOTH_LAST_INNOVATION_DEV_TRIALS_COMPLETED']:
+                        'BOTH_ADAPTIVE_DEV_TRIALS_COMPLETED', 'BOTH_LAST_INNOVATION_DEV_TRIALS_COMPLETED',
+                        'BOTH_QUERY_VIEW_DEV_TRIALS_COMPLETED']:
             break
         if 'CASE_FAILED' in statuses:
             raise RuntimeError('Dev cohort requires repair before any selection')

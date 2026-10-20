@@ -6,9 +6,14 @@ import json
 from pathlib import Path
 
 CASES = ['dmd', 'dmd_fp32', 'base', 'time', 'paired', 'paired_time',
-         'bridge', 'bridge_time', 'adaptive_bridge', 'adaptive_bridge_time', 'last', 'last_time']
+         'bridge', 'bridge_time', 'adaptive_bridge', 'adaptive_bridge_time', 'last', 'last_time',
+         'last_q2_time', 'paired_q2_time']
 METRICS = ['CLIP Score', 'Aesthetic Score', 'Pick Score', 'HP Score']
-CONTROLS = {'dmd', 'dmd_fp32', 'paired', 'paired_time'}
+CONTROLS = {'dmd', 'dmd_fp32', 'paired', 'paired_time', 'paired_q2_time'}
+
+
+def paired_control(case):
+    return 'paired_q2_time' if case == 'last_q2_time' else 'paired_time' if case.endswith('time') else 'paired'
 
 
 def select(root):
@@ -34,19 +39,19 @@ def select(root):
     qualifying = [r for r in rows if r['eligible']]
     pool = qualifying or [r for r in rows if not r['is_control']]
     chosen = max(pool, key=lambda r: r['selection_rank'])
-    faithful = [r for r in rows if r['case'] in {'base', 'time', 'last', 'last_time'}]
+    faithful = [r for r in rows if r['case'] in {'base', 'time', 'last', 'last_time', 'last_q2_time'}]
     faithful_pool = [r for r in faithful if r['eligible']] or faithful
     faithful_choice = max(faithful_pool, key=lambda r: r['selection_rank'])
     return dict(frozen_utc=datetime.now(timezone.utc).isoformat(),
                 status='QUALIFIED_DEV_CANDIDATE' if qualifying else 'NO_QUALIFIED_DEV_CANDIDATE',
                 interpretation=('The selected candidate requires independent test validation.' if qualifying else
                                 'No path method met all predeclared guards. The best-ranked path method is evaluated for diagnosis only.'),
-                selected_case=chosen['case'], paired_control='paired_time' if chosen['case'].endswith('time') else 'paired',
+                selected_case=chosen['case'], paired_control=paired_control(chosen['case']),
                 pure_teacher_alternative=dict(case=faithful_choice['case'], eligible=faithful_choice['eligible'],
-                    paired_control='paired_time' if faithful_choice['case'].endswith('time') else 'paired',
+                    paired_control=paired_control(faithful_choice['case']),
                     role='Same predeclared ranking restricted to pure Teacher mappings; additional fidelity comparison if primary selected proposal is bridged; never replaces primary selection by test results'),
                 reference=reference, trials=rows, dev_report_sha256=hashes,
-                selection_inputs='Only the twelve predeclared deterministic seed42 DrawBench64 reports; no PickScore2048/holdout138 scores.')
+                selection_inputs='Only the fourteen predeclared deterministic seed42 DrawBench64 reports; no new candidate PickScore2048/holdout138 scores.')
 
 
 def main():

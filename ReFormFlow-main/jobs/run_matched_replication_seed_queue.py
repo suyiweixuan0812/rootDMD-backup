@@ -49,9 +49,10 @@ while queue or running:
             completed.append(case)
             continue
         with (Path('/rootDMD')/f'path-is-det-{case}-seed{a.seed}.log').open('w') as stream:
+            launcher = 'jobs/run_deterministic_comparison_trial_v4.sh' if case in {'last_q2_time','paired_q2_time'} else 'jobs/run_deterministic_comparison_trial_v3.sh'
             running[case] = subprocess.Popen(['timeout', '--signal=TERM', '--kill-after=30s',
                 str(int(deadline-time.time()-180)), 'bash',
-                'jobs/run_deterministic_comparison_trial_v3.sh', case, str(a.seed)], cwd=root,
+                launcher, case, str(a.seed)], cwd=root,
                 stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
     record()
     if running:

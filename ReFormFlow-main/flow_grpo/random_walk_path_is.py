@@ -16,13 +16,15 @@ from .conditional_path_is import ConditionalISResult
 @torch.no_grad()
 def conditional_random_walk_sweep(reference, stops, evaluate, *, num_particles=8,
                                   auxiliary_scale=.003, block_size=None, generator=None,
-                                  bank_policy='uniform'):
+                                  bank_policy='uniform', gaussian_mean=None, gaussian_std=1.):
     if num_particles < 2 or auxiliary_scale <= 0:
         raise ValueError('Need at least two particles and a positive scale')
     if bank_policy not in {'uniform', 'last'}:
         raise ValueError('Unknown innovation-bank policy')
     if bank_policy == 'last' and block_size is None:
         raise ValueError('Last-bank sampling requires an explicit coordinate block')
+    if gaussian_std <= 0:
+        raise ValueError('Gaussian reference scale must be positive')
     batch = reference.shape[0]
     center = reference + auxiliary_scale * torch.randn(reference.shape, device=reference.device,
                                                        dtype=reference.dtype, generator=generator)
@@ -47,7 +49,9 @@ def conditional_random_walk_sweep(reference, stops, evaluate, *, num_particles=8
     # Subtract the shared phi(reference) before summing: no large full-norm
     # subtraction, no artificial dimension normalization of the true weights.
     delta = particles.double()-reference[:, None].double()
-    prior_correction = -.5*(delta.square()+2*reference[:, None].double()*delta).flatten(2).sum(2)
+    shifted = reference.double() if gaussian_mean is None else reference.double()-gaussian_mean.double()
+    prior_correction = -.5*((delta/gaussian_std).square()+
+        2*(shifted[:, None]/gaussian_std)*(delta/gaussian_std)).flatten(2).sum(2)
     log_weight = base_weight+prior_correction
     weights = log_weight.softmax(1)
     sources = value.source.reshape((batch, num_particles)+value.source.shape[1:])
