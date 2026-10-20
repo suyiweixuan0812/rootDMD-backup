@@ -1,0 +1,128 @@
+保留 Teacher/Student 路径比的修正与本轮验证
+========================================
+本轮：2026-10-21（北京时间）。优先PickScore/HPS提升，兼顾CLIP/Aesthetic，8小时上限。
+这是正在验证的方法修订；此前MH与PCMH成绩不能当成本方法的实验结果。
+
+一、哪些内容保留，哪些必须修改
+
+保留：Teacher生成候选路径；同一路径逐步评价Student/Teacher转移概率比；
+归一化粒子权重求条件均值；Tweedie接口；不训练Fake；原Student推理CPS和NFE=4。
+必要修订：共同Student确定性末端读出、显式前向观测似然、条件参考轨迹与局部候选。
+proposal改为完整生成器正噪声轨迹，而非原稿从查询点直接反向到Teacher clean端点。
+因此保留了真实路径比，但不是原稿每个采样步骤的逐字复现。
+不能同时坚持“两个不同确定性终端的普通Gaussian核比”和严格绝对连续；需要上述修改。
+
+二、明确目标与可计算路径比
+
+固定当前theta、提示词c、观测y及噪声sigma。生成器正噪声网格s0>...>sK-1>0。
+Student训练源是随机停止J的clean prediction：X=D_theta(x_{J-1},s_{J-1})。
+在完整Teacher候选路径H上，只保留J之前的Student密度；J之后的Teacher辅助后缀归一化积分为1。
+Student源前缀密度 p_theta(H_J,J)=pJ(J)*phi(x0)*prod_{k=1}^{J-1}M_theta(xk|xk-1)。
+Teacher proposal qT(H_J,J|y)=qJ(J)*q0(x0|y)*prod_{k=1}^{J-1}M_T(xk|xk-1)。
+末端统一使用当前Student D_theta；不计算D_theta与D_T的Dirac核比。
+
+观测仍为 y=alpha X+sigma eps，alpha=1-sigma，eps标准Gaussian。
+L(y|X) proportional exp[-||y-alpha X||^2/(2 sigma^2)]，所有事件维度求和。
+后验未归一化密度 gamma(H_J,J;y)=p_theta(H_J,J)*L(y|D_theta(xJ-1))。
+重要性权重为
+ w=(pJ/qJ)*(phi/q0)*prod(M_theta/M_T)*L。
+本轮qJ=pJ均匀、q0=phi，前两项为1，但代码显式支持并验证它们。
+若J=1，正噪声转移为空，路径比为空积1，不能伪造末步比来让每轮看起来都有路径权重。
+先验归一化和Bayes公式直接给出m_theta(y)=E_qT[w D_theta]/E_qT[w]。
+这条后验对应不依赖“任意网络反向CPS刚好是真正前向反演”的额外假设。
+
+三、Teacher和Student确实评价同一条路径
+
+正噪声CPS核的均值
+ mu_a(x;s,t)=(1-t)[x-s v_a(x,s)]+t cos(eta*pi/2)[x+(1-s)v_a(x,s)]，
+标准差nu=t sin(eta*pi/2)>0。Teacher采样x'，Student与Teacher均在相同x上评价mu。
+连续状态下log(M_theta/M_T)=-.5 sum[((x'-mu_theta)/nu)^2-((x'-mu_T)/nu)^2]。
+本轮Teacher proposal CFG=1；用于score gap的冻结Teacher CFG仍为4.5。
+二者使用相同冻结权重，但属于不同guidance策略，论文符号须区分M_T,prop与s_ref。
+不把CFG1的提议核误称为CFG4.5参考score的同一分布。
+
+四、BF16量化不是普通连续密度
+
+网络与潜变量状态保持BF16。量化后某个状态b对应一个舍入区间[a(b),b(b)]，
+转移质量为prod_d [Phi((upper_d-mu_d)/nu)-Phi((lower_d-mu_d)/nu)]。
+代码用FP64 log-CDF稳定计算，并对极小区间使用有控制的中点数值近似。
+只把连续Gaussian密度代入已量化的状态，不能声称实现了严格的离散核比。
+本轮Teacher创新改用FP64，避免FP32消去造成某些BF16目标单元无法被重放。
+Student源的有限RNG及FP32创新乘加仍有数值误差；理论针对Gaussian舍入单元模型，
+不宣称计算机有限RNG分布与理想测度逐比特一致。中间状态及最后读出均逐次核验。
+Teacher提议精度的变化不是给Student终端增加噪声，也不改变推理NFE。
+
+五、为什么仅修正密度仍不能解决ESS
+
+真实SD3 65536维诊断中，无条件Teacher候选N=8，即使核比算对，ESS仍接近1。
+观测似然的log跨度可达几万到几十万，低噪声尤其严重；proposal没有覆盖后验。
+减最大log权重不能增加覆盖。截权、平方和改均值、最终温度停在beta<1会改变目标。
+退火SMC测试控制渐进权重，但16阶段预算在真实网络上未必能到beta=1。
+预算未完成时原型抛出错误并记录最后beta，不把它冒充目标后验。
+解析Gaussian64维、N64测试中退火SMC有改善，但计算约9280次而非64次；
+同预算IS也有改善，8维时同预算IS更好。解析测试不证明SD3质量或效率提升。
+
+六、局部条件重要性重采样：保留w本身
+
+生成真实Student前缀H*，再用它独立Gaussian加噪生成y。
+由Bayes公式，H*在给定y后已是正确后验参考，J也有正确的条件分布。
+将该前缀转换到Teacher创新E的表示。在连续核下使用Gaussian逆映射；
+BF16量化是多对一，必须从TeacherGaussian的对应舍入区间内采样创新，不能只取区间中心。
+未使用未来创新从标准Gaussian补全。这样E*对应正确的增广后验
+ Pi(E,J|y) proportional phi(E)*qJ(J)*w(E,J;y)。
+
+固定J和所选16个活跃坐标，其余E坐标不变。设delta in (0,1)，rho=sqrt(1-delta^2)。
+先采辅助中心 C|E*=N(rho E*,delta^2 I)。
+候选E_i|C独立取N(rho C,delta^2 I)，并把E*本身作为第一个候选。
+由于phi(E)q(C|E)=phi(C)q(E|C)，增广目标除以候选proposal后仍只留下w(E,J)。
+因此权重仍然是原Student/Teacher路径比乘观测似然，没有把它替换为Metropolis接受比。
+按归一化w抽一个路径作为下一参考，并用所有候选的加权读出做Rao-Blackwell均值估计。
+这是条件i-SIR，仍属于MCMC/相关粒子方法；不能把“没有MH接受步骤”写成“没有MCMC”。
+与原稿独立SNIS的区别是：含一个正确后验参考，候选局部相关，需要增广不变性证明。
+固定J的更新保持联合后验，但不会混合J；依赖初始J来自正确成对轨迹。
+Student参数更新后必须重新生成参考；旧轨迹和任意初始化都不能套平稳证明。
+
+七、不变性和均值性质的证明范围
+
+给定C,J，参考E*的条件目标 proportional q(E|C)*w(E,J)。
+将当前参考和N-1个q(E|C)候选组成池，按w重采样，是该条件目标的i-SIR不变核。
+再对C积分，保持Pi(E,J|y)不变；随机选块只依赖未变J，选择概率正反向一致。
+加权读出是下一后验参考读出的条件期望，故在正确平稳初始化下
+ E[m_hat|y,c,sigma,theta]=m_theta(y)。
+这是理想模型下的条件期望恒等式，不是一次估计精确，也不是N个独立后验样本。
+给定单条参考轨迹或单次辅助中心，不能声称m_hat无偏；上式还对正确参考的条件分布取平均。
+低噪声可能权重仍集中于参考，必须同时报告候选权重ESS、参考概率、实际移动与位移。
+
+八、训练接口、正则与公平性
+
+仍采用原稿同一查询点的Student clean Jacobian，以避免成对源Jacobian与估计器的相关项。
+这是此前已明确的surrogate解释；不是原DMD源Jacobian的等价严格KL梯度。
+主候选lambda=.25，关闭正则lambda=0作消融；正则改变期望更新，不能把它的收益算成粒子改善。
+SD3-Medium、512、seed42、batch1、LoRA32/64、LR3e-5、教师score CFG4.5、
+CPSeta=.9、四步、1000外层轮/100次生成器更新、EMA等继承单卡DMD。
+Teacher proposal CFG1、16坐标局部核、N8与2次重采样、提议创新精度是本轮明确的新设置。
+不训练Fake；训练算力不能声称与DMD相等，推理NFE仍4。
+训练仍用完整PickScore train25432；独立DrawBench64用于开发选择；最终同PickScore2048报告。
+最终test在前轮已被查看，因此外部泛化仍需独立提示词和多训练种子进一步验证。
+
+九、实现与结果路径
+
+flow_grpo/path_ratio_smc.py：真实路径比、共享Student读出、BF16质量与退火SMC诊断原型。
+flow_grpo/conditional_path_is.py：截断Gaussian参考提升、增广条件i-SIR和真实移动诊断。
+flow_grpo/diffusers_patch/sd3_conditional_path_is.py：SD3回放、batch1字段、位精确参考核验。
+scripts/train_rtdmd_path_is_sd3.py、config/rtdmd_path_is_pickscore.py：独立训练入口。
+scripts/score_rtdmd_path_is_images.py：相同保存PNG四指标。
+jobs/run_path_ratio_round1_trial.sh：训练/开发集评分/证据落盘。
+logs/path-ratio-round1/source-manifest.json：启动时冻结的代码、数据、配置SHA256及40项测试记录。
+logs/path-ratio-round1/evidence/：开发结果与实际配置；最终PickScore结果另存并明确标注。
+logs/path-ratio-round1/WORKLOG_CN.txt：运行状态、预算和恢复信息，非完成声明。
+完整新PNG/LoRA暂存/dev/shm，重启会丢失；选定结果需复制权重与样本到项目磁盘。
+
+参考（只支持通用方法，不把标准技巧当原创）
+Del Moral, Doucet, Jasra (2006), Sequential Monte Carlo samplers.
+https://www.stats.ox.ac.uk/~doucet/delmoral_doucet_jasra_sequentialmontecarlosamplersJRSSB.pdf
+Beskos, Crisan, Jasra, On the Stability of Sequential Monte Carlo Methods in High Dimensions.
+https://arxiv.org/abs/1103.3965
+Ruiz, Titsias, Cemgil, Doucet (2021), Unbiased gradient estimation for variational auto-encoders using coupled Markov chains.
+https://proceedings.mlr.press/v161/ruiz21a/ruiz21a.pdf
+其ISIR/DISIR是相关粒子通用依据；本轮的共同读出、观测校正、参考提升及核选择需按上文单独证明。
