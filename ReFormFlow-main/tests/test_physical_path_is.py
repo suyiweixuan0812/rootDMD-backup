@@ -1,5 +1,5 @@
 import torch
-from flow_grpo.physical_path_is import lift_physical_gaussian_cell, evaluate_last_physical_state
+from flow_grpo.physical_path_is import lift_physical_gaussian_cell,evaluate_last_physical_state,round_bf16_exact
 from flow_grpo.path_ratio_smc import bf16_gaussian_log_mass
 from flow_grpo.random_walk_path_is import conditional_random_walk_sweep
 
@@ -15,6 +15,16 @@ def test_physical_lift_preserves_zero_and_tiny_cells_with_nonzero_mean():
     u = lift_physical_gaussian_cell(x, mean, .4)
     assert torch.equal(u.to(torch.bfloat16), x)
     assert torch.isfinite(u).all()
+
+
+def test_true_bf16_rounding_handles_midpoint_neighborhood_and_large_lift():
+    boundary=1.00390625
+    x=torch.tensor([boundary-1e-10,boundary,boundary+1e-10],dtype=torch.float64)
+    assert torch.equal(round_bf16_exact(x),torch.tensor([1.,1.,1.0078125],dtype=torch.bfloat16))
+    torch.manual_seed(91)
+    values=(.7+.6*torch.randn(65536)).to(torch.bfloat16)
+    u=lift_physical_gaussian_cell(values,torch.full_like(values,.7,dtype=torch.float32),.4)
+    assert torch.equal(round_bf16_exact(u),values)
 
 
 def test_physical_sampler_matches_enumerated_bf16_posterior():

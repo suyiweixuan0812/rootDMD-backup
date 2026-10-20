@@ -69,3 +69,4 @@ tests/*
 !tests/test_last_innovation_cache.py
 !tests/test_query_views.py
 !tests/test_physical_path_is.py
+!tests/test_rounding_partition.py
