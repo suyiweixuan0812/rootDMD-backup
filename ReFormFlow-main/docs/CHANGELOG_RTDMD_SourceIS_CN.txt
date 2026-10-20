@@ -1,0 +1,34 @@
+本次已完成的改动与实际结论
+==========================
+
+数学处理：
+1. 保留原 DMD 无噪声末步，不计算此处不存在的 Gaussian 路径核比。
+2. 用 Student 实际源分布乘以前向 Gaussian 观测似然，定义真正的条件后验。
+3. 在生成器初始噪声空间使用教师引导的 Gaussian 提议，计算精确的 prior/proposal 比。
+4. 用8候选的自归一化重要性采样估计均值，替代原 fake clean prediction。
+   有限候选估计有偏，不能声称无偏或精确；本版不同于原论文反向CPS路径比。
+
+代码：
+- 新增 source_posterior.py、独立训练/配置/启动脚本、四指标评分与比较报告脚本。
+- 原 DMD 训练代码和配置未修改；仅 .gitignore 纳入本次数学测试文件。
+- 新增6项通过的数学/数值测试，以及1至4096维的解析后验验证程序。
+- 原模型、分辨率、bf16、LoRA、学习率、EMA、随机停止、CPS、CFG、数据集和评估协议沿用。
+- 保持1000外层轮/100次生成器更新，取消Fake训练；计算量不等同于DMD。
+- 新增候选数8、教师噪声提议偏移系数0.01；磁盘限制下仅在1000轮保存checkpoint。
+- 训练源/候选初始Gaussian统一先采float32再转bf16；这是相对旧基线的数值实现差异。
+
+实际结果：
+- 单卡A100已完成1000轮和全部2048条测试提示词的四指标评估；任务退出码0。
+- 四项均低于相同单卡DMD：不能报告为方法优于DMD。
+- ESS均值1.095097/8，96%更新ESS<2，后验估计存在严重权重退化。
+- 数学积分目标可说明清楚，但少量候选在高维下不足以保证准确近似。
+- 原论文仍不能因这次修正实验而被视为已验证；这次结果也不等于否定所有可能的改进实现。
+- 最终LoRA的382个张量全部有限，lora_B平方范数2.622918，确认生成器已更新。
+- 原云端16卡10000轮任务不是这张比较表的对照。
+
+文件：
+- 数学推导：docs/RTDMD_SourceIS_Math_CN.txt。
+- 运行和查看：RUN_RTDMD_SOURCE_IS_CN.txt。
+- 比较结果：logs/rtdmd-source-is/comparison-1000/RESULTS_CN.txt、comparison.csv、summary.json。
+- 逐图评分与PNG：各方法 eval/step-1000/。
+- 生成器LoRA：logs/rtdmd-source-is/sd3-medium-rtdmd-source-is-train/checkpoints/checkpoint-1000/lora/generator/。

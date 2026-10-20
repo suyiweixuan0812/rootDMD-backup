@@ -1,0 +1,3 @@
+-r requirements-dmd-eval.txt
+# Diagnostic report plot only; training hyperparameters are unchanged.
+matplotlib==3.10.9
