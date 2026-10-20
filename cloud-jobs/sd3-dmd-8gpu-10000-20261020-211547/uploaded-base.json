@@ -1,0 +1,201 @@
+{
+  "bucket": "c20250506",
+  "prefix": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547",
+  "files": [
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/LICENSE",
+      "size": 7420,
+      "etag": "759a11bd79623524a2432ce070fdb7ff"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/model_index.json",
+      "size": 706,
+      "etag": "f3117045b073a30ea726bdbecf66b4c4"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/README.md",
+      "size": 7429,
+      "etag": "bdc25b7e438feba2fb0802fb06aacb02"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/vae/config.json",
+      "size": 739,
+      "etag": "958ff524b28604c787d97ac8f32d420c"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/transformer/config.json",
+      "size": 372,
+      "etag": "d049a795dbc00dfd4c4eb4bed5067d02"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer_3/tokenizer_config.json",
+      "size": 20617,
+      "etag": "f7d4beda83e15d26d09cb2985f326f3d"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer_3/spiece.model",
+      "size": 791656,
+      "etag": "9d15ef55d09d5a425ceb63fa31f7cae3"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer_3/tokenizer.json",
+      "size": 2424035,
+      "etag": "b4fb0a1ed2d74dd9e8e0567157fac7a7"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer_3/special_tokens_map.json",
+      "size": 2543,
+      "etag": "9583322ae544dfbdb0001350ab4c3fd9"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer_2/vocab.json",
+      "size": 1059962,
+      "etag": "a3933521163a0e76cee6094f1d72a9cc"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer_2/tokenizer_config.json",
+      "size": 856,
+      "etag": "a834bab13c9978fdae01a17ff3fbd228"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer_2/special_tokens_map.json",
+      "size": 576,
+      "etag": "4b03ede6e4c92422857cc0579e7379c7"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer_2/merges.txt",
+      "size": 524619,
+      "etag": "d2bc10797e70c920c14c69729ecdab34"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer/tokenizer_config.json",
+      "size": 705,
+      "etag": "96e74f87da5f9a1a11865cf9f459b215"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer/vocab.json",
+      "size": 1059962,
+      "etag": "a3933521163a0e76cee6094f1d72a9cc"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer/special_tokens_map.json",
+      "size": 588,
+      "etag": "1d6d6932ef3f2a924c78b9106a95b422"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/tokenizer/merges.txt",
+      "size": 524619,
+      "etag": "d2bc10797e70c920c14c69729ecdab34"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/vae/diffusion_pytorch_model.safetensors",
+      "size": 167666654,
+      "etag": "4d77930a95bf3c46d3ac63b6b0ec7c70-3"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/text_encoder_3/model.safetensors.index.json",
+      "size": 19885,
+      "etag": "ebfc181cf184f4dc9cfffebaeae24d06"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/text_encoder_3/config.json",
+      "size": 740,
+      "etag": "1f8cdb03b05864c9ff9d55c45b24b603"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/text_encoder_2/model.safetensors",
+      "size": 1389382176,
+      "etag": "4ccb1e33f599729ffe162933cbf3dc27-21"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/text_encoder_2/config.json",
+      "size": 570,
+      "etag": "b9f9a2a78363a0d0bfcd5f3a856f09b0"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/text_encoder/model.safetensors",
+      "size": 247323896,
+      "etag": "45d01e5a6098401e8b3601d44a5aac13-4"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/text_encoder/config.json",
+      "size": 574,
+      "etag": "cb8610240c6180d19407252754810dd0"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/scheduler/scheduler_config.json",
+      "size": 141,
+      "etag": "62bb19a6515117c3cfa806b622acbd49"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--yuvalkirstain--PickScore_v1/refs/main",
+      "size": 40,
+      "etag": "f19b3df3eab9825d6c1c49352f7dd1d7"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/transformer/diffusion_pytorch_model.safetensors",
+      "size": 4169981408,
+      "etag": "7be0d2bbcd388cf244d6184d403dde61-63"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--yuvalkirstain--PickScore_v1/snapshots/a4e4367c6dfa7288a00c550414478f865b875800/config.json",
+      "size": 4514,
+      "etag": "e5ebb4210981fd6371baa7c5dac482ca"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/refs/main",
+      "size": 40,
+      "etag": "0377c023cf0cef7a3d55ca6b3caf7d12"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/snapshots/1c2b8495b28150b8a4922ee1c8edee224c284c0c/preprocessor_config.json",
+      "size": 316,
+      "etag": "c38a9d064dc6ee42cb6e50f8b11e3539"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/snapshots/1c2b8495b28150b8a4922ee1c8edee224c284c0c/merges.txt",
+      "size": 524618,
+      "etag": "8de90acebb1cf72b02b0d86c310a66f1"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/snapshots/1c2b8495b28150b8a4922ee1c8edee224c284c0c/config.json",
+      "size": 4725,
+      "etag": "c6fec724d797c766ac4a4f73a1403118"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/snapshots/1c2b8495b28150b8a4922ee1c8edee224c284c0c/tokenizer_config.json",
+      "size": 904,
+      "etag": "5216dfc7125b2bf1ee0edabbf3cc8111"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/snapshots/1c2b8495b28150b8a4922ee1c8edee224c284c0c/tokenizer.json",
+      "size": 2224041,
+      "etag": "6e752903438a2c91818ee57466621634"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/snapshots/1c2b8495b28150b8a4922ee1c8edee224c284c0c/special_tokens_map.json",
+      "size": 389,
+      "etag": "c05624787db53245d5a2241c746b874c"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/snapshots/1c2b8495b28150b8a4922ee1c8edee224c284c0c/vocab.json",
+      "size": 862328,
+      "etag": "0696eca5cb3d1001f19b4f9ca390cefe"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/text_encoder_3/model-00002-of-00002.safetensors",
+      "size": 4530066248,
+      "etag": "fd3191727e4b105b184ae4309650dab7-68"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium/text_encoder_3/model-00001-of-00002.safetensors",
+      "size": 4994582104,
+      "etag": "068972f1e0283b77dfa8b898d0d95fa3-75"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--yuvalkirstain--PickScore_v1/snapshots/a4e4367c6dfa7288a00c550414478f865b875800/model.safetensors",
+      "size": 3944552236,
+      "etag": "a8f4fe09f457222456c96797b672fd66-59"
+    }
+  ]
+}

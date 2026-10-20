@@ -102,7 +102,7 @@ def check_rewards(rewards, root, hf_cache, home):
             errors += package_errors(["image-reward"])
             errors.append("ImageReward cache is not validated by this checker; prepare and verify it separately")
         for filename in files:
-            path = Path(root) / "reward_ckpts" / filename
+            path = Path(os.environ.get("REWARD_CKPT_PATH", str(Path(root) / "reward_ckpts"))) / filename
             if not path.is_file():
                 errors.append(f"Missing reward checkpoint: {path}")
     return errors

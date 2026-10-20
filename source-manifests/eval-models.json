@@ -1,0 +1,77 @@
+[
+  {
+    "repo": "openai/clip-vit-large-patch14",
+    "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "name": "config.json",
+    "path": "/dev/shm/dmd-eval-weights/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/config.json"
+  },
+  {
+    "repo": "openai/clip-vit-large-patch14",
+    "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "name": "merges.txt",
+    "path": "/dev/shm/dmd-eval-weights/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/merges.txt"
+  },
+  {
+    "repo": "openai/clip-vit-large-patch14",
+    "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "name": "model.safetensors",
+    "path": "/dev/shm/dmd-eval-weights/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/model.safetensors",
+    "sha256": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb",
+    "size": 1710540580,
+    "pointerSize": 135
+  },
+  {
+    "repo": "openai/clip-vit-large-patch14",
+    "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "name": "preprocessor_config.json",
+    "path": "/dev/shm/dmd-eval-weights/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/preprocessor_config.json"
+  },
+  {
+    "repo": "openai/clip-vit-large-patch14",
+    "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "name": "special_tokens_map.json",
+    "path": "/dev/shm/dmd-eval-weights/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/special_tokens_map.json"
+  },
+  {
+    "repo": "openai/clip-vit-large-patch14",
+    "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "name": "tokenizer.json",
+    "path": "/dev/shm/dmd-eval-weights/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/tokenizer.json"
+  },
+  {
+    "repo": "openai/clip-vit-large-patch14",
+    "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "name": "tokenizer_config.json",
+    "path": "/dev/shm/dmd-eval-weights/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/tokenizer_config.json"
+  },
+  {
+    "repo": "openai/clip-vit-large-patch14",
+    "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "name": "vocab.json",
+    "path": "/dev/shm/dmd-eval-weights/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/vocab.json"
+  },
+  {
+    "repo": "xswu/HPSv2",
+    "revision": "697403c78157020a1ae59d23f111aa58ced35b0a",
+    "name": "HPS_v2.1_compressed.pt",
+    "path": "/dev/shm/dmd-eval-weights/reward_ckpts/HPS_v2.1_compressed.pt",
+    "sha256": "c57a38fb4a2f7e7c15bf00da2ea377cdf165448b4dd1052a484c215a998c9837",
+    "size": 1972490005,
+    "pointerSize": 135
+  },
+  {
+    "repo": "laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
+    "revision": "1c2b8495b28150b8a4922ee1c8edee224c284c0c",
+    "name": "open_clip_pytorch_model.bin",
+    "path": "/dev/shm/dmd-eval-weights/reward_ckpts/open_clip_pytorch_model.bin",
+    "sha256": "9a78ef8e8c73fd0df621682e7a8e8eb36c6916cb3c16b291a082ecd52ab79cc4",
+    "size": 3944692325,
+    "pointerSize": 135
+  },
+  {
+    "url": "https://raw.githubusercontent.com/christophschuhmann/improved-aesthetic-predictor/main/sac+logos+ava1-l14-linearMSE.pth",
+    "path": "/dev/shm/dmd-eval-weights/reward_ckpts/sac+logos+ava1-l14-linearMSE.pth",
+    "size": 3714759,
+    "sha256": "21dd590f3ccdc646f0d53120778b296013b096a035a2718c9cb0d511bff0f1e0"
+  }
+]
