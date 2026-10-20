@@ -163,3 +163,41 @@ gradnorm .6557433与.6560907不同，后续BF16轨迹放大差异。
 时间权重候选omega(sigma)=.30/sigma，使用JD=-sigma*Jv消除显式Jacobian sigma因子。
 .30仅按已有训练梯度选择，在原固定状态上预测裁剪9%/12%，接近DMD10%/14%。
 真实新轨迹会改变，必须重新记录实际裁剪和指标；它改变surrogate时间加权，不改变路径后验。
+
+十三、桥接 Teacher 提议：基础比值保留，并补上明确的提议校正
+
+真实SD3诊断发现：长前缀即使观测噪声很大，仍可能由路径先验核比退化主导。
+例如某J4,sigma=.95候选池，Student/Teacher log比跨度约102，观测log似然跨度不足1。
+仅增加S2到S8、或扩大坐标块，不能系统消除这种提议错配。
+
+增强版在同一父状态x上构造v_Q=v_T+gamma*(v_theta-v_T)，使用同一正方差CPS。
+Q仍是可计算Gaussian核，目标保持Student路径先验乘实际观测似然。
+新权重必须是
+  w_Q=(pJ/qJ)*(phi/q0)*prod[(M_theta/M_T)*(M_T/Q)]*L
+     =(pJ/qJ)*(phi/q0)*prod(M_theta/Q)*L。
+代码记录基础Student/Teacher比及Teacher/Q校正，但直接计算合并后的log(Student/Q)，避免大数相消。
+只换提议却仍使用原Student/Teacher比会得到错误后验，新增解析测试明确检查这一点。
+gamma=0精确退化为Teacher-only提议；gamma=1是Student提议极限控制。
+
+连续理想Gaussian模型、相同协方差、固定父状态下，CPS均值对velocity线性：
+ mu_Q=(1-gamma)*mu_T+gamma*mu_theta。
+ KL(M_theta||Q)=(1-gamma)^2*KL(M_theta||M_T)。
+同初始分布、同停止点规则下，路径KL可按链式法则对上述条件KL求和。
+BF16量化只可用数据处理上界，不能把同一缩减比例直接说成量化路径KL的等式；
+更不能把先验KL缩减当成后验ESS或图像指标保证。
+
+开发采样诊断要求长路径使用更接近Student的提议：J<=2 gamma=.90，J>=3 gamma=.99。
+这只依赖已知、核中固定的J与sigma，保持条件不变性；没有按当前粒子权重自适应gamma。
+每次更新对实际Student参考，按该Q的Gaussian舍入单元重新提升创新并逐位检查读出。
+候选条件i-SIR与Rao-Blackwell步骤保持；固定J仍不混合停止点。
+
+sigma>=.9时使用4096坐标块，其余16；基础尺度仍.05，创新半径上限.5。
+上限约束辅助创新提议，Student CPS eta=.9和确定性终端读出继续保持原值。
+这是改变提议机制的增强版：实际重要性比为Student/Q，并明确分解成基础S/T与T/Q校正。
+Teacher在长前缀提议中的占比降为1%，短前缀为10%；目标Teacher score的CFG4.5保持。
+不能把这个增强版说成纯Teacher rollout或原稿逐步复现；纯Teacher-only代码和数据均保留。
+
+新增检查覆盖：gamma0恢复原提议、gamma1比值为1、分解恒等式、解析前向后验、
+BF16精确重放、漏校正后的错误后验、以及连续核KL关系。
+真实诊断恢复了部分此前冻结候选池的ESS和实际加权方差收益；低噪声仍可能冻结。
+这些诊断不等于PickScore/HPS提升，正式质量对照按冻结的确定性队列另做。
