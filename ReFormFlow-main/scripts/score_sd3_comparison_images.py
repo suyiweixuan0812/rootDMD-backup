@@ -47,6 +47,8 @@ def write_report(run_dir, folder, step, records, metrics):
     time_weight = config.get("posterior_time_weight", {"mode": "none"})
     if config.get("method_name") == "rtdmd_paired_source_ablation":
         label = "Paired-source control"
+    elif config.get("method_name") == "rtdmd_adaptive_bridged_conditional_path_is":
+        label = "Adaptive bridged Path-IS; past KL budget=.25"
     elif config.get("method_name") == "rtdmd_bridged_conditional_path_is":
         label = "Bridged Path-IS; gamma(J)=0.90/0.99"
     elif config.get("method_name") == "dmd_fp32_observation_control":

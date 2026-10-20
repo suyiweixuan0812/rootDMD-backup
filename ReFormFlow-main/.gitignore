@@ -63,3 +63,5 @@ tests/*
 !tests/test_query_time_weight.py
 
 !tests/test_bridged_path_is.py
+
+!tests/test_adaptive_bridge.py
