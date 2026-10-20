@@ -11,7 +11,15 @@
     "path-is-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed43-pick2048-exact/final-metrics.json",
     "sd3-det-dmd-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42/final-metrics.json",
     "sd3-det-dmd_fp32-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42/final-metrics.json",
-    "sd3-det-base-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-base-seed42/final-metrics.json"
+    "sd3-det-base-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-base-seed42/final-metrics.json",
+    "sd3-det-paired-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-paired-seed42/final-metrics.json",
+    "sd3-det-paired_time-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-paired_time-seed42/final-metrics.json",
+    "sd3-det-time-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-time-seed42/final-metrics.json",
+    "sd3-det-bridge-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42/final-metrics.json",
+    "sd3-det-bridge_time-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge_time-seed42/final-metrics.json",
+    "sd3-det-adaptive_bridge-seed42": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-adaptive_bridge-seed42/final-metrics.json",
+    "dmd-seed42-10000-pick2048": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-seed42-10000-pick2048/final-metrics.json",
+    "path-is-seed42-10000-pick2048": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed42-10000-pick2048/final-metrics.json"
   },
   "report_sha256": {
     "dmd-ema-dev64-exact": "1971f7320167e81e50b2ec68be633445f61abe7c4532d86234bade180705e440",
@@ -25,7 +33,15 @@
     "path-is-seed43-pick2048-exact": "cc5e7260269f1cc0d1a4b879f598f2189d02ebce8f80cccf024bb8573de5067a",
     "sd3-det-dmd-seed42": "166f55fdd8dfaa5640ba5c0fd6f50509f52f2ab981c63f2352b4205aa5bd70b2",
     "sd3-det-dmd_fp32-seed42": "b5429a3e142a750ad8b70d55c6af56070474c48ebeb1783d0199572ea67c30bf",
-    "sd3-det-base-seed42": "58fc460c5881ac3d3be43a379e8c7e8343ebcfa6501c18eb342adc223c01c7e3"
+    "sd3-det-base-seed42": "58fc460c5881ac3d3be43a379e8c7e8343ebcfa6501c18eb342adc223c01c7e3",
+    "sd3-det-paired-seed42": "c5bed351af3c2b46d3911199f2dff48b3b2e328c1c3aa3086b22d7b329138b2d",
+    "sd3-det-paired_time-seed42": "91e0fbaffbbd852ffd932f9acabb44246dc7b3bf6f46301d0fdeac6997b9600f",
+    "sd3-det-time-seed42": "e738edf6099cbef981c7d21364505439ac9ddd075d01c91743a04fdb97e5d8a4",
+    "sd3-det-bridge-seed42": "b54b1cef3f48cffea19289a98667e720cdc6677f67b0e712d57d754f7069c346",
+    "sd3-det-bridge_time-seed42": "5197b15e6bd2254f82d0784d24cf22f7482c2b867ffc381e61d90dab79f1c294",
+    "sd3-det-adaptive_bridge-seed42": "311df395275587950ca91362e943e548c81d3314081719295d1458daf379649b",
+    "dmd-seed42-10000-pick2048": "96c2a58cd9cb3ae6f25aa68ceb380feedbb7b05ad89d376b5d960d21a622470a",
+    "path-is-seed42-10000-pick2048": "29fc3b983afc649a9f47fa9b88a6a2a76492d6ebf6f403c060e0029c94154020"
   },
   "validation_table_groups": [
     {
@@ -39,7 +55,7 @@
       ]
     },
     {
-      "title_contains": "完整测试：同",
+      "title_contains": "首轮完整测试：同",
       "names": [
         "dmd-ema-pick2048-exact",
         "path-is-selected-pick2048-exact"
@@ -59,7 +75,25 @@
       "names": [
         "sd3-det-dmd-seed42",
         "sd3-det-dmd_fp32-seed42",
-        "sd3-det-base-seed42"
+        "sd3-det-base-seed42",
+        "sd3-det-paired-seed42",
+        "sd3-det-paired_time-seed42"
+      ]
+    },
+    {
+      "title_contains": "确定性开发集：采样与时间细节",
+      "names": [
+        "sd3-det-time-seed42",
+        "sd3-det-bridge-seed42",
+        "sd3-det-bridge_time-seed42",
+        "sd3-det-adaptive_bridge-seed42"
+      ]
+    },
+    {
+      "title_contains": "原路径版长训练确认：10000轮",
+      "names": [
+        "dmd-seed42-10000-pick2048",
+        "path-is-seed42-10000-pick2048"
       ]
     }
   ],
@@ -137,7 +171,7 @@
       1500
     ]
   },
-  "source_sha256": "0082f24137ab2500a0e1843cc35413b7f14f85dcfb2e3f973d2be87684f04e49",
+  "source_sha256": "97f8708dd880611485ab30ef1961a40ec4f33fa647fd98b5ee5e9a01f9a78eaa",
   "computed_values": [
     {
       "title_contains": "两组训练种子",
@@ -218,6 +252,131 @@
       "title_contains": "长路径采样诊断",
       "value": "0.02436",
       "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "2.89",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "17.5",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "57",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "11",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "45",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "1.82",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "59.3",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "70",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "18",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "54",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "1.56",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "98.9",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "82",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "16",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "58",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "1.28",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "72.4",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "87",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "26",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "39",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "1.63",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "53.3",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "78",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "25",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
+    },
+    {
+      "title_contains": "长训练中的提议漂移",
+      "value": "87",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json"
     }
   ],
   "source_artifacts": {
@@ -228,6 +387,11 @@
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-innovation-extension-plan.json": "0ce9f3947af1a0025537071343a753c1073b08f5c747004a25090e4be56d4f28",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-innovation-cache-audit.json": "941e046601818f41b595d6ecc6f98114d59a9d640aecda8fe6aac90bc3d54b50",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-last-innovation-geometry-diagnostics/diagnostics.json": "575393f625058949e7b437393a42d8b7bdf9da17d212dbebb1aa5b5b75dfd3d5",
-    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-last-innovation-radius2-diagnostics/diagnostics.json": "6036270f96377cec90e0542c08b9fe063fa980679c9b6d0d6bfbe0ae109cfd90"
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-last-innovation-radius2-diagnostics/diagnostics.json": "6036270f96377cec90e0542c08b9fe063fa980679c9b6d0d6bfbe0ae109cfd90",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/training-drift-long/training-drift.json": "5ffb9fc6444a939faaa25c8b5ca5501a0453cbecf41b460b5a3344232fd70278",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/query-view-detail-plan.json": "b667853f6a0a9c4fb907614b6cb6301db7bd22fb6115639f57b6023fa14facab",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/cpu-loading-runtime-change.json": "b09d68eae7fd5fc3d2f021f19f93f5f409b0bc3491bb61641e2223cd01ce6e7f",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/scoring-numeric-source-audit-v31.json": "b9766440cb846fa1a827e7d0ea59a58539bce93a621287aad6c6c0eae4ddf310",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-inverse-repair-record.json": "8c377462b8e6a1da90990322a6b7e1496ce16966bd9642963f90cda0de1d622b"
   }
 }

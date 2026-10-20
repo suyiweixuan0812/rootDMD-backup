@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 R = ROOT/'logs/path-ratio-round1'
 OUT = ROOT.parent
 CASES = ['dmd', 'dmd_fp32', 'base', 'time', 'paired', 'paired_time',
-         'bridge', 'bridge_time', 'adaptive_bridge', 'adaptive_bridge_time', 'last', 'last_time']
+         'bridge', 'bridge_time', 'adaptive_bridge', 'adaptive_bridge_time', 'last', 'last_time', 'last_q2_time', 'paired_q2_time']
 ENTRIES = {
     'base': ('scripts/train_rtdmd_path_is_details_sd3.py', 'config/rtdmd_path_is_details.py:time', ['--config.posterior_time_weight.mode=none']),
     'time': ('scripts/train_rtdmd_path_is_details_sd3.py', 'config/rtdmd_path_is_details.py:time', []),
@@ -98,6 +98,8 @@ def main():
         '3. 条件参考：从本次 Student 成对源构造正确后验参考，以条件 i-SIR 和 Rao-Blackwell 均值替代独立高维 SNIS；仍属相关 MCMC。',
         '4. BF16 状态按 Gaussian 舍入单元质量计算比，提议创新用 FP64，并逐次检查共同读出重放。有限 RNG/算术仍是理想核的近似。',
         '5. 新增 lambda=.10 的一致性细节改变期望更新；可选 .30/sigma 时间权重改变 surrogate 时间加权，不能说原目标完全未改。',
+        '7. 最后正方差块使用物理 Gaussian 坐标和直接 BF16 舍入，修复极小单元逆变换与两次舍入问题；通用创新实现配套正确的后验保护分区。',
+        '8. 双查询选项固定源与时间，对两个独立观测的梯度取平均后只裁剪/更新一次；查询计算约加倍，有相同计算量无粒子对照。',
         '6. 同查询 Jacobian 避免与成对参考相关的源 Jacobian 问题；它是本文明确的 surrogate，不宣称等价于原 DMD 源梯度的完整 KL。',
         '', '本轮固定开发候选：'+best+'；开发守门状态：'+selection['status'],
     ]
@@ -130,7 +132,7 @@ def main():
         '旧 seed42 上升、旧 seed43 下降的结果均保留；旧 MH/PCMH 是不同方法，不能冒充本轮路径比成绩。',
         '参考链两次未移动不等于加权均值不变；候选池权重 ESS 不等于独立后验样本 ESS。',
         '每项提示词 bootstrap 仅反映给定训练模型的提示词抽样误差，不代表训练种子稳定性。',
-        '59项数学/数值测试通过；真实A100训练、原生FP32 LoRA和评分数值路径另有审计。',
+        '68项数学/数值测试通过；真实A100训练、原生FP32 LoRA和评分数值路径另有审计。',
         '当前入口明确限制单卡/batch1，建议先确认多种子收益与粒子额外贡献，再做2–4卡同步/批处理验证；不直接启动16卡。',
         '', '四、文件位置',
         '更新论文：'+str(OUT/'RTDMD_v31.tex')+' 与 '+str(OUT/'RTDMD_v31.pdf'),
@@ -155,7 +157,7 @@ def main():
             '原始DMD入口未替换：'+str(ROOT/'scripts/train_dmd_sd3.py'), '',
             '在现有开发机项目环境重新训练（run_name需始终唯一，避免覆盖）：',
             'cd '+str(ROOT), 'source jobs/local_env.sh',
-            'export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1', shlex.join(command), '',
+            'export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1', shlex.join(command), '',
             '保存的EMA权重可直接评测，不再做额外EMA运算：',
             shlex.join(['bash', 'jobs/evaluate_loaded_path_checkpoint_v2.sh', str(R/'archived-checkpoints'/f'sd3-det-{best}-seed42-ema1000/lora/generator'),
                         'rtdmd-v31-user-pick2048-seed42', 'dataset/pickscore', '2048', 'RTDMD-v31']), '',

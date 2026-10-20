@@ -48,10 +48,11 @@
 \begin{document}
 \maketitle
 
+
 \begin{frame}{本版保留什么，必须改动什么}
 \small
 \begin{block}{保留方法主线}
-教师路径提议 $\to$ 同一路径的 Student/Teacher 转移概率比 $\to$
+以 Teacher 为参照的路径提议 $\to$ 同一路径的 Student/Teacher 比（改变提议时补校正）$\to$
 归一化粒子加权均值 $\to$ Tweedie score 接口 $\to$ Student 更新。
 不训练 Fake；Student 推理沿用四步 CPS。
 \end{block}
@@ -349,15 +350,18 @@ N&=8,\quad \text{条件更新次数}=2,\quad B=16,\\
 \begin{frame}{同一查询点的 Student Jacobian：保留并说明 surrogate 边界}
 \small
 令 $D=D_\theta(y,\sigma,c)$，$r=y-\sigma v_{\rm ref}(y,\sigma,c)$。
-本轮按原稿式 (2) 的同一查询点解释，使用
+共享 Tweedie 比例为 $\widehat s-s_{\rm ref}=\alpha(\widehat m-r)/\sigma^2$。
+以下写代码实际采用的 clean-gap 时间加权 surrogate：
 \begin{equation}
-g_0=\big[J_\theta D\big]^\top\frac{\widehat m-r}{n_\theta(y)},\quad
+g_0=\big[J_\theta D\big]^\top\frac{\widehat m-r}{d\,n_\theta(y)},\quad
 n_\theta(y)=\operatorname{mean}|D-r|.
 \end{equation}
 \begin{itemize}\itemsep5pt
 \item 给定 $y,c,\sigma,\theta$，Jacobian 与归一化因子是确定的，避免与成对源参考的相关项。
+\item 按原稿式(2)在查询噪声时刻反传；原DMD从生成源读出反传，两者梯度输入/时刻不同。
 \item 若改为对原成对源 $F_\theta(H^*)$ 反传，其 Jacobian 与参考粒子一般相关，不能直接复用无偏均值结论。
 \item 目标分支停止梯度，原梯度裁剪与 AdamW 继续使用。
+\item $d$ 为 MSE 均值的元素数；公式假定 $0<n_\theta(y)<\infty$ 且未触发数值清理分支。
 \end{itemize}
 \begin{alertblock}{明确的方法边界}
 这是同一查询点 clean prediction 的 surrogate；不是严格证明的原 DMD 源 Jacobian 或完整 KL 梯度等价式。
@@ -369,7 +373,7 @@ n_\theta(y)=\operatorname{mean}|D-r|.
 令 $\lambda=\lambda(\sigma)$ 在给定噪声后是确定量：
 \begin{equation}
 g_\lambda=G\left[(1-\lambda)\widehat m+\lambda D-r\right],\qquad
-G=\frac{[J_\theta D]^\top}{n_\theta(y)}.
+G=\frac{[J_\theta D]^\top}{d\,n_\theta(y)}.
 \end{equation}
 理想条件均值成立时，给定 $y,c,\sigma,\theta$，裁剪前有
 \begin{align}
@@ -441,20 +445,20 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
 4 & Path-IS, $\lambda=.5(1-\sigma)$ & 26.5994 & 5.4924 & 21.4137 & 25.9958 \\\bottomrule\end{tabular}
 \par\raggedright\vspace{4pt}
 原 PickScore 训练、seed42、NFE=4；其余外部配置相同。
-两组附加正则细节在前两组开发成绩之后提出，尚未使用本轮最终测试成绩选择。
+两组附加正则细节在前两组开发成绩之后提出，尚未使用首轮完整测试成绩选择。
 \begin{alertblock}{解读}
 优先两项偏好指标共同提升，同时检查 CLIP/Aesthetic；单项更高不能代表全部目标更好。
 采样器不变的 $\lambda$ 消融用于区分正则收益，不能把所有增益都归因于 ESS。
 \end{alertblock}
 \end{frame}
-\begin{frame}{完整测试：同 2048 条 PickScore 提示词}
+\begin{frame}{首轮完整测试：同 2048 条 PickScore 提示词}
 \small\centering
 \begin{tabular}{clrrrr}\toprule
 NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
 4 & DMD & 25.5374 & 5.9152 & 20.3478 & 27.2742 \\
 4 & Path-IS, $\lambda=.10$ & 25.6359 & 6.0100 & 20.6187 & 27.8866 \\\bottomrule\end{tabular}
 \par\raggedright\vspace{5pt}
-相同保存 PNG 评分协议；推理 NFE=4。最终候选在开发集上选择，选择记录随结果保存。
+相同保存 PNG 评分协议；推理 NFE=4。首轮候选在开发集上选择，选择记录随结果保存。
 此前 Source-IS、MH、PC-MH 的数值属于旧方法，不列入本版主方法成绩。
 \begin{alertblock}{结论的证据范围}
 若某项下降，原样报告。单次训练不能证明普遍优于 DMD；提示词区间也不能替代多训练种子。
@@ -589,6 +593,23 @@ D_\theta(y,\sigma)&=y-\sigma v_\theta(y,\sigma),\qquad J_\theta D=-\sigma J_\the
 \end{itemize}
 \end{frame}
 
+\begin{frame}{为什么直接增加少量粒子难以解决高维失配}
+\small
+连续单步等协方差 Gaussian 的精确计算：令
+$a=\|\mu_S-\mu_T\|^2/\nu^2$，$W=M_S/M_T$，则
+\begin{align}
+\log W\mid M_T&\sim\N(-a/2,a),\\
+\E_{M_T}[W]&=1,\quad \E_{M_T}[W^2]=e^a,
+\quad\mathrm{CV}^2(W)=e^a-1.
+\end{align}
+\begin{itemize}\itemsep5pt
+\item 小的逐坐标均值差也会累加到 $a$；权重方差可迅速增长。
+\item 这是固定父状态的理想单步公式，不是非线性整条 BF16 路径的闭式 ESS 公式。
+\item 把8粒子增加几倍不保证覆盖目标高概率区域；16张卡也不会自动修复提议失配。
+\item 后续两条细节路线：修正提议以减小失配，或固定更多上下文只做可控的条件平均。
+\end{itemize}
+\end{frame}
+
 \begin{frame}{保留路径比主线的扩展：显式修正桥接提议}
 \small
 Teacher-only 版本保留为 $\gamma=0$ 基线。可选改进使用同一正方差 CPS 核：
@@ -679,7 +700,7 @@ C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
 \item 单独改对称辅助、仍随机选创新层时，四个 $J=4$ SD3 诊断池仍 ESS=1；保留此负结果。
 \item 固定最后层后，同组诊断 ESS 约6.25--7.51；更大半径2未带来一致方差收益，采用 $.5$。
 \item 更早前缀与 $J$ 不混合，因此只部分 Rao--Blackwell 化；不能把这一采样改善等同于完整后验方差已消除。
-\item 不变前缀的网络输出可缓存，但每次先逐张量检查父状态相同；模型每次参数更新后重新建缓存。
+\item 不变前缀网络输出只算一次；原缓存版本逐张量检查父状态相同。物理坐标实现直接固定前缀，逐查询重建。
 \item 八个真实 SD3 查询池的 ESS、核比、移动和方差在缓存前后逐位一致；吞吐数字需另做隔离基准。
 \end{itemize}
 \end{frame}
@@ -687,7 +708,7 @@ C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
 \begin{frame}{新对照的选型与独立验证规则}
 \small
 \begin{itemize}\itemsep5pt
-\item 十二组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
+\item 十四组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
 \item 同时匹配原 DMD 和 FP32 观测噪声 DMD；逐指标取两者较大值作为开发参考。
 \item Pick/HPS 均需上升，CLIP 不低于参考 $-.10$、Aesthetic 不低于 $-.03$；排序预先固定。
 \item 无粒子的成对源仅是归因对照，不能替代所请求的路径比方法。
@@ -702,8 +723,113 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
 4 & DMD & 25.5532 & 5.4187 & 21.0938 & 24.8702 \\
 4 & DMD, FP32 query & 25.3443 & 5.4192 & 21.2014 & 25.6207 \\
 4 & Path-IS & 25.9538 & 5.4955 & 21.3902 & 26.1820 \\
+4 & One-source control & 25.8043 & 5.5246 & 21.3958 & 26.2622 \\
+4 & One-source + time & 26.2199 & 5.5053 & 21.3663 & 26.1140 \\
 \bottomrule\end{tabular}\par\raggedright\vspace{6pt}
 仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。
+\end{frame}
+\begin{frame}{确定性开发集：采样与时间细节}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & Path-IS + time & 26.0342 & 5.5059 & 21.3972 & 26.2307 \\
+4 & Bridge & 26.3688 & 5.5182 & 21.4673 & 26.4020 \\
+4 & Bridge + time & 26.0968 & 5.4042 & 21.3031 & 25.7041 \\
+4 & Past-KL bridge & 26.4519 & 5.4606 & 21.4091 & 25.8204 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。
+\end{frame}
+\begin{frame}{原路径版长训练确认：10000轮}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & DMD & 26.3654 & 5.9860 & 21.0344 & 30.2767 \\
+4 & Path-IS & 14.1075 & 3.7627 & 16.1528 & 8.8609 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+原先固定的 $\lambda=.10$、Teacher-only、无时间权重；双方10000轮/1000次生成器更新。此组 CUDA 后向未启用新确定性设置，不能与新队列混为同组。
+\end{frame}
+\begin{frame}{长训练中的提议漂移：直接来自训练日志}
+\scriptsize\centering
+Teacher-only 原路径版；每行统计截至所列轮次的最近1000轮（100次生成器更新）。
+\begin{tabular}{rrrrrr}\toprule
+截至轮次 & ESS/8 & 路径比跨度 & 链冻结\% & DMD裁剪\% & Path裁剪\%\\\midrule
+1000 & 2.89 & 17.5 & 57 & 11 & 45 \\
+3000 & 1.82 & 59.3 & 70 & 18 & 54 \\
+5000 & 1.56 & 98.9 & 82 & 16 & 58 \\
+8000 & 1.28 & 72.4 & 87 & 26 & 39 \\
+10000 & 1.63 & 53.3 & 78 & 25 & 87 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+固定 Teacher 提议随 Student 更新逐渐失配，是后续桥接与最后正方差块消融的动机。
+链冻结指两次参考重采样均未移动，加权均值仍可能变化。分噪声/停止点诊断另存；总平均 ESS 不代表所有层均有效。此表不是图像质量或全局收敛证明。
+\end{frame}
+\begin{frame}{最后正方差块：用物理坐标避免极小单元逆变换}
+\small
+固定更早前缀，最后 Teacher 核为 $U\sim\N(\mu_T,\nu^2I)$，
+$x=R_{\rm BF16}(U)$。直接恢复物理单元内的 $U$，不先计算极小区间的标准化端点：
+\begin{align}
+U\mid x&\sim q_T(U)\,\mathbf1\{R_{\rm BF16}(U)=x\}/M_T(x),\\
+\pi(U\mid\text{prefix},y,J)&\propto q_T(U)
+\frac{M_S(R(U))}{M_T(R(U))}L_\sigma(y\mid D_\theta(R(U))).
+\end{align}
+\begin{itemize}\itemsep5pt
+\item 更早核比在该条件更新中为常数；原 Student/Teacher 路径比没有被丢弃。
+\item $U=\mu_T+\nu E$ 是同一理想条件核的仿射换元；辅助尺度改为 $\nu\delta$，先验校正仍必须保留。
+\item 零附近 BF16 单元宽度可远小于非零 $\mu_T$ 的 FP64 间距；先减均值会使两个端点重合。
+\item 直接在物理单元内拒绝采样，不抖动原状态，不添加零方差末步噪声。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{BF16 的第二个数值边界：避免连续两次舍入}
+\small
+CUDA 上直接执行 FP64 到 BF16 的类型转换，可能经过 FP32 中间值。
+例如 BF16 中点 $b=1.00390625$ 附近：
+\begin{equation}
+R_{\rm BF16}(b+10^{-10})=1.0078125,
+\qquad R_{\rm BF16}(R_{\rm FP32}(b+10^{-10}))=1.
+\end{equation}
+\begin{itemize}\itemsep5pt
+\item 这会使落在正确物理单元内的参考恢复到相邻 BF16 状态，触发严格重放检查。
+\item 修复：先取得附近 BF16 值，再用 FP64 比较它及左右邻值的距离；严格距离比较保留中点 ties-to-even。
+\item A100 上已复现上述差异；65536 个物理状态通过准确舍入后的参考重放检查。
+\item 失败训练和日志单独保留，修复后从初始权重重跑，不拼接失败曲线或冒充完整成绩。
+\item 原源采样仍含有限 RNG、FP32 算术；这里只修复已定位的单元几何问题，不声称整个计算机采样律变为数学精确律。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{通用创新坐标的保护：必须同时限制候选集合}
+\small
+令 $A$ 是标准化单元在 FP64 中无法表示的路径集合。通用 OU/桥接版本采用分区核：
+\begin{equation}
+K(h,\cdot)=\begin{cases}\delta_h,&h\in A,\\
+K_{A^c}(h,\cdot),&h\notin A,
+\end{cases}\qquad
+\widetilde w_i=w_i\,\mathbf1\{h_i\notin A\}.
+\end{equation}
+\begin{itemize}\itemsep5pt
+\item $K_{A^c}$ 是保持 $\pi(\cdot\mid A^c)$ 的条件 i-SIR；$A$ 上保持原参考。
+\item 因 $\pi=\pi(A)\pi_A+\pi(A^c)\pi_{A^c}$，两部分均不跨区，整体保持原后验。
+\item 只对坏参考跳过、却允许普通候选进入 $A$ 会破坏这一证明；代码和回归测试明确禁止此做法。
+\item 保护分区会进一步限制混合，不能被记作成功粒子池；另记 identity/pool-evaluated 标志。
+\item 物理坐标的最后节点版本不需要这一标准化保护；非有限模型输出仍报错，不静默替换。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{保留同一更新期望：两次独立查询后平均梯度}
+\small
+同一个源 $H$ 和噪声尺度 $\sigma$，独立生成两个观测及其条件粒子随机数，
+得到 $g_1,g_2$，使用 $\bar g=(g_1+g_2)/2$：
+\begin{align}
+\E[\bar g\mid H,\sigma]&=\E[g_1\mid H,\sigma],\\
+\mathrm{Cov}(\bar g)&=\mathrm{Cov}(\E[g_1\mid H,\sigma])
++\tfrac12\E[\mathrm{Cov}(g_1\mid H,\sigma)].
+\end{align}
+\begin{itemize}\itemsep5pt
+\item 每次损失除以2后分别反传；两次完成后只做一次梯度裁剪和 Adam 更新。
+\item 源 batch1、学习率、EMA、生成器更新次数、每查询8粒子/2次条件更新及推理 NFE4 保持；查询与后验计算约加倍。
+\item 只减少给定源/时间的随机方差，不能消除源差异；裁剪/Adam 后的期望或质量提升没有保证。
+\item 增加同样两次查询的无粒子对照，区分额外观测计算与路径比条件平均各自的贡献。
+\item 该结论针对明确的查询 Jacobian surrogate，不补上它与完整 DMD KL 梯度的等价证明。
+\end{itemize}
 \end{frame}
 \begin{frame}{仍未被实验或理论解决的边界}
 \small
@@ -739,6 +865,9 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
 参考提升 / 条件 i-SIR & \texttt{flow\_grpo/conditional\_path\_is.py}\\
 真实 SD3 接口 & \texttt{diffusers\_patch/sd3\_conditional\_path\_is.py}\\
 训练与细节消融 & \texttt{train\_rtdmd\_path\_is\_sd3.py} / \texttt{train\_rtdmd\_path\_is\_refined\_sd3.py}\\
+最后正方差块 & \texttt{scripts/train\_rtdmd\_path\_is\_last\_sd3.py}\\
+精确前缀缓存 & \texttt{diffusers\_patch/sd3\_last\_innovation\_path\_is.py}\\
+桥接及历史校准 & \texttt{flow\_grpo/bridged\_path\_is.py} / \texttt{adaptive\_bridge.py}\\
 统一 EMA 评测 & \texttt{jobs/evaluate\_loaded\_path\_checkpoint.sh}\\
 逐图结果与统计 & \texttt{logs/path-ratio-round1/evidence/} 与 \texttt{comparison-final/}\\
 冻结与选择记录 & \texttt{source-manifest.json} / \texttt{refinement-manifest.json} / \texttt{selection.json}\\

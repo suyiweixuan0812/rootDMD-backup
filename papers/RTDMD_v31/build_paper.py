@@ -584,6 +584,8 @@ tex=tex.replace(r'\begin{frame}{仍未被实验或理论解决的边界}',bridge
 added_reports.update(bridge_reports)
 added_groups.extend(bridge_groups)
 computed_values.extend(bridge_values)
+from paper_numeric_query_addenda import render as render_numeric_query
+tex=tex.replace(r'\begin{frame}{仍未被实验或理论解决的边界}',render_numeric_query()+r'\begin{frame}{仍未被实验或理论解决的边界}')
 from paper_round_outcome import render as render_outcome
 outcome,outcome_reports,outcome_groups,outcome_values=render_outcome(ROUND)
 tex=tex.replace(r'\maketitle',r'\maketitle'+'\n'+outcome,1)
@@ -610,7 +612,10 @@ artifacts=['bridged-exact-geometry-diagnostics/diagnostics.json',
            'teacher-last-innovation-geometry-diagnostics/diagnostics.json',
            'teacher-last-innovation-radius2-diagnostics/diagnostics.json',
            'training-drift-long/training-drift.json',
-           'deterministic-selection.json','deterministic-validation-plan.json']
+           'deterministic-selection.json','deterministic-validation-plan.json',
+           'query-view-detail-plan.json','cpu-loading-runtime-change.json',
+           'physical-gaussian-gpu-replay-audit.json',
+           'scoring-numeric-source-audit-v31.json','last-inverse-repair-record.json']
 manifest['source_artifacts']={str(ROUND/name):hashlib.sha256((ROUND/name).read_bytes()).hexdigest()
                               for name in artifacts if (ROUND/name).exists()}
 (OUT/'paper-data-manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False))

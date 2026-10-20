@@ -7,7 +7,7 @@ LABELS = {'dmd': 'DMD', 'dmd_fp32': 'DMD, FP32 query', 'base': 'Path-IS',
           'paired_time': 'One-source + time', 'bridge': 'Bridge',
           'bridge_time': 'Bridge + time', 'adaptive_bridge': 'Past-KL bridge',
           'adaptive_bridge_time': 'Past-KL + time', 'last':'Teacher, last block',
-          'last_time':'Teacher, last + time'}
+          'last_time':'Teacher, last + time', 'last_q2_time':'Teacher, 2 queries', 'paired_q2_time':'One-source, 2 queries'}
 
 
 def render(root):
@@ -154,7 +154,7 @@ C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
 \item 单独改对称辅助、仍随机选创新层时，四个 $J=4$ SD3 诊断池仍 ESS=1；保留此负结果。
 \item 固定最后层后，同组诊断 ESS 约6.25--7.51；更大半径2未带来一致方差收益，采用 $.5$。
 \item 更早前缀与 $J$ 不混合，因此只部分 Rao--Blackwell 化；不能把这一采样改善等同于完整后验方差已消除。
-\item 不变前缀的网络输出可缓存，但每次先逐张量检查父状态相同；模型每次参数更新后重新建缓存。
+\item 不变前缀网络输出只算一次；原缓存版本逐张量检查父状态相同。物理坐标实现直接固定前缀，逐查询重建。
 \item 八个真实 SD3 查询池的 ESS、核比、移动和方差在缓存前后逐位一致；吞吐数字需另做隔离基准。
 \end{itemize}
 \end{frame}
@@ -162,7 +162,7 @@ C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
 \begin{frame}{新对照的选型与独立验证规则}
 \small
 \begin{itemize}\itemsep5pt
-\item 十二组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
+\item 十四组细节实验使用同一确定性运行设置、1000轮/100次生成器更新、DrawBench64 开发评测。
 \item 同时匹配原 DMD 和 FP32 观测噪声 DMD；逐指标取两者较大值作为开发参考。
 \item Pick/HPS 均需上升，CLIP 不低于参考 $-.10$、Aesthetic 不低于 $-.03$；排序预先固定。
 \item 无粒子的成对源仅是归因对照，不能替代所请求的路径比方法。
@@ -193,7 +193,7 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
     for title, cases in [
             ('确定性开发集：对照与基线', ['dmd', 'dmd_fp32', 'base', 'paired', 'paired_time']),
             ('确定性开发集：采样与时间细节', ['time', 'bridge', 'bridge_time', 'adaptive_bridge', 'adaptive_bridge_time']),
-            ('确定性开发集：纯教师最后正方差块', ['last', 'last_time'])]:
+            ('确定性开发集：纯教师最后正方差块', ['last', 'last_time', 'last_q2_time', 'paired_q2_time'])]:
         table(title, [(LABELS[c], f'sd3-det-{c}-seed42') for c in cases],
               r'仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。')
     selection = root / 'deterministic-selection.json'

@@ -1,5 +1,5 @@
 {
-  "page_count": 46,
+  "page_count": 54,
   "all_pages_rendered": true,
   "numeric_values_verified": [
     {
@@ -281,13 +281,173 @@
       "run": "sd3-det-base-seed42",
       "metric": "HP Score",
       "rendered_value": "26.1820"
+    },
+    {
+      "run": "sd3-det-paired-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "25.8043"
+    },
+    {
+      "run": "sd3-det-paired-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.5246"
+    },
+    {
+      "run": "sd3-det-paired-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.3958"
+    },
+    {
+      "run": "sd3-det-paired-seed42",
+      "metric": "HP Score",
+      "rendered_value": "26.2622"
+    },
+    {
+      "run": "sd3-det-paired_time-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "26.2199"
+    },
+    {
+      "run": "sd3-det-paired_time-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.5053"
+    },
+    {
+      "run": "sd3-det-paired_time-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.3663"
+    },
+    {
+      "run": "sd3-det-paired_time-seed42",
+      "metric": "HP Score",
+      "rendered_value": "26.1140"
+    },
+    {
+      "run": "sd3-det-time-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "26.0342"
+    },
+    {
+      "run": "sd3-det-time-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.5059"
+    },
+    {
+      "run": "sd3-det-time-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.3972"
+    },
+    {
+      "run": "sd3-det-time-seed42",
+      "metric": "HP Score",
+      "rendered_value": "26.2307"
+    },
+    {
+      "run": "sd3-det-bridge-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "26.3688"
+    },
+    {
+      "run": "sd3-det-bridge-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.5182"
+    },
+    {
+      "run": "sd3-det-bridge-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.4673"
+    },
+    {
+      "run": "sd3-det-bridge-seed42",
+      "metric": "HP Score",
+      "rendered_value": "26.4020"
+    },
+    {
+      "run": "sd3-det-bridge_time-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "26.0968"
+    },
+    {
+      "run": "sd3-det-bridge_time-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4042"
+    },
+    {
+      "run": "sd3-det-bridge_time-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.3031"
+    },
+    {
+      "run": "sd3-det-bridge_time-seed42",
+      "metric": "HP Score",
+      "rendered_value": "25.7041"
+    },
+    {
+      "run": "sd3-det-adaptive_bridge-seed42",
+      "metric": "CLIP Score",
+      "rendered_value": "26.4519"
+    },
+    {
+      "run": "sd3-det-adaptive_bridge-seed42",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.4606"
+    },
+    {
+      "run": "sd3-det-adaptive_bridge-seed42",
+      "metric": "Pick Score",
+      "rendered_value": "21.4091"
+    },
+    {
+      "run": "sd3-det-adaptive_bridge-seed42",
+      "metric": "HP Score",
+      "rendered_value": "25.8204"
+    },
+    {
+      "run": "dmd-seed42-10000-pick2048",
+      "metric": "CLIP Score",
+      "rendered_value": "26.3654"
+    },
+    {
+      "run": "dmd-seed42-10000-pick2048",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.9860"
+    },
+    {
+      "run": "dmd-seed42-10000-pick2048",
+      "metric": "Pick Score",
+      "rendered_value": "21.0344"
+    },
+    {
+      "run": "dmd-seed42-10000-pick2048",
+      "metric": "HP Score",
+      "rendered_value": "30.2767"
+    },
+    {
+      "run": "path-is-seed42-10000-pick2048",
+      "metric": "CLIP Score",
+      "rendered_value": "14.1075"
+    },
+    {
+      "run": "path-is-seed42-10000-pick2048",
+      "metric": "Aesthetic Score",
+      "rendered_value": "3.7627"
+    },
+    {
+      "run": "path-is-seed42-10000-pick2048",
+      "metric": "Pick Score",
+      "rendered_value": "16.1528"
+    },
+    {
+      "run": "path-is-seed42-10000-pick2048",
+      "metric": "HP Score",
+      "rendered_value": "8.8609"
     }
   ],
   "source_complete": true,
   "outside_page_text": [],
   "replacement_character_pages": [],
-  "pdf_sha256": "6ca71f398cf7490439bda544831cc6e2fef923c1072e2678da258df19ecef144",
-  "tex_sha256": "0082f24137ab2500a0e1843cc35413b7f14f85dcfb2e3f973d2be87684f04e49",
+  "pdf_sha256": "9eb9e770ef54ebf8e574cf2674ca815a3975dda62130773abe29746a22be43a5",
+  "tex_sha256": "97f8708dd880611485ab30ef1961a40ec4f33fa647fd98b5ee5e9a01f9a78eaa",
   "preview_directory": "/dev/shm/rtdmd-v31-pdf-preview",
-  "visual_review": "Pending review of rendered pages"
+  "visual_review": "Reviewed montage4: mathematical additions and closing pages fit without clipping; final score pages will be rechecked after experiments"
 }
