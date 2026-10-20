@@ -276,6 +276,26 @@ tex+=r'''
 \takeaway{不变性保证目标对应；混合、有效信息量与图像质量仍须通过真实实验评估。}
 \end{frame}
 
+\begin{frame}{Rao--Blackwell 的可证明收益与固定停止点的方差下界}
+\small
+在理想模型与正确平稳参考下，$X_A=F_\theta(E_A,J)$ 与 $X^*\mid y$ 同分布。
+\begin{equation}
+\Cov(X^*\mid y)-\Cov(\widehat m_C\mid y)
+=\E\!\left[\sum_i\bar w_i(F_i-\widehat m_C)(F_i-\widehat m_C)^\top\mid y\right]\succeq0.
+\end{equation}
+\begin{itemize}\itemsep4pt
+\item 与单个成对参考估计相比，条件加权平均的协方差不增加；多次平稳估计的平均也满足该上界。
+\item 该结论不保证优于任意独立 SNIS、任意其他链，也不等于图像质量一定更高。
+\item 候选读出全相同或权重集中于参考时，右端接近零；高权重 ESS 本身不足以证明降方差。
+\end{itemize}
+固定 $J$ 时仍有停止点之间的方差：
+\begin{equation}
+\Cov(\widehat m\mid y)\succeq
+\Cov\!\left(\E[X\mid J,y]\mid y\right).
+\end{equation}
+\takeaway{局部候选多样性决定真实降方差；固定 $J$ 与小坐标块也限制收益上限。}
+\end{frame}
+
 \begin{frame}{本轮局部粒子设置与 CFG 的区分}
 \small
 \begin{align}

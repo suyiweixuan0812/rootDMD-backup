@@ -57,3 +57,5 @@ tests/*
 !tests/test_path_ratio_smc.py
 !tests/test_conditional_path_is.py
 !tests/test_consistency_schedule.py
+
+!tests/test_path_is_variance.py

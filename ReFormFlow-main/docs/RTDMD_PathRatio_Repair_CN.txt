@@ -126,3 +126,17 @@ https://arxiv.org/abs/1103.3965
 Ruiz, Titsias, Cemgil, Doucet (2021), Unbiased gradient estimation for variational auto-encoders using coupled Markov chains.
 https://proceedings.mlr.press/v161/ruiz21a/ruiz21a.pdf
 其ISIR/DISIR是相关粒子通用依据；本轮的共同读出、观测校正、参考提升及核选择需按上文单独证明。
+
+十、进一步的条件方差结论（本轮补充推导）
+
+令A按候选权重抽样，F_A在平稳初始化下与原成对Student源X*|y同分布。
+Rao-Blackwell与全协方差公式给出
+ Cov(X*|y)-Cov(m_hat|y)
+ = E[sum_i wbar_i (F_i-m_hat)(F_i-m_hat)^T | y] >=PSD 0。
+所以单个池的加权均值相对单个成对源参考，条件协方差不增加。
+多次平稳池均值的平均由凸性也不超过同一个单源协方差上界；不需要假设各次独立。
+这个结论不保证优于任何其他估计器，更不保证图像评分提升。
+候选相同或参考权重接近1时，实际减少的方差接近0；ESS大也可能无收益。
+固定J不更新时，Cov(m_hat|y) >=PSD Cov(E[X|J,y]|y)，不能消除停止点间方差。
+这说明局部小块方案有明确上限；进一步改进应报告候选源加权方差，而非仅追求ESS。
+结论仍针对理想Gaussian舍入模型和正确后验参考，受前述数值/梯度边界约束。
