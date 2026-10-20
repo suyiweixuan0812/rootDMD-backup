@@ -87,7 +87,10 @@ def main():
         # nvidia-smi reports HOST PIDs in this container, unlike os.getpid().
         before_cuda=gpu_pids()
         torch.cuda.init()
+        probe=torch.zeros(1,device='cuda')
+        torch.cuda.synchronize()
         added=gpu_pids()-before_cuda
+        del probe
         if len(added)!=1:
             raise RuntimeError(f'Cannot safely identify own host CUDA PID: {added}')
         own_gpu_pids=added|{os.getpid()}

@@ -278,5 +278,8 @@ def annealed_path_smc(initial_innovations, initial_stops, evaluate, *,
             mean = (weights.exp().reshape((-1,) + (1,) * (current.source.ndim - 1)) * current.source.double()).sum(0)
             return SMCResult(mean, particles, stops, weights, history, evaluations,
                 int(torch.unique(ancestors).numel()), int(torch.unique(current.source.flatten(1), dim=0).shape[0]), beta)
-    raise TemperingBudgetExceeded(
+    error=TemperingBudgetExceeded(
         f'Budget {max_stages} exhausted at beta={beta:.8f}; final posterior NOT reached')
+    error.history=history
+    error.evaluations=evaluations
+    raise error

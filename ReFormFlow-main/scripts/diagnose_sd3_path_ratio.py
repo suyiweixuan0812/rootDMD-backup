@@ -1,0 +1,149 @@
+"""GPU diagnostics of literal CPS path ratios; no training or test-score claims."""
+import argparse
+from functools import partial
+import json
+import math
+import time
+from pathlib import Path
+
+import torch
+from diffusers import StableDiffusion3Pipeline
+from peft import PeftModel
+
+from flow_grpo.diffusers_patch.train_dreambooth_lora_sd3 import encode_prompt
+from flow_grpo.diffusers_patch.sd3_source_trace import replay_source
+from flow_grpo.posterior_mh import SourceState
+from flow_grpo.path_ratio_smc import evaluate_teacher_path,effective_sample_size,annealed_path_smc,TemperingBudgetExceeded
+from flow_grpo.conditional_path_is import lift_student_prefix,conditional_importance_sweep
+from flow_grpo.diffusers_patch.solver import cps_step
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    root=Path(__file__).resolve().parents[1]
+    parser.add_argument('--model',default=str(root/'models/sd3-medium'))
+    parser.add_argument('--adapter',default=str(root/'logs/dmd/sd3-medium-pickscore-no-reward-train/checkpoints/checkpoint-1000/lora/generator'))
+    parser.add_argument('--particles',type=int,default=8)
+    parser.add_argument('--prompts',type=int,default=2)
+    parser.add_argument('--smc-stages',type=int,default=16)
+    parser.add_argument('--local',action='store_true')
+    parser.add_argument('--micro-batch',type=int,default=8)
+    parser.add_argument('--local-scales',type=float,nargs='+',default=[.0003,.001,.003,.01])
+    parser.add_argument('--output',type=Path,default=root/'logs/path-ratio-prototype/sd3-diagnostics')
+    args=parser.parse_args()
+    torch.set_num_threads(1)
+    torch.manual_seed(81021)
+    args.output.mkdir(parents=True,exist_ok=True)
+    print('Loading SD3-Medium for real path-density diagnostics',flush=True)
+    pipe=StableDiffusion3Pipeline.from_pretrained(args.model,torch_dtype=torch.bfloat16,local_files_only=True)
+    for encoder in [pipe.text_encoder,pipe.text_encoder_2,pipe.text_encoder_3]:
+        encoder.requires_grad_(False).eval().to('cuda')
+    prompts=(root/'dataset/drawbench/test.txt').read_text().splitlines()[:args.prompts]
+    with torch.no_grad():
+        embeds,pooled=encode_prompt([pipe.text_encoder,pipe.text_encoder_2,pipe.text_encoder_3],
+            [pipe.tokenizer,pipe.tokenizer_2,pipe.tokenizer_3],prompts,128,device='cuda')
+        negative,negative_pooled=encode_prompt([pipe.text_encoder,pipe.text_encoder_2,pipe.text_encoder_3],
+            [pipe.tokenizer,pipe.tokenizer_2,pipe.tokenizer_3],[''],128,device='cuda')
+    for encoder in [pipe.text_encoder,pipe.text_encoder_2,pipe.text_encoder_3]:encoder.to('cpu')
+    torch.cuda.empty_cache()
+    transformer=PeftModel.from_pretrained(pipe.transformer,args.adapter,adapter_name='student',is_trainable=False)
+    transformer.requires_grad_(False).eval().to('cuda')
+    total=pipe.scheduler.config.num_train_timesteps
+    shift=pipe.scheduler.config.shift
+    sigmas=[round(shift*(step/total)/(1+(shift-1)*(step/total)),6) for step in [1000,750,500,250]]
+    tensor_sigmas=torch.tensor(sigmas+[0.],device='cuda')
+    shape=(1,transformer.config.in_channels,512//pipe.vae_scale_factor,512//pipe.vae_scale_factor)
+    records=[]
+    @torch.no_grad()
+    def predict(sample,s,teacher=False,cfg=1.):
+        n=sample.shape[0]
+        if n>args.micro_batch:
+            return torch.cat([predict(part,s,teacher,cfg) for part in sample.split(args.micro_batch)])
+        cond=selected_embeds.expand(n,-1,-1)
+        pool=selected_pooled.expand(n,-1)
+        if teacher and cfg>1:
+            hidden=torch.cat([sample,sample])
+            cond=torch.cat([negative.expand(n,-1,-1),cond])
+            pool=torch.cat([negative_pooled.expand(n,-1),pool])
+        else:hidden=sample
+        context=transformer.disable_adapter() if teacher else torch.autocast('cuda',enabled=False)
+        with context,torch.autocast('cuda',dtype=torch.bfloat16):
+            velocity=transformer(hidden_states=hidden,timestep=torch.full((hidden.shape[0],),s*total,device='cuda'),
+                encoder_hidden_states=cond,pooled_projections=pool,return_dict=False)[0]
+        if teacher and cfg>1:
+            uncond,cond=velocity.chunk(2)
+            velocity=uncond+cfg*(cond-uncond)
+        return velocity
+    for index,prompt in enumerate(prompts):
+        selected_embeds,selected_pooled=embeds[index:index+1],pooled[index:index+1]
+        state=SourceState(torch.randn(shape,device='cuda'),torch.randn((3,)+shape,device='cuda'),
+            torch.randint(1,5,(1,),device='cuda'))
+        source=replay_source(transformer,state,selected_embeds,selected_pooled,tensor_sigmas,total,.9,torch.bfloat16)
+        for sigma in [.25,.5,.75]:
+            observation=(1-sigma)*source.float()+sigma*torch.randn_like(source,dtype=torch.float32)
+            for cfg in [1.,4.5]:
+                generator=torch.Generator(device='cuda').manual_seed(91200+index)
+                innovations=torch.randn((args.particles,4)+shape[1:],device='cuda',generator=generator)
+                stops=torch.randint(0,4,(args.particles,),device='cuda',generator=generator)
+                def evaluate(e,j):
+                    return evaluate_teacher_path(e,j,observation,sigma,sigmas,.9,
+                        partial(predict,teacher=False),partial(predict,teacher=True,cfg=cfg),state_dtype=torch.bfloat16)
+                if args.local:
+                    prefix=[]
+                    x=state.z.to(selected_embeds.dtype)
+                    for k in range(int(state.stop.item())):
+                        prefix.append(x)
+                        if k+1<int(state.stop.item()):
+                            x=cps_step(x,predict(x,sigmas[k]),sigmas[k],sigmas[k+1],.9,noise=state.noises[k])
+                    lifted=lift_student_prefix(prefix,sigmas,.9,partial(predict,teacher=True,cfg=cfg),generator=generator)
+                    j=torch.tensor([len(prefix)-1],device='cuda')
+                    replay=evaluate(lifted,j)
+                    error=float((replay.source.float()-source.float()).abs().max())
+                    if error!=0:raise RuntimeError(f'Reference source replay mismatch: {error}')
+                    for base_scale in args.local_scales:
+                        scale=min(.05,max(.00001,base_scale*sigma/(1-sigma)/math.sqrt(len(prefix))))
+                        started=time.monotonic()
+                        result=conditional_importance_sweep(lifted,j,evaluate,num_particles=args.particles,
+                            auxiliary_scale=scale,generator=generator)
+                        torch.cuda.synchronize()
+                        row=dict(prompt_index=index,prompt=prompt,sigma=sigma,proposal_cfg=cfg,
+                            particles=args.particles,base_scale=base_scale,source_stop=len(prefix),
+                            exact_reference_replay=True,elapsed_seconds=time.monotonic()-started,
+                            sigma_grid=sigmas,**result.diagnostics)
+                        records.append(row)
+                        (args.output/'diagnostics.json').write_text(json.dumps(dict(
+                            scope='Real SD3 conditional path-importance sampling on independent DrawBench prompts; not a quality evaluation',
+                            rows=records,configuration=vars(args)),indent=2,default=str,ensure_ascii=False))
+                        print(json.dumps(row,ensure_ascii=False),flush=True)
+                    continue
+                started=time.monotonic()
+                result=evaluate(innovations,stops)
+                torch.cuda.synchronize()
+                row=dict(prompt_index=index,prompt=prompt,sigma=sigma,proposal_cfg=cfg,
+                    particles=args.particles,ess=effective_sample_size(result.log_weight),
+                    max_weight=float(result.log_weight.softmax(0).max()),
+                    path_ratio_span=float(result.log_path_ratio.max()-result.log_path_ratio.min()),
+                    observation_log_span=float(result.log_observation.max()-result.log_observation.min()),
+                    total_log_span=float(result.log_weight.max()-result.log_weight.min()),
+                    elapsed_seconds=time.monotonic()-started,sigma_grid=sigmas,
+                    precision='BF16 states; ideal-Gaussian rounding-cell probabilities in FP64; finite RNG/arithmetic approximation remains')
+                if index==0 and sigma==.75 and cfg==1. and args.smc_stages>0:
+                    try:
+                        smc=annealed_path_smc(innovations,stops,evaluate,max_stages=args.smc_stages,
+                            mutation_steps=2,pcn_scale=.05,ess_fraction=.8,generator=generator)
+                        row['smc']=dict(reached_target=True,beta=smc.beta,stages=len(smc.history),
+                            evaluations=smc.evaluations,history=smc.history,
+                            distinct_initial_ancestors=smc.distinct_initial_ancestors,
+                            distinct_final_sources=smc.distinct_final_sources)
+                    except TemperingBudgetExceeded as error:
+                        row['smc']=dict(reached_target=False,error=str(error),
+                            history=getattr(error,'history',[]),evaluations=getattr(error,'evaluations',None))
+                records.append(row)
+                (args.output/'diagnostics.json').write_text(json.dumps(dict(
+                    scope='Real SD3/DMD-EMA path-sampling diagnostic on separate DrawBench development prompts; no image-quality evaluation',
+                    configuration=vars(args)|{'output':str(args.output)},rows=records),indent=2,default=str,ensure_ascii=False))
+                print(json.dumps(row,ensure_ascii=False),flush=True)
+    print('SD3 path diagnostics completed',flush=True)
+
+
+if __name__=='__main__':main()

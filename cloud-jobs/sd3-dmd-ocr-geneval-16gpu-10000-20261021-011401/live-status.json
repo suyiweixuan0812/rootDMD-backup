@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T01:28:54.416193+08:00",
+  "updated_at": "2026-10-21T01:39:02.141761+08:00",
   "jobs": {
     "ocr": {
       "job_id": "t-20261021011436-d5rtf",
@@ -13,8 +13,8 @@
         "HoldingEndTime": "",
         "RetriedTimes": 0
       },
-      "step": 725,
-      "generator_step": 72
+      "step": 1666,
+      "generator_step": 166
     },
     "geneval": {
       "job_id": "t-20261021011501-rlmj5",
