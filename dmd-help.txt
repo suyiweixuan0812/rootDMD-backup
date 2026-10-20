@@ -1,0 +1,75 @@
+Standard DMD and optional AC-DMD training for the SD3 model family.
+flags:
+
+scripts/train_dmd_sd3.py:
+  --config: DMD configuration.
+    (default: 'config/dmd.py:sd35m')
+
+absl.app:
+  -?,--[no]help: show this help
+    (default: 'false')
+  --[no]helpfull: show full help
+    (default: 'false')
+  --[no]helpshort: show this help
+    (default: 'false')
+  --[no]helpxml: like --helpfull, but generates XML output
+    (default: 'false')
+  --[no]only_check_args: Set to true to validate args and exit.
+    (default: 'false')
+  --[no]pdb: Alias for --pdb_post_mortem.
+    (default: 'false')
+  --[no]pdb_post_mortem: Set to true to handle uncaught exceptions with the post
+    mortem debugger. PDB is used by default; $PYTHONBREAKPOINT
+    (https://docs.python.org/3/using/cmdline.html#envvar-PYTHONBREAKPOINT) can
+    be used to specify a custom one.
+    (default: 'false')
+  --profile_file: Dump profile information to a file (for python -m pstats).
+    Implies --run_with_profiling.
+  --[no]run_with_pdb: Set to true for debug mode. PDB is used by default;
+    $PYTHONBREAKPOINT (https://docs.python.org/3/using/cmdline.html#envvar-
+    PYTHONBREAKPOINT) can be used to specify a custom debugger.
+    (default: 'false')
+  --[no]run_with_profiling: Set to true for profiling the script. Execution will
+    be slower, and the output format might change over time.
+    (default: 'false')
+  --[no]use_cprofile_for_profiling: Use cProfile instead of the profile module
+    for profiling. This has no effect unless --run_with_profiling is set.
+    (default: 'true')
+
+absl.logging:
+  --[no]alsologtostderr: also log to stderr?
+    (default: 'false')
+  --log_dir: directory to write logfiles into
+    (default: '')
+  --logger_levels: Specify log level of loggers. The format is a CSV list of
+    `name:level`. Where `name` is the logger name used with
+    `logging.getLogger()`, and `level` is a level name  (INFO, DEBUG, etc). e.g.
+    `myapp.foo:INFO,other.logger:DEBUG`
+    (default: '')
+  --[no]logtostderr: Should only log to stderr?
+    (default: 'false')
+  --[no]showprefixforinfo: If False, do not prepend prefix to info messages when
+    it's logged to stderr, --verbosity is set to INFO level, and python logging
+    is used.
+    (default: 'true')
+  --stderrthreshold: log messages at this level, or more severe, to stderr in
+    addition to the logfile.  Possible values are 'debug', 'info', 'warning',
+    'error', and 'fatal'.  Obsoletes --alsologtostderr. Using --alsologtostderr
+    cancels the effect of this flag. Please also note that this flag is subject
+    to --verbosity and requires logfile not be stderr.
+    (default: 'fatal')
+  -v,--verbosity: Logging verbosity level. Messages logged at this level or
+    lower will be included. Set to 1 for debug logging. If the flag was not set
+    or supplied, the value will be changed from the default of -1 (warning) to 0
+    (info) after flags are parsed.
+    (default: '-1')
+    (an integer)
+
+absl.flags:
+  --flagfile: Insert flag definitions from the given file into the command line.
+    (default: '')
+  --undefok: comma-separated list of flag names that it is okay to specify on
+    the command line even if the program does not define a flag with that name.
+    IMPORTANT: flags in this list that have arguments MUST use the --flag=value
+    format.
+    (default: '')

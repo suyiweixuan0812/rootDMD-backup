@@ -1,0 +1,250 @@
+{
+  "_id": "667b9aa820887e69a0675a2d",
+  "id": "ckpt/stable-diffusion-3-medium-diffusers",
+  "private": false,
+  "pipeline_tag": "text-to-image",
+  "library_name": "diffusers",
+  "tags": [
+    "diffusers",
+    "safetensors",
+    "diffusers:StableDiffusion3Pipeline",
+    "region:us"
+  ],
+  "downloads": 18,
+  "likes": 0,
+  "modelId": "ckpt/stable-diffusion-3-medium-diffusers",
+  "author": "ckpt",
+  "sha": "17c61f55d12b2a7776e634a0ab6c772bd37a765b",
+  "lastModified": "2024-06-26T04:50:47.000Z",
+  "gated": false,
+  "disabled": false,
+  "config": {
+    "diffusers": {
+      "_class_name": "StableDiffusion3Pipeline"
+    }
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "a6344aac8c09253b3b630fb776ae94478aa0275b",
+      "size": 1519
+    },
+    {
+      "rfilename": "model_index.json",
+      "blobId": "d96854d87970d1223f58b9db5b7ff1aed64400aa",
+      "size": 706
+    },
+    {
+      "rfilename": "scheduler/scheduler_config.json",
+      "blobId": "eca5b2eed3727b3ad375eb20e467e4264120fd5d",
+      "size": 141
+    },
+    {
+      "rfilename": "text_encoder/config.json",
+      "blobId": "dbda34b6008657d7be7423051c47abd4c94e263a",
+      "size": 574
+    },
+    {
+      "rfilename": "text_encoder/model.safetensors",
+      "blobId": "888b139f21181cd4ee4e93ce739ee63f26f2079c",
+      "size": 247323896,
+      "lfs": {
+        "sha256": "71e183d11db0c6b6282a4d9e0abb74125edc8692393e89ed8ee5571005f35cb1",
+        "size": 247323896,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "text_encoder_2/config.json",
+      "blobId": "35886d089e214b9e35db394d4d3d122a19baf231",
+      "size": 570
+    },
+    {
+      "rfilename": "text_encoder_2/model.safetensors",
+      "blobId": "1a41ba6f6d67ebaaea453978332a941d0bc5dae5",
+      "size": 1389382176,
+      "lfs": {
+        "sha256": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+        "size": 1389382176,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_3/config.json",
+      "blobId": "5f020057278e664f8d4875a172b8266a9707c249",
+      "size": 740
+    },
+    {
+      "rfilename": "text_encoder_3/model-00001-of-00002.safetensors",
+      "blobId": "821fab5489700b2759adf6279e66ae49ce977d12",
+      "size": 4994582104,
+      "lfs": {
+        "sha256": "4f2751ceeb2a96edd693e539dc5d6bba0b8d3814f49a9b3798403a0cec4b2e3d",
+        "size": 4994582104,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_3/model-00002-of-00002.safetensors",
+      "blobId": "6a80301dd8f107a40fd7727de44c95dee84f6a7b",
+      "size": 4530066248,
+      "lfs": {
+        "sha256": "f63154532130422309532ff56f11945fbea8266c958e3133e8e5aef85c6293c7",
+        "size": 4530066248,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_3/model.safetensors.index.json",
+      "blobId": "c8728bc3dca59d2616a2a594cbac3ddb9eb77d5b",
+      "size": 19885
+    },
+    {
+      "rfilename": "text_encoders/clip_g.safetensors",
+      "blobId": "1a41ba6f6d67ebaaea453978332a941d0bc5dae5",
+      "size": 1389382176,
+      "lfs": {
+        "sha256": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+        "size": 1389382176,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoders/clip_l.safetensors",
+      "blobId": "e224fcda070dc105fd83c64ed2074f47a1b0ff7b",
+      "size": 246144152,
+      "lfs": {
+        "sha256": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+        "size": 246144152,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "text_encoders/t5xxl_fp16.safetensors",
+      "blobId": "53df2732c884758d2a898585551df37ea652a416",
+      "size": 9787841024,
+      "lfs": {
+        "sha256": "6e480b09fae049a72d2a8c5fbccb8d3e92febeb233bbe9dfe7256958a9167635",
+        "size": 9787841024,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoders/t5xxl_fp8_e4m3fn.safetensors",
+      "blobId": "79b9ebe64019308077904fa68ed6f707569121c0",
+      "size": 4893934904,
+      "lfs": {
+        "sha256": "7d330da4816157540d6bb7838bf63a0f02f573fc48ca4d8de34bb0cbfd514f09",
+        "size": 4893934904,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "tokenizer/merges.txt",
+      "blobId": "76e821f1b6f0a9709293c3b6b51ed90980b3166b",
+      "size": 524619
+    },
+    {
+      "rfilename": "tokenizer/pecial_tokens_map.json",
+      "blobId": "cf0682d6de72c1547f41b4f6d7c59f62deffef94",
+      "size": 588
+    },
+    {
+      "rfilename": "tokenizer/tokenizer_config.json",
+      "blobId": "180a4e1be2a7d0b38a44108d6f24f585f35147b1",
+      "size": 705
+    },
+    {
+      "rfilename": "tokenizer/vocab.json",
+      "blobId": "469be27c5c010538f845f518c4f5e8574c78f7c8",
+      "size": 1059962
+    },
+    {
+      "rfilename": "tokenizer_2/merges.txt",
+      "blobId": "76e821f1b6f0a9709293c3b6b51ed90980b3166b",
+      "size": 524619
+    },
+    {
+      "rfilename": "tokenizer_2/special_tokens_map.json",
+      "blobId": "b3b93aa8e7fd8552501067e63e04e2958298c2b2",
+      "size": 576
+    },
+    {
+      "rfilename": "tokenizer_2/tokenizer_config.json",
+      "blobId": "f4299b251265219ef1369503c04d837bd9528f0a",
+      "size": 856
+    },
+    {
+      "rfilename": "tokenizer_2/vocab.json",
+      "blobId": "469be27c5c010538f845f518c4f5e8574c78f7c8",
+      "size": 1059962
+    },
+    {
+      "rfilename": "tokenizer_3/special_tokens_map.json",
+      "blobId": "17ade346a1042cbe0c1436f5bedcbd85c099d582",
+      "size": 2543
+    },
+    {
+      "rfilename": "tokenizer_3/spiece.model",
+      "blobId": "317a5ccbde45300f5d1d970d4d449af2108b147e",
+      "size": 791656,
+      "lfs": {
+        "sha256": "d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86",
+        "size": 791656,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "tokenizer_3/tokenizer.json",
+      "blobId": "6f055030106071d446e559644b285557a82fefd4",
+      "size": 2424035
+    },
+    {
+      "rfilename": "tokenizer_3/tokenizer_config.json",
+      "blobId": "15377e70a0e43e060a98bbc5cb6245664d906e6c",
+      "size": 20617
+    },
+    {
+      "rfilename": "transformer/config.json",
+      "blobId": "f6305a08a77fb74e9b21965855abe0ee904eb9c3",
+      "size": 372
+    },
+    {
+      "rfilename": "transformer/diffusion_pytorch_model.safetensors",
+      "blobId": "797bbf8904491ba4d5904084c1d7baec23729562",
+      "size": 4169981408,
+      "lfs": {
+        "sha256": "8b0e357dd04755fbfb067c63f4a883ac1de2942dd4a3240069874a17022e5418",
+        "size": 4169981408,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "vae/config.json",
+      "blobId": "5cc5fb203426bfac5ecee2710115bb1697737211",
+      "size": 739
+    },
+    {
+      "rfilename": "vae/diffusion_pytorch_model.safetensors",
+      "blobId": "3e221bf4d03116ec0ac0e91218f7795e11d3e7a5",
+      "size": 167666654,
+      "lfs": {
+        "sha256": "f9b67a279283625caee39d61eacb5324243848477b4eb535355eaaa8423d4e09",
+        "size": 167666654,
+        "pointerSize": 134
+      }
+    }
+  ],
+  "spaces": [
+    "flosstradamus/FluxMusicGUI",
+    "JoPmt/FluxMusicGUI_tstng"
+  ],
+  "createdAt": "2024-06-26T04:35:52.000Z",
+  "safetensors": {
+    "parameters": {
+      "F16": 2084951104
+    },
+    "total": 2084951104
+  },
+  "usedStorage": 30427714222
+}

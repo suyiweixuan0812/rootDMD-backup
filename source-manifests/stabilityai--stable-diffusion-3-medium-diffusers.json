@@ -1,0 +1,432 @@
+{
+  "_id": "6669cb02699a4f7e9c5abca4",
+  "id": "stabilityai/stable-diffusion-3-medium-diffusers",
+  "private": false,
+  "pipeline_tag": "text-to-image",
+  "library_name": "diffusers",
+  "tags": [
+    "diffusers",
+    "safetensors",
+    "text-to-image",
+    "stable-diffusion",
+    "en",
+    "arxiv:2403.03206",
+    "license:other",
+    "diffusers:StableDiffusion3Pipeline",
+    "region:us"
+  ],
+  "downloads": 56434,
+  "likes": 501,
+  "modelId": "stabilityai/stable-diffusion-3-medium-diffusers",
+  "author": "stabilityai",
+  "sha": "ea42f8cef0f178587cf766dc8129abd379c90671",
+  "lastModified": "2024-06-19T13:47:26.000Z",
+  "gated": "auto",
+  "disabled": false,
+  "model-index": null,
+  "config": {
+    "diffusers": {
+      "_class_name": "StableDiffusion3Pipeline"
+    }
+  },
+  "cardData": {
+    "license": "other",
+    "license_name": "stabilityai-nc-research-community",
+    "license_link": "LICENSE",
+    "tags": [
+      "text-to-image",
+      "stable-diffusion"
+    ],
+    "extra_gated_prompt": "By clicking \"Agree\", you agree to the [License Agreement](https://huggingface.co/stabilityai/stable-diffusion-3-medium/blob/main/LICENSE) and acknowledge Stability AI's [Privacy Policy](https://stability.ai/privacy-policy).",
+    "extra_gated_fields": {
+      "Name": "text",
+      "Email": "text",
+      "Country": "country",
+      "Organization or Affiliation": "text",
+      "Receive email updates and promotions on Stability AI products, services, and research?": {
+        "type": "select",
+        "options": [
+          "Yes",
+          "No"
+        ]
+      },
+      "I acknowledge that this model is for non-commercial use only unless I acquire a separate license from Stability AI": "checkbox"
+    },
+    "language": [
+      "en"
+    ],
+    "pipeline_tag": "text-to-image"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "3f633ab969635a0e18c7e2a3c49e3fea8de42790",
+      "size": 1067
+    },
+    {
+      "rfilename": "LICENSE",
+      "blobId": "8382aa8606a2802019851aba513333ec5611aecf",
+      "size": 7420
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "c748393acdf12f4f55f1f143ac779a4427dfb20f",
+      "size": 7446
+    },
+    {
+      "rfilename": "mmdit.png",
+      "blobId": "e6fa2c1cb5249c091315bdb169073ab10a60baf5",
+      "size": 266439
+    },
+    {
+      "rfilename": "model_index.json",
+      "blobId": "d96854d87970d1223f58b9db5b7ff1aed64400aa",
+      "size": 706
+    },
+    {
+      "rfilename": "scheduler/scheduler_config.json",
+      "blobId": "eca5b2eed3727b3ad375eb20e467e4264120fd5d",
+      "size": 141
+    },
+    {
+      "rfilename": "sd3demo.jpg",
+      "blobId": "6ab26984957b0edae7ad24d123bf021221002b48",
+      "size": 7404768,
+      "lfs": {
+        "sha256": "c6d829561bdf08624c0031f6147e771b0025a441d6616ee924a2af2ca7ea7f34",
+        "size": 7404768,
+        "pointerSize": 132
+      }
+    },
+    {
+      "rfilename": "text_encoder/config.json",
+      "blobId": "dbda34b6008657d7be7423051c47abd4c94e263a",
+      "size": 574
+    },
+    {
+      "rfilename": "text_encoder/model.fp16.safetensors",
+      "blobId": "888b139f21181cd4ee4e93ce739ee63f26f2079c",
+      "size": 247323896,
+      "lfs": {
+        "sha256": "71e183d11db0c6b6282a4d9e0abb74125edc8692393e89ed8ee5571005f35cb1",
+        "size": 247323896,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "text_encoder/model.safetensors",
+      "blobId": "888b139f21181cd4ee4e93ce739ee63f26f2079c",
+      "size": 247323896,
+      "lfs": {
+        "sha256": "71e183d11db0c6b6282a4d9e0abb74125edc8692393e89ed8ee5571005f35cb1",
+        "size": 247323896,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "text_encoder_2/config.json",
+      "blobId": "35886d089e214b9e35db394d4d3d122a19baf231",
+      "size": 570
+    },
+    {
+      "rfilename": "text_encoder_2/model.fp16.safetensors",
+      "blobId": "1a41ba6f6d67ebaaea453978332a941d0bc5dae5",
+      "size": 1389382176,
+      "lfs": {
+        "sha256": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+        "size": 1389382176,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_2/model.safetensors",
+      "blobId": "1a41ba6f6d67ebaaea453978332a941d0bc5dae5",
+      "size": 1389382176,
+      "lfs": {
+        "sha256": "ec310df2af79c318e24d20511b601a591ca8cd4f1fce1d8dff822a356bcdb1f4",
+        "size": 1389382176,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_3/config.json",
+      "blobId": "5f020057278e664f8d4875a172b8266a9707c249",
+      "size": 740
+    },
+    {
+      "rfilename": "text_encoder_3/model-00001-of-00002.safetensors",
+      "blobId": "821fab5489700b2759adf6279e66ae49ce977d12",
+      "size": 4994582104,
+      "lfs": {
+        "sha256": "4f2751ceeb2a96edd693e539dc5d6bba0b8d3814f49a9b3798403a0cec4b2e3d",
+        "size": 4994582104,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_3/model-00002-of-00002.safetensors",
+      "blobId": "6a80301dd8f107a40fd7727de44c95dee84f6a7b",
+      "size": 4530066248,
+      "lfs": {
+        "sha256": "f63154532130422309532ff56f11945fbea8266c958e3133e8e5aef85c6293c7",
+        "size": 4530066248,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_3/model.fp16-00001-of-00002.safetensors",
+      "blobId": "821fab5489700b2759adf6279e66ae49ce977d12",
+      "size": 4994582104,
+      "lfs": {
+        "sha256": "4f2751ceeb2a96edd693e539dc5d6bba0b8d3814f49a9b3798403a0cec4b2e3d",
+        "size": 4994582104,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_3/model.fp16-00002-of-00002.safetensors",
+      "blobId": "6a80301dd8f107a40fd7727de44c95dee84f6a7b",
+      "size": 4530066248,
+      "lfs": {
+        "sha256": "f63154532130422309532ff56f11945fbea8266c958e3133e8e5aef85c6293c7",
+        "size": 4530066248,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "text_encoder_3/model.safetensors.index.fp16.json",
+      "blobId": "26fbacbb229da635a50237394681830c048fc371",
+      "size": 20980
+    },
+    {
+      "rfilename": "text_encoder_3/model.safetensors.index.json",
+      "blobId": "c8728bc3dca59d2616a2a594cbac3ddb9eb77d5b",
+      "size": 19885
+    },
+    {
+      "rfilename": "tokenizer/merges.txt",
+      "blobId": "76e821f1b6f0a9709293c3b6b51ed90980b3166b",
+      "size": 524619
+    },
+    {
+      "rfilename": "tokenizer/special_tokens_map.json",
+      "blobId": "cf0682d6de72c1547f41b4f6d7c59f62deffef94",
+      "size": 588
+    },
+    {
+      "rfilename": "tokenizer/tokenizer_config.json",
+      "blobId": "180a4e1be2a7d0b38a44108d6f24f585f35147b1",
+      "size": 705
+    },
+    {
+      "rfilename": "tokenizer/vocab.json",
+      "blobId": "469be27c5c010538f845f518c4f5e8574c78f7c8",
+      "size": 1059962
+    },
+    {
+      "rfilename": "tokenizer_2/merges.txt",
+      "blobId": "76e821f1b6f0a9709293c3b6b51ed90980b3166b",
+      "size": 524619
+    },
+    {
+      "rfilename": "tokenizer_2/special_tokens_map.json",
+      "blobId": "b3b93aa8e7fd8552501067e63e04e2958298c2b2",
+      "size": 576
+    },
+    {
+      "rfilename": "tokenizer_2/tokenizer_config.json",
+      "blobId": "f4299b251265219ef1369503c04d837bd9528f0a",
+      "size": 856
+    },
+    {
+      "rfilename": "tokenizer_2/vocab.json",
+      "blobId": "469be27c5c010538f845f518c4f5e8574c78f7c8",
+      "size": 1059962
+    },
+    {
+      "rfilename": "tokenizer_3/special_tokens_map.json",
+      "blobId": "17ade346a1042cbe0c1436f5bedcbd85c099d582",
+      "size": 2543
+    },
+    {
+      "rfilename": "tokenizer_3/spiece.model",
+      "blobId": "317a5ccbde45300f5d1d970d4d449af2108b147e",
+      "size": 791656,
+      "lfs": {
+        "sha256": "d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86",
+        "size": 791656,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "tokenizer_3/tokenizer.json",
+      "blobId": "6f055030106071d446e559644b285557a82fefd4",
+      "size": 2424035
+    },
+    {
+      "rfilename": "tokenizer_3/tokenizer_config.json",
+      "blobId": "15377e70a0e43e060a98bbc5cb6245664d906e6c",
+      "size": 20617
+    },
+    {
+      "rfilename": "transformer/config.json",
+      "blobId": "f6305a08a77fb74e9b21965855abe0ee904eb9c3",
+      "size": 372
+    },
+    {
+      "rfilename": "transformer/diffusion_pytorch_model.fp16.safetensors",
+      "blobId": "797bbf8904491ba4d5904084c1d7baec23729562",
+      "size": 4169981408,
+      "lfs": {
+        "sha256": "8b0e357dd04755fbfb067c63f4a883ac1de2942dd4a3240069874a17022e5418",
+        "size": 4169981408,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "transformer/diffusion_pytorch_model.safetensors",
+      "blobId": "797bbf8904491ba4d5904084c1d7baec23729562",
+      "size": 4169981408,
+      "lfs": {
+        "sha256": "8b0e357dd04755fbfb067c63f4a883ac1de2942dd4a3240069874a17022e5418",
+        "size": 4169981408,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "vae/config.json",
+      "blobId": "5cc5fb203426bfac5ecee2710115bb1697737211",
+      "size": 739
+    },
+    {
+      "rfilename": "vae/diffusion_pytorch_model.fp16.safetensors",
+      "blobId": "3e221bf4d03116ec0ac0e91218f7795e11d3e7a5",
+      "size": 167666654,
+      "lfs": {
+        "sha256": "f9b67a279283625caee39d61eacb5324243848477b4eb535355eaaa8423d4e09",
+        "size": 167666654,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "vae/diffusion_pytorch_model.safetensors",
+      "blobId": "3e221bf4d03116ec0ac0e91218f7795e11d3e7a5",
+      "size": 167666654,
+      "lfs": {
+        "sha256": "f9b67a279283625caee39d61eacb5324243848477b4eb535355eaaa8423d4e09",
+        "size": 167666654,
+        "pointerSize": 134
+      }
+    }
+  ],
+  "spaces": [
+    "stabilityai/stable-diffusion-3-medium",
+    "Nymbo/Serverless-ImgGen-Hub",
+    "OpenGVLab/InternVL",
+    "alexnasa/Chain-of-Zoom",
+    "BoobyBoobs/Flux_Lustly_AI_Uncensored_NSFW_V1",
+    "multimodalart/civitai-to-hf",
+    "fallenshock/FlowEdit",
+    "InstantX/SD35-IP-Adapter",
+    "fffiloni/sd3-ControlNet",
+    "KingNish/OpenCHAT-Mini",
+    "jeasinema/UltraEdit-SD3",
+    "rizavelioglu/vae-comparison",
+    "Nick088/Stable-Diffusion-3-Medium-SuperPrompt",
+    "Vchitect/Vchitect-2.0",
+    "Novaciano/Flux_Lustly_AI_Uncensored_NSFW_V1",
+    "gen6scp/sana-zero",
+    "madebyollin/sd3-with-taesd3-previews",
+    "radames/flash-sd3-taesd3",
+    "weepiess2383/CFG-Zero-Star",
+    "KingNish/OpenCHAT-mini2",
+    "KangLiao/Puffin",
+    "Nick088/stable-diffusion-arena",
+    "ironjr/semantic-draw-canvas-sd3",
+    "JournalistsonHF/text-to-image-bias",
+    "dgoot/image-to-image",
+    "dipta007/OracleZoom",
+    "Nymbo/Stable-Diffusion-3",
+    "Skywork/UniPic2-SD3.5M-Kontext",
+    "hyeoncho01/Tangential-Amplifying-Guidance",
+    "Marhill/Flux_Lustly_AI_Uncensored_NSFW_V1",
+    "Parmist/strangerzonehf-Flux-Super-Realism-LoRA",
+    "Skywork/UniPic2-Metaquery",
+    "HuiZhang0812/CreatiLayout",
+    "CyranoB/StableDiffusion3",
+    "Kkordik/inpainting-sd3-sketch-pad",
+    "acceptee/DiT4SR",
+    "diffusers/optimized-diffusers-code",
+    "vkthakur88/stable_diffusion_3",
+    "NativeAngels/Serverless-ImgGen-Hub",
+    "TheoBH/FurnishAI",
+    "Theartplug/Theartplugchatbot",
+    "evijit/text-to-image-bias",
+    "Ishayoyo/stabilityai-stable-diffusion-3-medium-diffusers",
+    "GenAILearniverse/IImageGenUsingSDXLWithStyle",
+    "APGASU/RefEdit-SD3",
+    "Speedofmastery/orynxml-backend",
+    "AstroMash/Flux_Lustly_AI_Uncensored_NSFW_V1",
+    "FallnAI/DiffusionLab-v.sd3",
+    "Nymbo/Stable-Diffusion-3-Serverless",
+    "Falln87/stabilityai-stable-diffusion-3-medium-diffusers",
+    "dinesh29/stabilityai-stable-diffusion-3-medium-diffusers",
+    "gendev/aidenforfina",
+    "ritutweets46/sd3-shecodes",
+    "PeepDaSlan9/HYDRAS_InternVL",
+    "Walid-Ahmed/image_gen",
+    "prof-l/InternVL-demo",
+    "Skyjoe/OpenCHAT-mini",
+    "Kall00/Chab",
+    "ILLERRAPS/OpenGPT-4o",
+    "Falln87/stable-diffusion-3",
+    "connor-33341/ImageAI",
+    "dgoot/text-to-image",
+    "amos1088/test_gradio",
+    "dgoot/inpainting",
+    "Tejasva-Maurya/ImagiGen_v2",
+    "Nymbo/Model-Status-Checker",
+    "xulh/ymx",
+    "adaface-neurips/adaface-animate",
+    "Quiho/stabilityai-stable-diffusion-3-medium-diffusers",
+    "FlowChef/RefEdit-SD3",
+    "Babyboy333/Flux_Lustly_AI_Uncensored_NSFW_V1",
+    "leonardot7/fipec",
+    "LiviaXzx/francadig",
+    "ulzii11/text_to_image_generation",
+    "AiAF/Civ-2-HF",
+    "orronai/FlowOpt",
+    "Moebius-pizza/Serverless-ImgGen-Hub",
+    "samsammysammy/Serverless-ImgGen-Hub",
+    "Guy24/lens-demo",
+    "hugging-apps/perceptual-flow-matching-demo",
+    "VanguardAI/MultiModal_OpenSource_AI",
+    "cristianae2001/sd3_123456789",
+    "Scatxyu/stabilityai-stable-diffusion-3-medium-diffusers3",
+    "SAGGGG/stable-diffusion-3-medium",
+    "cocktailpeanut/Stable-Diffusion-3-Medium-SuperPrompt",
+    "Kamont/stabilityai-stable-diffusion-3-medium-diffusers",
+    "bhaskartripathi/SDXL3",
+    "NukeGH05T/stabilityai-stable-diffusion-3-medium-diffusers",
+    "RICHKEED/fysuifiuofafashsfaasihuaofhuafuhiasfhsaifh",
+    "fl4brc/stabilityai-stable-diffusion-3-medium-diffusers",
+    "Nimochu/stabilityai-stable-diffusion-3-medium-diffusers",
+    "kasper-boy/image-generator-ai-sd-3-medium",
+    "Yjhhh/stable-diffusion-3-medium",
+    "khurramasad299/stabilityai-stable-diffusion-3-medium-diffusers",
+    "Ugottaloveit/stabilityai-stable-diffusion-3-medium-diffusers",
+    "Trptr/stabilityai-stable-diffusion-3-medium-diffusers",
+    "aichampions/stable-diffusion-3-medium",
+    "GBHG/stabilityai-stable-diffusion-3-medium-diffusers",
+    "jeanfrancfr/ImageGenerationSD3",
+    "xiao-yu-chen/stabilityai-stable-diffusion-3-medium-diffusers"
+  ],
+  "createdAt": "2024-06-12T16:21:22.000Z",
+  "safetensors": {
+    "parameters": {
+      "F16": 2084951104
+    },
+    "total": 2084951104
+  },
+  "usedStorage": 62119286226
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "repo": "frankjoshua/stable-diffusion-3-medium-diffusers",
+    "revision": "b1148b4028b9ec56ebd36444c193d56aeff7ab56",
+    "directory": "/dev/shm/reformdmd-models/sd3-medium"
+  },
+  {
+    "repo": "yuvalkirstain/PickScore_v1",
+    "revision": "a4e4367c6dfa7288a00c550414478f865b875800",
+    "directory": "/rootDMD/hf-cache/hub/models--yuvalkirstain--PickScore_v1/snapshots/a4e4367c6dfa7288a00c550414478f865b875800"
+  },
+  {
+    "repo": "laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
+    "revision": "1c2b8495b28150b8a4922ee1c8edee224c284c0c",
+    "directory": "/rootDMD/hf-cache/hub/models--laion--CLIP-ViT-H-14-laion2B-s32B-b79K/snapshots/1c2b8495b28150b8a4922ee1c8edee224c284c0c"
+  }
+]

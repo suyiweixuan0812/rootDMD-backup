@@ -1,0 +1,54 @@
+本次任务：原始 SD3-Medium + 标准 DMD + PickScore 提示词；训练不使用奖励。
+
+代码入口
+  scripts/train_dmd_sd3.py：标准 DMD 和可选 AC-DMD。本次关闭 AC-DMD。
+  config/dmd_sd3_pickscore.py：本次单卡运行配置。
+  jobs/run_dmd_pickscore.sh：环境检查与启动入口。
+
+方法解读
+  基座 SD3 Transformer 冻结，用禁用 LoRA 的方式计算教师预测。
+  generator 和 fake_score 是共享基座上的两套独立 LoRA，rank=32、alpha=64。
+  fake_score 学习当前生成图像分布的去噪/速度预测，不是奖励打分器。
+  每 10 次 fake_score 更新执行一次 generator DMD 更新。
+  generator 根据 fake_score 与教师的预测差异匹配分布，不读取 PickScore 分数。
+  denoising_step_list 配置为 1000、750、500、250，共 4 步；训练随机选择终止步。
+  实际 sigma 会按教师 scheduler.shift 映射，再额外补上终点 0。
+  教师 CFG=4.5；生成器单条件分支；噪声强度 0.9。
+  PickScore 只在 torch.no_grad 的评估分支中对生成图像评分。
+  仓库中的 PickScore 返回原始分数除以 26，评估 JSON 同时保存原始与归一化均值。
+
+数据与配置
+  模型：原始 stabilityai/stable-diffusion-3-medium-diffusers，不是 SD3.5。
+  提示词：dataset/pickscore/train.txt 共 25432 条；独立 test.txt 共 2048 条。
+  分辨率 512，bf16，单卡 batch=1，开启梯度检查点；外部日志服务关闭。
+  smoke：20 个外层迭代，2 次生成器更新，最后评估 4 个测试提示词并保存。
+  train：1000 个外层迭代，100 次生成器更新，每 100 轮保存和评估 16 个提示词。
+  train 最后一轮评估完整 2048 条测试提示词；中间少量提示词用于运行检查。
+
+环境与模型
+  Python /rootDMD/.venv-dmd/bin/python，独立 venv 复用服务器现有 PyTorch。
+  实际 PyTorch 2.7.1+cu128；上游参考为 2.6.0，未改动系统 PyTorch。
+  其余核心依赖见 requirements-dmd-runtime.txt。
+  只安装 DMD/PickScore 所需依赖；该入口不需要 FlashAttention、DeepSpeed 等额外扩展。
+  官方模型匿名下载返回 401；使用公开镜像 frankjoshua/stable-diffusion-3-medium-diffusers。
+  六个 safetensors 权重逐个与官方仓库公布的 SHA256 比对，下载后再做本地校验。
+  下载版本与原始文件清单保存在 /rootDMD/source-manifests/。
+  SD3 约 15.5GB，暂存 /dev/shm/reformdmd-models/sd3-medium 并链接至 models/sd3-medium。
+  共享内存中的模型在服务器重启后需要重新下载；训练日志与检查点位于项目 logs/dmd/。
+  PickScore 与其处理器缓存位于 /rootDMD/hf-cache/hub/。
+
+复现命令（在 /rootDMD/ReFormFlow-main 执行）
+  source jobs/local_env.sh
+  python scripts/download_dmd_models.py
+  bash jobs/run_dmd_pickscore.sh smoke
+  bash jobs/run_dmd_pickscore.sh train
+
+日志与结果
+  /rootDMD/model-download.log：下载与完整性验证。
+  logs/dmd/sd3-medium-pickscore-no-reward-smoke/：真实权重短跑结果。
+  logs/dmd/sd3-medium-pickscore-no-reward-train/：较长训练结果。
+  每次运行 config.json 记录配置，metrics.jsonl 记录损失、梯度范数和学习率。
+  eval/step-N/metrics.json 保存 PickScore 均值；rank-0/ 保存图片及对应 prompts.json。
+  checkpoints/checkpoint-N/lora/generator/ 和 fake_score/ 保存两套 LoRA。
+  评估/推理应使用 lora/generator/，不能把两套 adapter 的父目录当作单个 LoRA。
+  上游恢复逻辑从 EMA 导出的生成器恢复，未保存完整 EMA/scheduler 历史；恢复并非位级连续训练。

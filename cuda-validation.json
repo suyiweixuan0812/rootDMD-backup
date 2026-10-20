@@ -1,0 +1,8 @@
+{
+  "validation": "tiny randomly initialized SD3 on CUDA; not pretrained-model training",
+  "fake_loss": 1.5490765571594238,
+  "dmd_loss": 3.8370490074157715e-07,
+  "generator_grad_l1": 3.836894188680162e-05,
+  "gradient_checkpointing": true,
+  "cuda_peak_bytes": 18308608
+}

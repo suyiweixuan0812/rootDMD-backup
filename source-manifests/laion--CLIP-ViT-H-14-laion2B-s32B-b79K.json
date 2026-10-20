@@ -1,0 +1,281 @@
+{
+  "_id": "63225b2c2c2436c310fcf157",
+  "id": "laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
+  "private": false,
+  "pipeline_tag": "zero-shot-image-classification",
+  "library_name": "open_clip",
+  "tags": [
+    "open_clip",
+    "pytorch",
+    "safetensors",
+    "clip",
+    "zero-shot-image-classification",
+    "arxiv:1910.04867",
+    "license:mit",
+    "region:us"
+  ],
+  "downloads": 494699,
+  "likes": 486,
+  "modelId": "laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
+  "author": "laion",
+  "sha": "1c2b8495b28150b8a4922ee1c8edee224c284c0c",
+  "lastModified": "2025-01-22T04:38:44.000Z",
+  "gated": false,
+  "disabled": false,
+  "widgetData": [
+    {
+      "src": "https://huggingface.co/datasets/mishig/sample_images/resolve/main/cat-dog-music.png",
+      "candidate_labels": "playing music, playing sports",
+      "example_title": "Cat & Dog"
+    }
+  ],
+  "model-index": null,
+  "config": {
+    "architectures": [
+      "CLIPModel"
+    ],
+    "model_type": "clip",
+    "tokenizer_config": {
+      "unk_token": {
+        "content": "<|endoftext|>",
+        "single_word": false,
+        "lstrip": false,
+        "rstrip": false,
+        "normalized": true,
+        "__type": "AddedToken"
+      },
+      "bos_token": {
+        "content": "<|startoftext|>",
+        "single_word": false,
+        "lstrip": false,
+        "rstrip": false,
+        "normalized": true,
+        "__type": "AddedToken"
+      },
+      "eos_token": {
+        "content": "<|endoftext|>",
+        "single_word": false,
+        "lstrip": false,
+        "rstrip": false,
+        "normalized": true,
+        "__type": "AddedToken"
+      },
+      "pad_token": "<|endoftext|>"
+    }
+  },
+  "cardData": {
+    "license": "mit",
+    "widget": [
+      {
+        "src": "https://huggingface.co/datasets/mishig/sample_images/resolve/main/cat-dog-music.png",
+        "candidate_labels": "playing music, playing sports",
+        "example_title": "Cat & Dog"
+      }
+    ],
+    "library_name": "open_clip",
+    "pipeline_tag": "zero-shot-image-classification"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "431e737df0db4099ffa997aa9e6d122b7c71698a",
+      "size": 1574
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "72f888ab1ebb47ed8f8ca0f59a90a1d0bbfa9e23",
+      "size": 8209
+    },
+    {
+      "rfilename": "config.json",
+      "blobId": "38a5d523326dafc4a3409504bc8f9aa73b5bc555",
+      "size": 4725
+    },
+    {
+      "rfilename": "merges.txt",
+      "blobId": "80954e3a66452c700b68842dcebc85e08dd3306a",
+      "size": 524618
+    },
+    {
+      "rfilename": "model.safetensors",
+      "blobId": "6164afb9d1ba9474c76cd45b5bf46b895a691ba5",
+      "size": 3944552236,
+      "lfs": {
+        "sha256": "036e6e2bd49697511f4f8b8cb5ee465f93025f7a69a145eadeb9a881ace9b18d",
+        "size": 3944552236,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "open_clip_config.json",
+      "blobId": "a7e04ce761ac15fc0edd245e5ddc0e88fabdf67a",
+      "size": 637
+    },
+    {
+      "rfilename": "open_clip_model.safetensors",
+      "blobId": "7832bfba5d3a4dbf9df1dd17d68ddd2f17ca9d4a",
+      "size": 3944517836,
+      "lfs": {
+        "sha256": "0084e75319a50ad85ef45377bad5bc38f2f58824459eb690048d51c9f8863be5",
+        "size": 3944517836,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "open_clip_pytorch_model.bin",
+      "blobId": "6c854fa8ce7af9137008574025fb83630b3fcf4e",
+      "size": 3944692325,
+      "lfs": {
+        "sha256": "9a78ef8e8c73fd0df621682e7a8e8eb36c6916cb3c16b291a082ecd52ab79cc4",
+        "size": 3944692325,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "preprocessor_config.json",
+      "blobId": "5a12a1eb250987a4eee0e3e7d7338c4b22724be1",
+      "size": 316
+    },
+    {
+      "rfilename": "pytorch_model.bin",
+      "blobId": "c9ff24e72f77dfa6cc87b3ed8dd3174ffdaf65a5",
+      "size": 3944736097,
+      "lfs": {
+        "sha256": "d6d1e3e93c27d6e430db9d20c151d1baa4dc98b503b136b7d85a63f4b02c9749",
+        "size": 3944736097,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "special_tokens_map.json",
+      "blobId": "9bfb42aa97dcd61e89f279ccaee988bccb4fabae",
+      "size": 389
+    },
+    {
+      "rfilename": "tokenizer.json",
+      "blobId": "564c0ebd5ce29c4ee4864004aee693deadd3128c",
+      "size": 2224041
+    },
+    {
+      "rfilename": "tokenizer_config.json",
+      "blobId": "e3e138b103e00cb9cfb2ab6ef11d96b47ddd9e04",
+      "size": 904
+    },
+    {
+      "rfilename": "vocab.json",
+      "blobId": "182766ce89b439768edadda342519f33802f5364",
+      "size": 862328
+    }
+  ],
+  "spaces": [
+    "pharmapsychotic/CLIP-Interrogator",
+    "yanze/PuLID-FLUX",
+    "multimodalart/Ip-Adapter-FaceID",
+    "yanze/PuLID",
+    "guoyww/AnimateDiff",
+    "wwen1997/Framer",
+    "wangfuyun/AnimateLCM-SVD",
+    "fantaxy/flx-pulid",
+    "wangfuyun/AnimateLCM",
+    "fffiloni/ZeST",
+    "VIDraft/Portrait-Animation",
+    "Vchitect/LaVie",
+    "TIGER-Lab/T2V-Turbo-V2",
+    "fffiloni/SVFR-demo",
+    "PAIR/StreamingT2V",
+    "shikunl/prismer",
+    "zheyangqin/VADER",
+    "tomg-group-umd/pez-dispenser",
+    "Leoxing/PIA",
+    "unity/IP-Adapter-Instruct",
+    "TianxingWu/FreeInit",
+    "BLIP3o/blip-3o",
+    "IP-composer/ip-composer",
+    "sam-motamed/VOID",
+    "fffiloni/AniDoc",
+    "fffiloni/MimicMotion",
+    "fffiloni/svd_keyframe_interpolation",
+    "tight-inversion/tight-inversion-pulid-demo",
+    "ID-Animator/ID-Animator",
+    "HarborYuan/ovsam",
+    "JackAILab/ConsistentID",
+    "TencentARC/MotionCtrl",
+    "MeissonFlow/meissonic",
+    "Heartsync/image-ip-composer",
+    "Yiyuan/InteractiveVideo",
+    "FaceAdapter/FaceAdapter",
+    "fffiloni/AnimateDiff-Image-Init",
+    "zideliu/styledrop",
+    "hehao13/CameraCtrl-svd",
+    "fffiloni/ReNO",
+    "alexnasa/ReCamMaster-ZEROGPU",
+    "LanguageBind/LanguageBind",
+    "Deddy/PuLid-FLX-GPU",
+    "LXT/OMG_Seg",
+    "sofianhw/PuLID-FLUX",
+    "Caoyunkang/AdaCLIP",
+    "rerun/Vista",
+    "kfirgold99/Piece-it-Together-Space",
+    "Deadmon/Ip-Adapter-FaceID",
+    "HikariDawn/This-and-That",
+    "guardiancc/dance-monkey",
+    "SunderAli17/ToonMage",
+    "ZENLLC/videodiffusion",
+    "qiuzhi2046/PuLID-FLUX",
+    "JackAILab/ConsistentID-SDXL",
+    "ML4Sustain/EarthExplorer",
+    "kadirnar/ZeST",
+    "yslan/ObjCtrl-2.5D",
+    "rahul7star/PusaV1",
+    "hugging-apps/t3-video-4k",
+    "hamacojr/CAT-Seg",
+    "hamacojr/SAM-CAT-Seg",
+    "nowsyn/StyleShot",
+    "ATH-MaaS/Mei",
+    "xswu/HPSv2",
+    "navervision/LinCIR",
+    "JoPmt/ConsisID",
+    "jbilcke-hf/ReCamMaster",
+    "NguyenDinhHieu/EquiFashion",
+    "mattmdjaga/Preference_Scorer-Pickscore",
+    "rp-yu/apiprompting",
+    "qiuzhi2046/PuLID",
+    "Kunbyte/Lumen",
+    "yuxinjiang11/Anomagic",
+    "furonghuang-lab/Erasing-Invisible-Demo",
+    "cangcz/AnchorCrafter",
+    "huzey/VibeSpace",
+    "Xuweiyi/UniCtrl",
+    "nuwandaa/StyleShot",
+    "zongzhuofan/EasyRef",
+    "VIDraft/tight-inversion-pulid-demo",
+    "Shani13524/neurosense_app",
+    "nutrientdocs/doc-openvocab-leaderboard",
+    "Fr33d0m21/Remodel_Dreamer",
+    "jbilcke-hf/ai-tube-model-lavie",
+    "hideosnes/Zero-Shot-Material-Transfer",
+    "CrazyEric/AnimateLCM-SVD",
+    "xinxiaoxin/MimicMotion",
+    "yasserrmd/InspireBake",
+    "deepghs/compare_clip_siglip",
+    "PiperMy/PuLID-FLUX",
+    "nutrientdocs/document-classification-leaderboard",
+    "jsscclr/CLIP-Interrogator",
+    "kbora/minerva-generate-docker",
+    "Kikastrophe/CLIP-Interrogator1",
+    "yxbob/h94-IP-Adapter-FaceID",
+    "biaggi/CLIP-Interrogator",
+    "jbilcke-hf/ai-tube-model-animatelcm",
+    "Shad0ws/PuLID",
+    "SIGMitch/ModelMan"
+  ],
+  "createdAt": "2022-09-14T22:52:28.000Z",
+  "safetensors": {
+    "parameters": {
+      "I64": 334,
+      "F32": 986109440
+    },
+    "total": 986109774
+  },
+  "usedStorage": 16706800297
+}

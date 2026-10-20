@@ -1,0 +1,162 @@
+{
+  "_id": "644638f4e1136600536edeb9",
+  "id": "yuvalkirstain/PickScore_v1",
+  "private": false,
+  "pipeline_tag": "zero-shot-image-classification",
+  "library_name": "transformers",
+  "tags": [
+    "transformers",
+    "pytorch",
+    "safetensors",
+    "clip",
+    "zero-shot-image-classification",
+    "arxiv:2305.01569",
+    "endpoints_compatible",
+    "region:us"
+  ],
+  "downloads": 442120,
+  "likes": 53,
+  "modelId": "yuvalkirstain/PickScore_v1",
+  "author": "yuvalkirstain",
+  "sha": "a4e4367c6dfa7288a00c550414478f865b875800",
+  "lastModified": "2023-05-08T08:32:12.000Z",
+  "gated": false,
+  "disabled": false,
+  "config": {
+    "architectures": [
+      "CLIPModel"
+    ],
+    "model_type": "clip",
+    "tokenizer_config": {
+      "bos_token": {
+        "__type": "AddedToken",
+        "content": "<|startoftext|>",
+        "lstrip": false,
+        "normalized": true,
+        "rstrip": false,
+        "single_word": false
+      },
+      "eos_token": {
+        "__type": "AddedToken",
+        "content": "<|endoftext|>",
+        "lstrip": false,
+        "normalized": true,
+        "rstrip": false,
+        "single_word": false
+      },
+      "pad_token": "<|endoftext|>",
+      "unk_token": {
+        "__type": "AddedToken",
+        "content": "<|endoftext|>",
+        "lstrip": false,
+        "normalized": true,
+        "rstrip": false,
+        "single_word": false
+      }
+    }
+  },
+  "transformersInfo": {
+    "auto_model": "AutoModelForZeroShotImageClassification",
+    "pipeline_tag": "zero-shot-image-classification",
+    "processor": "AutoProcessor"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "c7d9f3332a950355d5a77d85000f05e6f45435ea",
+      "size": 1477
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "ed337d971d4a7b75ab3de556d3aaf96b769c226e",
+      "size": 3227
+    },
+    {
+      "rfilename": "config.json",
+      "blobId": "99e3770ba4e4f1db668d5a4370bbe41bb40adec3",
+      "size": 4514
+    },
+    {
+      "rfilename": "merges.txt",
+      "blobId": "76e821f1b6f0a9709293c3b6b51ed90980b3166b",
+      "size": 524619
+    },
+    {
+      "rfilename": "model.safetensors",
+      "blobId": "5bcbd31efe7324735e75e6bf42a61619c29ed8da",
+      "size": 3944552236,
+      "lfs": {
+        "sha256": "ef31ef6fc5ff4d9bb90dd232df4e145887ba62c5a03aa2841415f8c25f18d52e",
+        "size": 3944552236,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "preprocessor_config.json",
+      "blobId": "af8e53160886428d1b4527c8fd4c448d834358f5",
+      "size": 556
+    },
+    {
+      "rfilename": "pytorch_model.bin",
+      "blobId": "d9d0576f0008216f083264c99f79d21f9e806a3f",
+      "size": 3944742093,
+      "lfs": {
+        "sha256": "3f0cf1c6e533f478534404cb3ca6938103becbfe4312c6affc077c274a757972",
+        "size": 3944742093,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "special_tokens_map.json",
+      "blobId": "2c2130b544c0c5a72d5d00da071ba130a9800fb2",
+      "size": 472
+    },
+    {
+      "rfilename": "tokenizer.json",
+      "blobId": "bc1f77d20440541dd073ebae6f6c401087c7d34e",
+      "size": 2224119
+    },
+    {
+      "rfilename": "tokenizer_config.json",
+      "blobId": "c9b2a711cbdd039529fa5a66f1965e13eb14451d",
+      "size": 775
+    },
+    {
+      "rfilename": "vocab.json",
+      "blobId": "182766ce89b439768edadda342519f33802f5364",
+      "size": 862328
+    }
+  ],
+  "spaces": [
+    "zheyangqin/VADER",
+    "sam-motamed/VOID",
+    "fffiloni/ReNO",
+    "yuvalkirstain/PickScore",
+    "ZENLLC/videodiffusion",
+    "mattmdjaga/Preference_Scorer-Pickscore",
+    "cp524/smc_meissonic",
+    "micole66/PickScore",
+    "xinglilu/Vadhwid",
+    "fantaxy/VADER",
+    "jcrissa/yuvalkirstain-PickScore_v1",
+    "sdsdgwe/HPSv3",
+    "benzweijia/Adv-GRPO",
+    "benzweijia/Adv-GRPO_DINO",
+    "weathon/HPSv3",
+    "rafael1994s/vision",
+    "seedmanc/PickScore",
+    "analavishal/void-demo",
+    "Ringo42069/cass-nebula-gen",
+    "Devteamdl/VOID-api",
+    "Luv008888/VOID"
+  ],
+  "createdAt": "2023-04-24T08:08:20.000Z",
+  "safetensors": {
+    "parameters": {
+      "I64": 334,
+      "F32": 986109440
+    },
+    "total": 986109774
+  },
+  "usedStorage": 7889294329
+}

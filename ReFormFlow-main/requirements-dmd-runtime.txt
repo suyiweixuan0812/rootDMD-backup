@@ -1,0 +1,14 @@
+# Minimal DMD/PickScore environment. Reuses the host's torch 2.7.1+cu128 and
+# torchvision 0.22.1+cu128 through a venv created with --system-site-packages.
+# The upstream reference uses torch 2.6.0; no host packages are replaced.
+numpy==1.26.4
+transformers==4.40.0
+accelerate==1.4.0
+diffusers==0.33.1
+peft==0.10.0
+huggingface-hub==0.29.1
+tokenizers==0.19.1
+ml_collections==1.1.0
+sentencepiece==0.2.2
+safetensors==0.8.0
+ftfy==6.3.1
