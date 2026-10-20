@@ -95,11 +95,11 @@ def main():
                   and main.get('count') == 2048) or training_ready)
         if ready:
             break
-        if time.time() > D-4800:
+        if time.time() > D-4200:
             record('NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED')
             return
         time.sleep(10)
-    if D-time.time() < 4800:
+    if D-time.time() < 4200:
         record('NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED')
         return
     choice = validation.read(R/'deterministic-selection.json')

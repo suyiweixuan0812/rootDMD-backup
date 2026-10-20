@@ -590,6 +590,17 @@ from paper_numeric_query_addenda import render as render_numeric_query
 tex=tex.replace(r'\begin{frame}{仍未被实验或理论解决的边界}',render_numeric_query()+r'\begin{frame}{仍未被实验或理论解决的边界}')
 from paper_round_outcome import render as render_outcome
 outcome,outcome_reports,outcome_groups,outcome_values=render_outcome(ROUND)
+if (ROUND/'deterministic-selection.json').exists():
+    current_choice=json.loads((ROUND/'deterministic-selection.json').read_text())
+    faithful_case=current_choice['pure_teacher_alternative']['case']
+    if faithful_case != current_choice['selected_case']:
+        faithful_tex,faithful_reports,faithful_groups,faithful_values=render_outcome(
+            ROUND,case_override=faithful_case,title_override='纯教师路径版：保留核心的完整测试')
+        outcome+=faithful_tex
+        outcome_reports.update(faithful_reports)
+        outcome_groups.extend(faithful_groups)
+        outcome_values.extend(faithful_values)
+
 from paper_particle_outcome import render as render_particle_outcome
 particle_tex,particle_reports,particle_groups,particle_values=render_particle_outcome(ROUND)
 outcome += particle_tex

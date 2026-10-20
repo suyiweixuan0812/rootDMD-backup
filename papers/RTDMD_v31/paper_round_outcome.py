@@ -3,12 +3,12 @@ import json
 from paper_bridge_addenda import LABELS, METRICS
 
 
-def render(root):
+def render(root, case_override=None, title_override=None):
     selected = root/'deterministic-selection.json'
     if not selected.exists():
         return '', {}, [], []
     choice = json.loads(selected.read_text())
-    best = choice['selected_case']
+    best = case_override or choice['selected_case']
     rows, reports, groups, values, seeds = [], {}, [], [], []
     for seed in [42, 43, 44]:
         tables = {}
@@ -30,7 +30,7 @@ def render(root):
             rows.append(f'{seed} & 4 & '+LABELS[case]+' & '+' & '.join(f'{tables[case][k]:.4f}' for k in METRICS)+r' \\')
     if not seeds:
         return '', {}, [], []
-    title = '本轮完整测试结论：与两种 DMD 对照'
+    title = title_override or '本轮完整测试结论：与两种 DMD 对照'
     gains = {k:sum(t[best][k]-t['dmd'][k] for _, t in seeds)/len(seeds) for k in METRICS}
     paired_wins = all(all(t[best][k] > max(t['dmd'][k], t['dmd_fp32'][k])
                           for k in ['Pick Score', 'HP Score']) for _, t in seeds)
@@ -45,7 +45,8 @@ def render(root):
         conclusion = '训练种子复核存在未胜出的对比，尚未建立两个偏好指标的稳定优势；不能只列较好的一次。'
     else:
         conclusion = '本页仅含一个完整训练种子；即使均值上升，也不能据此认定训练稳定性。'
-    if choice['status'] != 'QUALIFIED_DEV_CANDIDATE':
+    qualified = (choice['status'] == 'QUALIFIED_DEV_CANDIDATE' if case_override is None else choice['pure_teacher_alternative']['eligible'])
+    if not qualified:
         conclusion = '开发守门条件没有候选全部通过；本表为固定诊断候选的后续验证，不能称为达标方法。'+conclusion
     delta = '；'.join(label+f' {gains[k]:+.4f}' for label, k in
                      [('CLIP','CLIP Score'),('Aesthetic','Aesthetic Score'),('Pick','Pick Score'),('HPS','HP Score')])
@@ -62,7 +63,7 @@ Seed & NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ 
 \begin{alertblock}{结论的范围}
 '''+conclusion+r'''
 \end{alertblock}
-完整2048提示词、相同推理噪声与四项模型；开发分数及旧 MH/PCMH 成绩不混入本表。
+完整2048提示词、相同推理噪声与四项模型；本轮双方统一确定性 CUDA，旧 DMD/MH/PCMH 队列另表报告。
 \end{frame}
 '''
     groups.append(dict(title_contains=title, names=list(reports)))
