@@ -4,6 +4,7 @@ import torch
 
 from flow_grpo.conditional_path_is import lift_student_prefix,conditional_importance_sweep
 from flow_grpo.path_ratio_smc import evaluate_teacher_path
+from flow_grpo.rounding_cells import UnrepresentableRoundingCell,identity_partition_result
 from .solver import cps_step
 
 
@@ -53,11 +54,16 @@ def conditional_path_mean(observation,sigma,states,source,student,teacher,positi
                           eta,num_particles=8,num_sweeps=2,base_scale=.15,block_size=16):
     if source.shape[0]!=1:raise ValueError('Comparison entry requires batch1')
     sigmas=[float(s) for s in positive_sigmas]
-    reference=lift_student_prefix(states,sigmas,eta,teacher)
+    try:
+        reference=lift_student_prefix(states,sigmas,eta,teacher)
+    except UnrepresentableRoundingCell:
+        replay=(states[-1].float()-sigmas[len(states)-1]*student(states[-1],sigmas[len(states)-1]).float()).to(source.dtype)
+        if not torch.equal(replay,source):raise RuntimeError('Identity-partition source readout mismatch')
+        return identity_partition_result(source,float(sigma.item()),len(states))
     stops=torch.tensor([len(states)-1],device=source.device)
     def evaluate(e,j):
         return evaluate_teacher_path(e,j,observation,sigma.flatten(),sigmas,eta,
-            student,teacher,state_dtype=source.dtype)
+            student,teacher,state_dtype=source.dtype,restrict_representable=True)
     initial=evaluate(reference,stops)
     if not torch.equal(initial.source,source):
         raise RuntimeError(f'Posterior reference replay mismatch: {float((initial.source-source).abs().max())}')
@@ -76,5 +82,6 @@ def conditional_path_mean(observation,sigma,states,source,student,teacher,positi
     metrics.update({'path_is/sigma':s,'path_is/stop':len(states),
         'path_is/frozen_update':float(all(r['path_is_actual_move_rate']==0 for r in diagnostics)),
         'path_is/reference_replay_exact':1.,
+        'path_is/identity_due_to_unrepresentable_cell':0.,'path_is/candidate_pool_evaluated':1.,
         'path_is/total_mean_displacement_rms':float((estimate-source.float()).square().mean().sqrt())})
     return estimate,metrics

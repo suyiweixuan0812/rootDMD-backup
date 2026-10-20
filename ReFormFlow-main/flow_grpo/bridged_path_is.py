@@ -10,6 +10,7 @@ large sums. gamma=0 recovers Teacher-only; gamma=1 is a Student-proposal CONTROL
 from dataclasses import dataclass
 import math
 import torch
+from .rounding_cells import unrepresentable_bf16_cells
 from .path_ratio_smc import (PathEvaluation,cps_mean,bf16_gaussian_log_mass,
     bf16_gaussian_log_ratio_at,gaussian_log_ratio_at)
 
@@ -31,7 +32,7 @@ def bridge_velocity(student,teacher,strength):
 def evaluate_bridged_path(innovations,stops,observation,sigma_observation,
                           positive_sigmas,eta,student_velocity,teacher_velocity,
                           bridge_strength=.9,initial_mean=None,target_stop_probs=None,
-                          proposal_stop_probs=None,state_dtype=None):
+                          proposal_stop_probs=None,state_dtype=None,restrict_representable=False):
     grid=tuple(float(x) for x in positive_sigmas)
     n,count=innovations.shape[:2]
     if (count!=len(grid) or not count or not 0<eta<=1 or not 0<=bridge_strength<=1
@@ -44,6 +45,8 @@ def evaluate_bridged_path(innovations,stops,observation,sigma_observation,
     shift=torch.zeros_like(sample) if initial_mean is None else torch.broadcast_to(initial_mean,sample.shape)
     sample=sample+shift
     if state_dtype is not None:sample=sample.to(state_dtype)
+    excluded=(unrepresentable_bf16_cells(sample,shift,1.).flatten(1).any(1)
+              if restrict_representable else torch.zeros(n,device=sample.device,dtype=torch.bool))
     quantized=state_dtype==torch.bfloat16
     initial=(bf16_gaussian_log_ratio_at(sample,torch.zeros_like(shift),shift,1.) if quantized else
         (.5*shift.double().square()-sample.double()*shift.double()).flatten(1).sum(1))
@@ -64,6 +67,8 @@ def evaluate_bridged_path(innovations,stops,observation,sigma_observation,
             cps_mean(x,bridge_velocity(student,teacher,bridge_strength),s,t,eta))
         std=t*math.sin(eta*math.pi/2)
         proposed=(proposal_mean+std*innovations[:,k+1]).to(sample.dtype)
+        if restrict_representable:
+            excluded |= unrepresentable_bf16_cells(proposed,proposal_mean,std).flatten(1).any(1) & (stops>k)
         if quantized:
             a=bf16_gaussian_log_mass(proposed,target_mean,std)
             b=bf16_gaussian_log_mass(proposed,teacher_mean,std)
@@ -94,4 +99,4 @@ def evaluate_bridged_path(innovations,stops,observation,sigma_observation,
     likelihood=-.5*((observation.double()-(1-sigma)*source.double())/sigma).square().flatten(1).sum(1)
     weight=initial+path+stop_ratio+likelihood
     if not torch.isfinite(weight).all():raise FloatingPointError('Nonfinite bridge weight')
-    return BridgedPathEvaluation(source,weight,path,initial,stop_ratio,likelihood,base,correction)
+    return BridgedPathEvaluation(source,weight.masked_fill(excluded,-torch.inf),path,initial,stop_ratio,likelihood,base,correction)

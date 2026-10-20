@@ -8,6 +8,7 @@ step, not a replacement for the path likelihood ratio. Not an SD3 trainer.
 from dataclasses import dataclass
 import math
 import torch
+from .rounding_cells import unrepresentable_bf16_cells
 
 
 class TemperingBudgetExceeded(RuntimeError):
@@ -92,7 +93,7 @@ def bf16_gaussian_log_ratio_at(value,target_mean,proposal_mean,std):
 def evaluate_teacher_path(innovations, stops, observation, sigma_observation,
                           positive_sigmas, eta, student_velocity, teacher_velocity,
                           initial_mean=None, target_stop_probs=None, proposal_stop_probs=None,
-                          state_dtype=None):
+                          state_dtype=None,restrict_representable=False):
     """Map iid Gaussian innovations through a *Teacher* prefix and weigh it.
 
     innovations: [N,K,...], with K strictly positive generator sigma nodes.
@@ -117,6 +118,8 @@ def evaluate_teacher_path(innovations, stops, observation, sigma_observation,
     quantized=state_dtype==torch.bfloat16
     if state_dtype is not None:
         sample=sample.to(state_dtype)
+    excluded=(unrepresentable_bf16_cells(sample,shift,1.).flatten(1).any(1)
+              if restrict_representable else torch.zeros(n,device=sample.device,dtype=torch.bool))
     initial_ratio = (bf16_gaussian_log_ratio_at(sample,torch.zeros_like(shift),shift,1.) if quantized
         else (.5 * shift.double().square() - sample.double() * shift.double()).flatten(1).sum(1))
     cumulative = torch.zeros(n, device=sample.device, dtype=torch.float64)
@@ -135,6 +138,8 @@ def evaluate_teacher_path(innovations, stops, observation, sigma_observation,
         proposal_mean = cps_mean(x, teacher, s, t, eta)
         std = t * math.sin(eta * math.pi / 2)
         proposed = (proposal_mean + std * innovations[:, k + 1]).to(sample.dtype)
+        if restrict_representable:
+            excluded |= unrepresentable_bf16_cells(proposed,proposal_mean,std).flatten(1).any(1) & (stops>k)
         ratio_function=bf16_gaussian_log_ratio_at if quantized else gaussian_log_ratio_at
         cumulative = cumulative + ratio_function(proposed, target_mean, proposal_mean, std)
         sample = proposed
@@ -160,7 +165,7 @@ def evaluate_teacher_path(innovations, stops, observation, sigma_observation,
     log_weight = initial_ratio + path_ratio + stop_ratio + likelihood
     if not torch.isfinite(log_weight).all():
         raise FloatingPointError('Nonfinite path-posterior weight')
-    return PathEvaluation(source, log_weight, path_ratio, initial_ratio, stop_ratio, likelihood)
+    return PathEvaluation(source,log_weight.masked_fill(excluded,-torch.inf),path_ratio,initial_ratio,stop_ratio,likelihood)
 
 
 def normalized_log_weights(log_weights):

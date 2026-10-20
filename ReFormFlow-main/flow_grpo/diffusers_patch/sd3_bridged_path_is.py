@@ -3,6 +3,7 @@ import math
 import torch
 from flow_grpo.bridged_path_is import evaluate_bridged_path,bridge_velocity
 from flow_grpo.conditional_path_is import lift_student_prefix,conditional_importance_sweep
+from flow_grpo.rounding_cells import UnrepresentableRoundingCell,identity_partition_result
 from .sd3_conditional_path_is import make_fields,sample_prefix
 
 
@@ -16,12 +17,21 @@ def conditional_path_mean(observation,sigma,states,source,student,teacher,positi
     bridge_strength=long_bridge_strength if len(states)>=long_bridge_min_stop else bridge_strength
     def proposal(x,s):
         return bridge_velocity(student(x,s).float(),teacher(x,s).float(),bridge_strength)
-    reference=lift_student_prefix(states,grid,eta,proposal)
+    try:
+        reference=lift_student_prefix(states,grid,eta,proposal)
+    except UnrepresentableRoundingCell:
+        replay=(states[-1].float()-grid[len(states)-1]*student(states[-1],grid[len(states)-1]).float()).to(source.dtype)
+        if not torch.equal(replay,source):raise RuntimeError('Bridge identity-partition readout mismatch')
+        mean,metrics=identity_partition_result(source,float(sigma.item()),len(states))
+        metrics.update({'path_is/bridge_strength':bridge_strength,
+            'path_is/base_student_teacher_span':0.,'path_is/teacher_proposal_correction_span':0.,
+            'path_is/innovation_radius_limit':float(max_innovation_radius or 0)})
+        return mean,metrics
     stops=torch.tensor([len(states)-1],device=source.device)
     last=[]
     def evaluate(e,j):
         value=evaluate_bridged_path(e,j,observation,sigma.flatten(),grid,eta,student,teacher,
-            bridge_strength=bridge_strength,state_dtype=source.dtype)
+            bridge_strength=bridge_strength,state_dtype=source.dtype,restrict_representable=True)
         last[:]=[value]
         return value
     initial=evaluate(reference,stops)
@@ -54,6 +64,7 @@ def conditional_path_mean(observation,sigma,states,source,student,teacher,positi
     metrics={k.replace('path_is_','path_is/',1):sum(d[k] for d in diagnostics)/len(diagnostics)
              for k in diagnostics[0]}
     metrics.update({'path_is/sigma':s,'path_is/stop':len(states),'path_is/reference_replay_exact':1.,
+        'path_is/identity_due_to_unrepresentable_cell':0.,'path_is/candidate_pool_evaluated':1.,
         'path_is/frozen_update':float(all(d['path_is_actual_move_rate']==0 for d in diagnostics)),
         'path_is/total_mean_displacement_rms':float((mean-source.float()).square().mean().sqrt())})
     return mean,metrics

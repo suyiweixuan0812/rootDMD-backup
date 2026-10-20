@@ -10,6 +10,7 @@ import math
 import torch
 
 from .path_ratio_smc import cps_mean
+from .rounding_cells import UnrepresentableRoundingCell,unrepresentable_bf16_cells
 
 
 def _truncated_normal(lower,upper,generator,max_rounds=128):
@@ -55,6 +56,8 @@ def lift_student_prefix(states,positive_sigmas,eta,teacher_velocity,initial_mean
         hi=.5*(value.double()+torch.nextafter(value,torch.full_like(value,float('inf'))).double())
         lower=(lo-mean.double())/std
         upper=(hi-mean.double())/std
+        if unrepresentable_bf16_cells(value,mean,std).any():
+            raise UnrepresentableRoundingCell('Positive physical cell lost at FP64 inverse precision')
         out=_truncated_normal(lower,upper,generator)
         # Use FP64 proposal innovations: FP32 cancellation can miss BF16 cells.
         for _ in range(16):
@@ -122,6 +125,10 @@ def conditional_importance_sweep(reference,stops,evaluate,*,num_particles=8,
     selected=sources[rows,chosen]
     difference=(selected.float()-sources[:,0].float()).flatten(1)
     displacement=(mean-sources[:,0].double()).flatten(1)
+    logw=evaluated.log_weight.reshape(batch,num_particles)
+    finite=torch.isfinite(logw)
+    finite_span=(torch.where(finite,logw,-torch.inf).max(1).values-
+                 torch.where(finite,logw,torch.inf).min(1).values).mean()
     return ConditionalISResult(particles[rows,chosen],stops.clone(),mean.float(),dict(
         path_is_ess=float(weights.square().sum(1).reciprocal().mean()),
         path_is_max_weight=float(weights.max(1).values.mean()),
@@ -129,8 +136,8 @@ def conditional_importance_sweep(reference,stops,evaluate,*,num_particles=8,
         path_is_actual_move_rate=float((difference.square().sum(1)>0).float().mean()),
         path_is_move_rms=float(difference.square().mean(1).sqrt().mean()),
         path_is_mean_displacement_rms=float(displacement.square().mean(1).sqrt().mean()),
-        path_is_log_weight_range=float((evaluated.log_weight.reshape(batch,num_particles).max(1).values
-            -evaluated.log_weight.reshape(batch,num_particles).min(1).values).mean()),
+        path_is_log_weight_range=float(finite_span),
+        path_is_excluded_unrepresentable_candidates=float((~finite).sum(1).float().mean()),
         path_is_auxiliary_scale=delta,
         path_is_block_size=(int(block_size) if block_size is not None else int(reference[0].numel())),
         path_is_path_ratio_span=float((evaluated.log_path_ratio.reshape(batch,num_particles).max(1).values
