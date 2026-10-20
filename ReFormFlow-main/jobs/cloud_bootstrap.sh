@@ -8,8 +8,13 @@ cd "$task_root"
 : "${REWARD_CKPT_PATH:?Set REWARD_CKPT_PATH to the mounted evaluation weights}"
 task_runtime="${DMD_RUNTIME_DIR:-/tmp/dmd-runtime}"
 python -m venv --system-site-packages "$task_runtime"
-"$task_runtime/bin/python" -m pip install --disable-pip-version-check --no-cache-dir \
-    --index-url https://pypi.org/simple -r requirements-dmd-eval.txt
+if [[ -n "${DMD_WHEELHOUSE:-}" ]]; then
+    "$task_runtime/bin/python" -m pip install --disable-pip-version-check --no-cache-dir \
+        --no-index --find-links "$DMD_WHEELHOUSE" -r requirements-dmd-eval.txt
+else
+    "$task_runtime/bin/python" -m pip install --disable-pip-version-check --no-cache-dir \
+        --index-url https://pypi.org/simple -r requirements-dmd-eval.txt
+fi
 export DMD_PYTHON="$task_runtime/bin/python"
 export PYTHONPATH="$task_root${PYTHONPATH:+:$PYTHONPATH}"
 "$DMD_PYTHON" scripts/check_runtime.py --method dmd --model "$SD3_MODEL" \

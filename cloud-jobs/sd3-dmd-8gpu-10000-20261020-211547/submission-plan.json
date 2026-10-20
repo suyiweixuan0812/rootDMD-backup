@@ -11,5 +11,10 @@
   "outer_steps": 10000,
   "gpus": 8,
   "output_directory": "/rootDMD/cloud-jobs/sd3-dmd-8gpu-10000-20261020-211547",
-  "state": "preparing"
+  "state": "preparing-vepfs",
+  "vepfs_id": "vepfs-cnbj4cc563ae78e0",
+  "vepfs_name": "vepfs-mlp3",
+  "vepfs_host_path": "/mnt/vepfs-cnbj4cc563ae78e0",
+  "vepfs_asset_root": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547",
+  "nodes": 1
 }

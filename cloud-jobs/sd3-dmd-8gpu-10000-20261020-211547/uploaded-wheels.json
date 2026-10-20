@@ -1,0 +1,136 @@
+{
+  "bucket": "c20250506",
+  "prefix": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547",
+  "files": [
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/zipp-4.1.1-py3-none-any.whl",
+      "size": 10582,
+      "etag": "bc33224c18cb8ac110a4665048ef27b3"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/args-0.1.0-py3-none-any.whl",
+      "size": 3319,
+      "etag": "d9bb3ff2d68a6cfe52bca7fa6da0f9e1"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/clint-0.5.1-py3-none-any.whl",
+      "size": 34458,
+      "etag": "a58ab914acc06127d9b9843e913af2d9"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/hpsv2x-1.2.0-py3-none-any.whl",
+      "size": 9028204,
+      "etag": "2934384a7c0106c96db949f40e1bee43"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/webdataset-1.0.2-py3-none-any.whl",
+      "size": 74956,
+      "etag": "1d3e9e4800a9f9e11a51743206340574"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/tokenizers-0.19.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "size": 3610961,
+      "etag": "ffe0493b2b926d9b416a3953c173824c"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/transformers-4.40.0-py3-none-any.whl",
+      "size": 8998461,
+      "etag": "8b707702b19589b6b24162f0d7cc4c4d"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/sentencepiece-0.2.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "size": 1397736,
+      "etag": "9955d3669683b3b04655b8ada64ce2c7"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/timm-1.0.15-py3-none-any.whl",
+      "size": 2361373,
+      "etag": "d1d52d0c49db0d02be5f948637f40f56"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "size": 516040,
+      "etag": "1fb94956b4ea5c0a2c5f79543471f946"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/pytest_split-0.8.0-py3-none-any.whl",
+      "size": 11708,
+      "etag": "4ac4ef2a261769c91a8b8e645e44bfb5"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "size": 807870,
+      "etag": "b3baaa03751fc90073221c5ec847048e"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/pytest-7.2.0-py3-none-any.whl",
+      "size": 316791,
+      "etag": "248e739c2e98293810c16f56d77dd675"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/protobuf-3.20.3-py2.py3-none-any.whl",
+      "size": 162128,
+      "etag": "d54a346e6bfbd0e599cc639e8b671b56"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/peft-0.10.0-py3-none-any.whl",
+      "size": 199070,
+      "etag": "d00d594c6af10cb93a1c225b0f693965"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/iniconfig-2.3.1-py3-none-any.whl",
+      "size": 7552,
+      "etag": "5167efaac40122c06cd4afffbe7edfa7"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/ml_collections-1.1.0-py3-none-any.whl",
+      "size": 76707,
+      "etag": "79676d8c98d39073240abcc7fc6b7091"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/numpy-1.26.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "size": 17950613,
+      "etag": "1ceb224096686831ad731e472b65e96a"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/importlib_metadata-9.0.1-py3-none-any.whl",
+      "size": 27920,
+      "etag": "10f3d7bf6891c943a86343c4666bbf85"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/huggingface_hub-0.29.1-py3-none-any.whl",
+      "size": 468049,
+      "etag": "b28b4cdec43bce442d57df588fb87fa0"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/ftfy-6.3.1-py3-none-any.whl",
+      "size": 44821,
+      "etag": "281b4d6ad88248f40cd28e125aac7438"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/einops-0.8.2-py3-none-any.whl",
+      "size": 65638,
+      "etag": "5605416baf416c292f92297bd77a8b68"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/braceexpand-0.1.7-py2.py3-none-any.whl",
+      "size": 5923,
+      "etag": "89037c104cb409cad1be862e02f38967"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/pyarrow-26.0.0-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "size": 53931932,
+      "etag": "0b6903b0a2f459ad080a5659d843d9cb"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/accelerate-1.4.0-py3-none-any.whl",
+      "size": 342129,
+      "etag": "1bbaecd854da1f9ca7b96d38f789cdfc"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels/diffusers-0.33.1-py3-none-any.whl",
+      "size": 3554612,
+      "etag": "2e70e5cb9e30cc42055181a0d5760129"
+    }
+  ]
+}

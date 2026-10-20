@@ -1,0 +1,66 @@
+{
+  "bucket": "c20250506",
+  "prefix": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547",
+  "files": [
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/refs/main",
+      "size": 40,
+      "etag": "1fbdf5488aa813691492276979d79ef1"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/tokenizer_config.json",
+      "size": 905,
+      "etag": "7b6c8387a6f4c3c15607941b21f5fdb1"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/vocab.json",
+      "size": 961143,
+      "etag": "1bc8fc969ae774adc01b561fedad5638"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/special_tokens_map.json",
+      "size": 389,
+      "etag": "c05624787db53245d5a2241c746b874c"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/preprocessor_config.json",
+      "size": 316,
+      "etag": "c38a9d064dc6ee42cb6e50f8b11e3539"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/tokenizer.json",
+      "size": 2224003,
+      "etag": "68ddfbb74477b2bb92711d6743b646bf"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/config.json",
+      "size": 4519,
+      "etag": "8b8f4bf7d46e3266e40dd97a2888fc15"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/merges.txt",
+      "size": 524619,
+      "etag": "d2bc10797e70c920c14c69729ecdab34"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/reward_ckpts/sac+logos+ava1-l14-linearMSE.pth",
+      "size": 3714759,
+      "etag": "b1047fd767a00134b8fd6529bf19521a"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache/hub/models--openai--clip-vit-large-patch14/snapshots/32bd64288804d66eefd0ccbe215aa642df71cc41/model.safetensors",
+      "size": 1710540580,
+      "etag": "ab5b97659e45871f4311a83309d60817-26"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/reward_ckpts/HPS_v2.1_compressed.pt",
+      "size": 1972490005,
+      "etag": "c51282d4ce6573dafe31dc03eb38c1e4-30"
+    },
+    {
+      "key": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/reward_ckpts/open_clip_pytorch_model.bin",
+      "size": 3944692325,
+      "etag": "f3db162873a6728d56c96d9f67762dbe-59"
+    }
+  ]
+}
