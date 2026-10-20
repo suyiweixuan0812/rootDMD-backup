@@ -1,3 +1,5 @@
+以保留纯Teacher路径为目标，先看 RTDMD_v31_纯Teacher入口.txt。下面记录固定的开发指标排名候选及其复现命令。
+
 RTDMD v31：怎样找到与运行代码
 
 主训练入口：/rootDMD/ReFormFlow-main/scripts/train_rtdmd_path_is_bridge_sd3.py

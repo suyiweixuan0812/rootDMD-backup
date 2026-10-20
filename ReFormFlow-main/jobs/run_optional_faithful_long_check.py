@@ -62,7 +62,7 @@ def audit_prefix(case, name):
 
 def evaluate(name):
     output = name+'-pick2048-exact'
-    if D-time.time() < 1800:
+    if D-time.time() < 1500:
         return None
     checkpoint = R/'runs'/name/'checkpoints/checkpoint-3000/lora/generator'
     with (Path('/rootDMD')/f'path-is-{output}.log').open('w') as stream:
@@ -128,7 +128,7 @@ def main():
         if main_status.startswith('FAILED') or main_status.startswith('BUDGET_STOP'):
             record('BUDGET_STOP_MAIN_VALIDATION_NEEDS_ATTENTION', main_status=main_status, training=names, archived=archives)
             return
-        if time.time() > D-1800:
+        if time.time() > D-1500:
             record('BUDGET_STOP_BEFORE_LONG_TEST', training=names, archived=archives)
             return
         time.sleep(10)

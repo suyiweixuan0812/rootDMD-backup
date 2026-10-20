@@ -588,6 +588,12 @@ from paper_numeric_query_addenda import render as render_numeric_query
 tex=tex.replace(r'\begin{frame}{仍未被实验或理论解决的边界}',render_numeric_query()+r'\begin{frame}{仍未被实验或理论解决的边界}')
 from paper_round_outcome import render as render_outcome
 outcome,outcome_reports,outcome_groups,outcome_values=render_outcome(ROUND)
+from paper_particle_outcome import render as render_particle_outcome
+particle_tex,particle_reports,particle_groups,particle_values=render_particle_outcome(ROUND)
+outcome += particle_tex
+outcome_reports.update(particle_reports)
+outcome_groups.extend(particle_groups)
+outcome_values.extend(particle_values)
 tex=tex.replace(r'\maketitle',r'\maketitle'+'\n'+outcome,1)
 added_reports.update(outcome_reports)
 added_groups.extend(outcome_groups)
@@ -601,6 +607,8 @@ manifest={'reports':{name:str(ROUND/'evidence'/name/'final-metrics.json') for _,
  'selection':selection,'source_sha256':hashlib.sha256(tex.encode()).hexdigest()}
 (OUT/'paper-data-manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False))
 
+manifest['selection_role']='Legacy first-phase choice for older tables; new cohort selection is separately stored'
+manifest['deterministic_selection']=json.loads((ROUND/'deterministic-selection.json').read_text()) if (ROUND/'deterministic-selection.json').exists() else None
 manifest['reports'].update(added_reports)
 manifest['report_sha256'].update({n:hashlib.sha256(Path(f).read_bytes()).hexdigest() for n,f in added_reports.items()})
 manifest['validation_table_groups'].extend(added_groups)

@@ -1,0 +1,16 @@
+保留纯Teacher路径比核心的代码入口
+
+所选纯Teacher版本：last
+训练入口：/rootDMD/ReFormFlow-main/scripts/train_rtdmd_path_is_last_sd3.py
+配置：config/rtdmd_path_is_last.py:last
+保留Teacher CPS字段、完整Student/Teacher正方差路径比和观测似然；条件i-SIR更新最后一个随机过渡，不给确定性末步加噪。
+候选前缀固定，其核比是共同条件常数；本版只部分平均后验，更早路径和停止点不混合。
+这是必要测度/后验修正后的方法；并非原稿全部采样步骤保持不变。质量是否胜出以匹配种子结果和控制实验为准。
+
+cd /rootDMD/ReFormFlow-main
+source jobs/local_env.sh
+export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+python scripts/run_deterministic_training.py scripts/train_rtdmd_path_is_last_sd3.py --config=config/rtdmd_path_is_last.py:last --config.run_name=rtdmd-v31-pure-teacher-user-repeat-seed42 --config.seed=42 --config.save_dir=logs/path-ratio-round1/runs --config.eval.dataset=dataset/drawbench --config.eval.num_prompts=8 --config.eval.final_num_prompts=64 --config.eval_freq=1000 --config.save_freq=1000
+
+原生FP32 EMA目录：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints/sd3-det-last-seed42-ema1000/lora/generator
+开发指标排名候选另见完整代码说明；若为Bridge，其实际提议已改变，不冒充纯Teacher版本。

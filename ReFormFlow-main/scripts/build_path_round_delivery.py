@@ -171,6 +171,24 @@ def main():
         faithful_trainer,faithful_config,_ = ENTRIES[faithful['case']]
         code += ['', '更贴近原稿的纯Teacher选项：'+faithful['case'], '入口：'+str(ROOT/faithful_trainer),
                  '配置：'+faithful_config, '原生EMA目录：'+str(R/'archived-checkpoints'/f'sd3-det-{faithful["case"]}-seed42-ema1000/lora/generator')]
+    ft, fc, fe = ENTRIES[faithful['case']]
+    faithful_command = ['python', 'scripts/run_deterministic_training.py', ft, '--config='+fc,
+        '--config.run_name=rtdmd-v31-pure-teacher-user-repeat-seed42', '--config.seed=42',
+        '--config.save_dir=logs/path-ratio-round1/runs', '--config.eval.dataset=dataset/drawbench',
+        '--config.eval.num_prompts=8', '--config.eval.final_num_prompts=64', '--config.eval_freq=1000',
+        '--config.save_freq=1000', *fe]
+    faithful_guide = ['保留纯Teacher路径比核心的代码入口', '',
+        '所选纯Teacher版本：'+faithful['case'], '训练入口：'+str(ROOT/ft), '配置：'+fc,
+        '保留Teacher CPS字段、完整Student/Teacher正方差路径比和观测似然；条件i-SIR更新最后一个随机过渡，不给确定性末步加噪。',
+        '候选前缀固定，其核比是共同条件常数；本版只部分平均后验，更早路径和停止点不混合。',
+        '这是必要测度/后验修正后的方法；并非原稿全部采样步骤保持不变。质量是否胜出以匹配种子结果和控制实验为准。', '',
+        'cd '+str(ROOT), 'source jobs/local_env.sh',
+        'export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1',
+        shlex.join(faithful_command), '',
+        '原生FP32 EMA目录：'+str(R/'archived-checkpoints'/f'sd3-det-{faithful["case"]}-seed42-ema1000/lora/generator'),
+        '开发指标排名候选另见完整代码说明；若为Bridge，其实际提议已改变，不冒充纯Teacher版本。']
+    (OUT/'RTDMD_v31_纯Teacher入口.txt').write_text('\n'.join(faithful_guide)+'\n')
+    code = ['以保留纯Teacher路径为目标，先看 RTDMD_v31_纯Teacher入口.txt。下面记录固定的开发指标排名候选及其复现命令。', '']+code
     (OUT/'RTDMD_v31_代码与运行说明.txt').write_text('\n'.join(code)+'\n')
     print('Wrote result CSV, matched-seed summary, change report and runnable code guide')
 
