@@ -548,14 +548,16 @@ $\lambda$ & 候选权重 ESS / 8 & 实际移动率 & 参考链冻结率\\\midrul
 理论与修订 & \texttt{docs/RTDMD\_PathRatio\_Repair\_CN.txt}\\
 路径核比 / BF16 质量 & \texttt{flow\_grpo/path\_ratio\_smc.py}\\
 参考提升 / 条件 i-SIR & \texttt{flow\_grpo/conditional\_path\_is.py}\\
-真实 SD3 接口 & \texttt{diffusers\_patch/sd3\_conditional\_path\_is.py}\\
+真实 SD3 接口 & \texttt{flow\_grpo/diffusers\_patch/sd3\_conditional\_path\_is.py}\\
 训练与细节消融 & \texttt{train\_rtdmd\_path\_is\_sd3.py} / \texttt{train\_rtdmd\_path\_is\_refined\_sd3.py}\\
 最后正方差块 & \texttt{scripts/train\_rtdmd\_path\_is\_last\_sd3.py}\\
-精确前缀缓存 & \texttt{diffusers\_patch/sd3\_last\_innovation\_path\_is.py}\\
+固定前缀物理内核 & \texttt{flow\_grpo/diffusers\_patch/sd3\_last\_innovation\_path\_is.py}\\
+物理坐标 / 保护分区 & \texttt{flow\_grpo/physical\_path\_is.py} / \texttt{rounding\_cells.py}\\
+双查询平均 & \texttt{scripts/train\_rtdmd\_path\_is\_query\_views\_sd3.py}\\
 桥接及历史校准 & \texttt{flow\_grpo/bridged\_path\_is.py} / \texttt{adaptive\_bridge.py}\\
-统一 EMA 评测 & \texttt{jobs/evaluate\_loaded\_path\_checkpoint.sh}\\
-逐图结果与统计 & \texttt{logs/path-ratio-round1/evidence/} 与 \texttt{comparison-final/}\\
-冻结与选择记录 & \texttt{source-manifest.json} / \texttt{refinement-manifest.json} / \texttt{selection.json}\\
+统一 EMA 评测 & \texttt{jobs/evaluate\_loaded\_path\_checkpoint\_v2.sh}\\
+逐图结果与统计 & \texttt{logs/path-ratio-round1/evidence/} 与 \texttt{RTDMD\_v31\_results.csv}\\
+当前冻结与选择 & \texttt{deterministic-selection.json} / \texttt{deterministic-validation-plan.json}\\
 \bottomrule\end{tabularx}
 \par\vspace{4pt}权重、完整 PNG 与持久保存的位置由交付说明列出；RAM 存储不冒充持久归档。
 \end{frame}
