@@ -1,0 +1,39 @@
+{
+  "run_id": "sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401",
+  "created_at": "2026-10-21T01:14:01.807527+08:00",
+  "source_directory": "/tmp/dmd-ocr-geneval-state/source",
+  "output_directory": "/rootDMD/cloud-jobs/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401",
+  "mount_output_root": "/mnt/vepfs/rootDMD/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401/outputs",
+  "vepfs_output_root": "/vepfs-mlp2/c20250506/250404014/rootDMD/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401/outputs",
+  "resource_queue_id": "q-20251224103048-8xwhn",
+  "gpus_per_job": 16,
+  "outer_steps": 10000,
+  "training_rewards": {},
+  "initialization": "Original SD3-Medium; independent fresh LoRA for each dataset",
+  "scorers": [
+    "clipscore",
+    "aesthetic",
+    "pickscore",
+    "hpsv2"
+  ],
+  "jobs": {
+    "ocr": {
+      "name": "sd3-dmd-ocr-16gpu-10000-20261021-011401",
+      "config_file": "/rootDMD/cloud-jobs/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401/job-ocr.json",
+      "expected_test_images": 1018,
+      "run_name": "sd3-dmd-ocr-16gpu-10000",
+      "vepfs_output": "/vepfs-mlp2/c20250506/250404014/rootDMD/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401/outputs/sd3-dmd-ocr-16gpu-10000",
+      "state": "Waiting",
+      "job_id": "t-20261021011436-d5rtf"
+    },
+    "geneval": {
+      "name": "sd3-dmd-geneval-16gpu-10000-20261021-011401",
+      "config_file": "/rootDMD/cloud-jobs/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401/job-geneval.json",
+      "expected_test_images": 2212,
+      "run_name": "sd3-dmd-geneval-16gpu-10000",
+      "vepfs_output": "/vepfs-mlp2/c20250506/250404014/rootDMD/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401/outputs/sd3-dmd-geneval-16gpu-10000",
+      "state": "Waiting",
+      "job_id": "t-20261021011501-rlmj5"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "updated_at": "2026-10-21T01:18:45.991472+08:00",
+  "jobs": {
+    "ocr": {
+      "job_id": "t-20261021011436-d5rtf",
+      "state": "Running",
+      "status": {
+        "State": "Running",
+        "SecondaryState": "",
+        "Message": "2 个实例皆在运行中。",
+        "StartTime": "2026-10-20T17:15:20Z",
+        "EndTime": "",
+        "HoldingEndTime": "",
+        "RetriedTimes": 0
+      },
+      "step": 85,
+      "generator_step": 8
+    },
+    "geneval": {
+      "job_id": "t-20261021011501-rlmj5",
+      "state": "Queueing",
+      "status": {
+        "State": "Queueing",
+        "SecondaryState": "",
+        "Message": "当前队列剩余配额不足，您可以选择继续等待资源释放或者将任务变更为闲时任务，以借用其他队列资源（支持出借空闲资源的队列），但任务创建为闲时任务后有随时被抢占风险。",
+        "StartTime": "",
+        "EndTime": "",
+        "HoldingEndTime": "",
+        "RetriedTimes": 0
+      }
+    }
+  }
+}

@@ -44,8 +44,19 @@ def write_report(run_dir, folder, step, records, metrics):
         raise ValueError("This report describes standard DMD without reward training")
     sample = config["sample"]
     nfe = len(sample["denoising_step_list"][:sample["num_steps"]])
+    dataset = Path(config["eval"]["dataset"])
+    source = dataset / "test_metadata.jsonl"
+    if not source.is_file():
+        source = dataset / "test.txt"
+    if not source.is_file():
+        raise FileNotFoundError(f"Test prompt file missing from {dataset}")
+    dataset_name = config["eval"].get(
+        "dataset_name",
+        {"pickscore": "PickScore", "ocr": "OCR", "geneval": "GenEval"}.get(dataset.name, dataset.name),
+    )
     row = {
         "Method": "SD3-Medium + DMD",
+        "Dataset": dataset_name,
         "NFE": nfe,
         "Post-Train": "DMD (no reward)",
         "CLIP Score": metrics["clipscore"] * 100,
@@ -59,7 +70,10 @@ def write_report(run_dir, folder, step, records, metrics):
         "table": row,
         "raw_repository_means": metrics,
         "protocol": {
-            "dataset": "PickScore test.txt, original order, one image per prompt",
+            "dataset": f"{dataset_name} {source.name}, original order, one image per test record",
+            "dataset_name": dataset_name,
+            "unique_prompts": len({record["prompt"] for record in records}),
+            "test_file_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
             "resolution": config["resolution"],
             "seed": config["eval"]["seed"],
             "ema": config["eval"]["use_ema"],
@@ -73,9 +87,6 @@ def write_report(run_dir, folder, step, records, metrics):
             "comparability": "Scores require the same prompts, model versions, preprocessing and scales for comparison",
         },
     }
-    dataset = Path(config["eval"]["dataset"]) / "test.txt"
-    if dataset.is_file():
-        report["protocol"]["test_file_sha256"] = hashlib.sha256(dataset.read_bytes()).hexdigest()
     (folder / "final-metrics.json").write_text(json.dumps(report, indent=2, ensure_ascii=False))
     with (folder / "final-metrics.csv").open("w", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(row))
@@ -84,7 +95,7 @@ def write_report(run_dir, folder, step, records, metrics):
     headings = " | ".join(row)
     values = " | ".join(f"{value:.4f}" if isinstance(value, float) else str(value) for value in row.values())
     text = f"| {headings} |\n| " + " | ".join(["---"] * len(row)) + f" |\n| {values} |\n\n"
-    text += f"PickScore test set: {len(records)} images; step {step}; EMA={config['eval']['use_ema']}.\n\n"
+    text += f"{dataset_name} test set: {len(records)} images; step {step}; EMA={config['eval']['use_ema']}.\n\n"
     text += "CLIP and HP scores use the ×100 display scale; Pick Score is the unnormalized logit. "
     text += "HP uses HPSv2.1. All four metrics score the same saved images. "
     text += "These values do not establish comparability with a paper using a different evaluation protocol.\n"

@@ -1,0 +1,25 @@
+{
+  "method": "DMD",
+  "model": "Original SD3-Medium",
+  "gpus_per_task": 16,
+  "outer_steps": 10000,
+  "no_training_rewards": true,
+  "fresh_base_per_dataset": true,
+  "train_records": {
+    "ocr": 19653,
+    "geneval": 50000
+  },
+  "test_records": {
+    "ocr": 1018,
+    "geneval": 2212
+  },
+  "geneval_unique_test_prompts": 553,
+  "dataset_and_report_preflight": "passed",
+  "combined_report_preflight": "passed",
+  "evaluation_scorers": [
+    "CLIP Score",
+    "Aesthetic Score",
+    "Pick Score",
+    "HP Score (HPSv2.1)"
+  ]
+}

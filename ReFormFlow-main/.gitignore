@@ -54,3 +54,4 @@ tests/*
 !tests/test_posterior_mh.py
 !tests/test_posterior_mh_blocks.py
 !tests/test_posterior_consistency.py
+!tests/test_path_ratio_smc.py
