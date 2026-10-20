@@ -35,9 +35,10 @@
     "t-20261020215646-ccqqz"
   ],
   "job_id": "t-20261020220728-lmk7p",
-  "latest_verified_step": 70,
-  "latest_verified_generator_step": 7,
+  "latest_verified_step": 1210,
+  "latest_verified_generator_step": 121,
   "dataset": "PickScore prompt dataset",
   "train_prompt_count": 25432,
-  "test_prompt_count": 2048
+  "test_prompt_count": 2048,
+  "measured_seconds_per_outer_step": 0.75
 }

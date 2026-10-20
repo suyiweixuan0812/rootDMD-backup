@@ -1,0 +1,8 @@
+{
+  "step": 1210,
+  "generator_updates": 121,
+  "intervals_measured": 149,
+  "seconds_per_step_excluding_eval_boundary": 0.75,
+  "remaining_training_minutes": 109.9,
+  "log_time_beijing": "2026-10-20T22:25:15.255307+08:00"
+}
