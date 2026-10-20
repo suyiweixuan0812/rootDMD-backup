@@ -59,3 +59,5 @@ tests/*
 !tests/test_consistency_schedule.py
 
 !tests/test_path_is_variance.py
+
+!tests/test_query_time_weight.py

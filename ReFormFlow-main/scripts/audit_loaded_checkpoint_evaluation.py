@@ -27,6 +27,7 @@ def main():
     before=report['table'].copy()
     report['protocol']['path_is']=actual.get('path_is',{'enabled':False})
     report['protocol']['posterior_consistency']=actual.get('posterior_consistency',{'enabled':False})
+    report['protocol']['posterior_time_weight']=actual.get('posterior_time_weight',{'mode':'none','effective_weight':1.0})
     report['protocol']['checkpoint_training_configuration']={
         'path':str(training_config),'sha256':hashlib.sha256(training_config.read_bytes()).hexdigest(),
         'method_name':actual.get('method_name','DMD'), 'seed':actual['seed'],
