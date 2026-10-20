@@ -341,8 +341,8 @@ G_\theta(y)=\frac{1}{d\,n_\theta(y)}\{J_\theta D_\theta(y)\}^\top.
 \widehat g_0=G_\theta(y)(\widehat m-r).
 \end{equation}
 \begin{block}{与 Tweedie score 差的关系}
-真实 score 差还含 $\alpha/\sigma^2$。上述写法选择相应正时间预条件，
-并对 $n_\theta$ 停止梯度；不是声称保留了未明确指定的所有 $\lambda_t$。
+真实 score 差还含 $\alpha/\sigma^2$。上述更新将其吸收于时间权重，
+另对状态相关的 $n_\theta$ 停止梯度；不是未指定时间权重下的等价 KL 梯度。
 \end{block}
 \takeaway{以下结论针对固定 $\theta,y$ 的裁剪前 surrogate 梯度，不是完整 KL 梯度或收敛定理。}
 \end{frame}
@@ -361,7 +361,8 @@ G_\theta(y)=\frac{1}{d\,n_\theta(y)}\{J_\theta D_\theta(y)\}^\top.
 \widehat g_\lambda
 =G_\theta(y)\left\{(1-\lambda)\widehat m+\lambda D_\theta(y)-r\right\}.
 \end{equation}
-\takeaway{保留后验均值项，同时鼓励去噪器与自身源分布一致；不新增 Fake 或奖励模型训练。}
+\takeaway{这是新增的 Student 后验一致性项，不是 v29 的 Fake 一致性正则 $\mathcal L_{\rm cons}$。
+本节 $\lambda$ 是正则强度，不是原稿的时间权重 $\lambda_t$。}
 \end{frame}
 
 \begin{frame}{新增命题：条件后验采样方差的精确缩放}
