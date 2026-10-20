@@ -1,0 +1,206 @@
+{
+  "bucket": "c20250506",
+  "prefix": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547/train-code",
+  "files": [
+    {
+      "path": "config/dmd.py",
+      "size": 3379,
+      "sha256": "cb75d8261929623a47bb110e78dd26dae4cce9c903c6f87236de1cd191b2c095"
+    },
+    {
+      "path": "config/reform.py",
+      "size": 8866,
+      "sha256": "55925bc33d2a2c0525cd4c2c5ef6ae2ad4981b8b9f274db672fb1e82bd9200fb"
+    },
+    {
+      "path": "config/dmd_sd3_pickscore.py",
+      "size": 1630,
+      "sha256": "5d1d5941d66c9372b19efa989faf2d62c5d58613f5cc8dc9eee7b7f54a745e1e"
+    },
+    {
+      "path": "config/base.py",
+      "size": 5359,
+      "sha256": "cf350d56b84cbe5f7597fa1f04ad2d08cbcde6a4032b1bf118e833022230b3c8"
+    },
+    {
+      "path": "flow_grpo/ema.py",
+      "size": 3824,
+      "sha256": "ac29a338c19fde2119b8a5c7c4b42a324ce7c6f7032bfb10f08550d89e8e0ed3"
+    },
+    {
+      "path": "flow_grpo/aesthetic_scorer.py",
+      "size": 2153,
+      "sha256": "b120a1b17744ae9f2680c49b11c57a2b8f81d57766e0a8b4939c90b6e1fe687c"
+    },
+    {
+      "path": "flow_grpo/clip_scorer.py",
+      "size": 2621,
+      "sha256": "111f3b037799397341a51df727f64eab404aa2202f16adf7c3bbee1fb7bc2624"
+    },
+    {
+      "path": "flow_grpo/ocr.py",
+      "size": 2497,
+      "sha256": "e3c456af97ad65c29f45f0e9a5dca315818cc5818e1f10810dcbc3c05b5c9171"
+    },
+    {
+      "path": "flow_grpo/stat_tracking_reform.py",
+      "size": 3478,
+      "sha256": "9bcd842ac58979c1d2642620e041866d8adcf9fd45982697cd6fa663cad05679"
+    },
+    {
+      "path": "flow_grpo/gen_eval.py",
+      "size": 17043,
+      "sha256": "71582f69ca9ba36e4e69afddc958f5ecba4aa1fcd9df35514b5f47b39015f005"
+    },
+    {
+      "path": "flow_grpo/rewards.py",
+      "size": 7376,
+      "sha256": "71ccd9fa4e0865859e77c34c5c18d6613a0627f9b0f1c810c80f510833b25c90"
+    },
+    {
+      "path": "flow_grpo/pickscore_scorer.py",
+      "size": 2179,
+      "sha256": "956f35ccc7bc96726008d6629bc5ccdec9a9f417b9e7f14a0ade9b305cdef607"
+    },
+    {
+      "path": "flow_grpo/hpsv2_scorer.py",
+      "size": 5392,
+      "sha256": "7d12c233f0b3ca18a212cdc9175c8076fb26c435767de719eba7162e6ad94818"
+    },
+    {
+      "path": "flow_grpo/reward_ckpt_path.py",
+      "size": 146,
+      "sha256": "92089826c562ad15381975b027d324f7476f7f51a70c6fbf9c7dcdd4ad7ad7ba"
+    },
+    {
+      "path": "flow_grpo/imagereward_scorer.py",
+      "size": 1361,
+      "sha256": "2c0b22c859aa1724633659c84170fd16ed88232c4c302de8e82aee627e4a4290"
+    },
+    {
+      "path": "flow_grpo/prompt_data.py",
+      "size": 2920,
+      "sha256": "0a15050783c141c740c0f21420b87def9f964797ca25da1be46ea5eada112b39"
+    },
+    {
+      "path": "flow_grpo/train_utils.py",
+      "size": 1343,
+      "sha256": "957ff958487aba1e1a76e01b5d779f549cb940b26771c4d07a47495806598cbd"
+    },
+    {
+      "path": "flow_grpo/diffusers_patch/sd3_pipeline_dmd.py",
+      "size": 1739,
+      "sha256": "412f0aefc2fd147faa22aadff954d81deb380203e48541aaba3fe820663d6d39"
+    },
+    {
+      "path": "flow_grpo/diffusers_patch/train_dreambooth_lora_sd3.py",
+      "size": 4914,
+      "sha256": "8943c58f971927b432c6168d4c0ac9ff35aaef256c44708f94ac554b32d256ec"
+    },
+    {
+      "path": "flow_grpo/diffusers_patch/solver.py",
+      "size": 12315,
+      "sha256": "54a9425e4c275b18f4b3402807709da0d5e548ec9b8e309df0e43c36dd9d32d1"
+    },
+    {
+      "path": "flow_grpo/diffusers_patch/train_dreambooth_lora_flux.py",
+      "size": 4669,
+      "sha256": "78225a7dcb95672ceb23a89b4a38fef06ac8340a4d458a32ef4b3e1fe1d8a9b2"
+    },
+    {
+      "path": "flow_grpo/diffusers_patch/pipeline_with_logprob.py",
+      "size": 11236,
+      "sha256": "ed2d26679db8a19af5a8e4027506bd0c56694aeb9c00c1ae90c785a4ec386fb9"
+    },
+    {
+      "path": "scripts/download_dmd_models.py",
+      "size": 7940,
+      "sha256": "91e395668185abf05302889a304ef9df6166a31a689d1c5e84090fdac2733a45"
+    },
+    {
+      "path": "scripts/train_reform_sd3.py",
+      "size": 42765,
+      "sha256": "279b4bdc97c0e9beb1e3aa15c3f84b6b29c3b32889e033502f1078e08843786c"
+    },
+    {
+      "path": "scripts/check_runtime.py",
+      "size": 7608,
+      "sha256": "931dad02c82dc77109cb92c6cb37367a363112dd9a9f481f7c1cc61de634656d"
+    },
+    {
+      "path": "scripts/train_dmd_sd3.py",
+      "size": 37128,
+      "sha256": "e6cfa81481f49e26dacffbed479ee99275c14b3bf1de57a6cab962b612c71f1c"
+    },
+    {
+      "path": "scripts/train_reform_flux.py",
+      "size": 42584,
+      "sha256": "a6f65321ab59b624bc2ed8324ecfa4ee8db402bc8feeed09fcfc02713807d66d"
+    },
+    {
+      "path": "scripts/score_dmd_images.py",
+      "size": 7711,
+      "sha256": "904ffdcebe1d19784a691c2ddb7b5cf103f1d34b5c3a78fb68139594149717a2"
+    },
+    {
+      "path": "scripts/eval/inference_flux.py",
+      "size": 6161,
+      "sha256": "a20d7f3cd0967d2b2a48c301465e1a3bbdb33ee9051c74307cf78564c851ae4c"
+    },
+    {
+      "path": "scripts/eval/inference_sd3.py",
+      "size": 4209,
+      "sha256": "a12ea4003f5fa0033e17d2770fa64a939e7ff974dcbea453fdeb7b134fc0ead3"
+    },
+    {
+      "path": "scripts/eval/evaluation_multi.py",
+      "size": 15493,
+      "sha256": "2364bf329e198f781a2eae93b396a423a3cb3b28394457079b2e312e2ff5dc6f"
+    },
+    {
+      "path": "jobs/local_env.sh",
+      "size": 524,
+      "sha256": "9b030887eb48321544277b2fa7a5e25e2b67a1b1c5e1e99d2e92fad17796694d"
+    },
+    {
+      "path": "jobs/cloud_bootstrap.sh",
+      "size": 1559,
+      "sha256": "68b72a4d0ad20d57bdf9eaa9a9af8ee65911414a65012825dc1489163d8146bf"
+    },
+    {
+      "path": "jobs/run_dmd_pickscore_distributed.sh",
+      "size": 1873,
+      "sha256": "ca14bff9786dc57b72037806737693e7c07cb0a178d47d15712b3240fbe55f77"
+    },
+    {
+      "path": "jobs/run_dmd_pickscore_8gpu.sh",
+      "size": 1253,
+      "sha256": "ea97626245b7720c4e7963ca6094647b4e22aa22ae14f7a9fad6c78f6bcc72cb"
+    },
+    {
+      "path": "jobs/run_dmd_pickscore.sh",
+      "size": 561,
+      "sha256": "f5fffdadd4c9a7c460cffbc7dbe33175b313c5b4429aabd627e2d08fbd4c3769"
+    },
+    {
+      "path": "dataset/pickscore/train.txt",
+      "size": 2906730,
+      "sha256": "2f425adcbb9a6d0feee7c6c448e1cb83a1f71deca9434b803907e2578eca837f"
+    },
+    {
+      "path": "dataset/pickscore/test.txt",
+      "size": 239891,
+      "sha256": "d75c025fa451866e70f7e36243f7cdd93095523cb51f5f9651f2ce3236d20262"
+    },
+    {
+      "path": "requirements-dmd-runtime.txt",
+      "size": 431,
+      "sha256": "8ebd29a91ef09bab23d42628f3bfa85c185e45ed1ccea0881a2da35a5bf7a6c1"
+    },
+    {
+      "path": "requirements-dmd-eval.txt",
+      "size": 76,
+      "sha256": "b50b756229a2f1036a330409da28b79ffaca95a6cc3c9af709b0f7ee1b0f67f8"
+    }
+  ]
+}

@@ -6,15 +6,16 @@
   "queue_id": "q-20251224103048-8xwhn",
   "bucket": "c20250506",
   "prefix": "rootDMD/sd3-dmd-8gpu-10000-20261020-211547",
-  "instance_type": "ml.pni2.28xlarge",
+  "instance_type": "ml.hpcpni2.28xlarge",
   "image": "vemlp-cn-beijing.cr.volces.com/preset-images/pytorch:2.7.1-cu12.8.1-py3.12-ubuntu22.04",
   "outer_steps": 10000,
-  "gpus": 8,
+  "gpus": 16,
   "output_directory": "/rootDMD/cloud-jobs/sd3-dmd-8gpu-10000-20261020-211547",
-  "state": "preparing-vepfs",
+  "state": "waiting-for-authorized-vepfs-directory",
   "vepfs_id": "vepfs-cnbj4cc563ae78e0",
   "vepfs_name": "vepfs-mlp3",
   "vepfs_host_path": "/mnt/vepfs-cnbj4cc563ae78e0",
   "vepfs_asset_root": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547",
-  "nodes": 1
+  "nodes": 2,
+  "training_run_name": "sd3-dmd-16gpu-10000"
 }

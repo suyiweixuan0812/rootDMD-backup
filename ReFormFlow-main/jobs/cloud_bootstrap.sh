@@ -19,6 +19,9 @@ export DMD_PYTHON="$task_runtime/bin/python"
 export PYTHONPATH="$task_root${PYTHONPATH:+:$PYTHONPATH}"
 "$DMD_PYTHON" scripts/check_runtime.py --method dmd --model "$SD3_MODEL" \
     --rewards pickscore clipscore aesthetic hpsv2
+if [[ "${DMD_NNODES:-1}" -gt 1 ]]; then
+    exec bash "$task_root/jobs/run_dmd_pickscore_distributed.sh"
+fi
 bash "$task_root/jobs/run_dmd_pickscore_8gpu.sh"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1

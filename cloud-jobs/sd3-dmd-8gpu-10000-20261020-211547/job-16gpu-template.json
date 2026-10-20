@@ -1,0 +1,111 @@
+{
+  "Name": "sd3-dmd-16gpu-10000-20261020-211547",
+  "ProjectName": "default",
+  "Description": "Original SD3-Medium standard DMD, 16 A100-80GB, 10000 outer steps, no training rewards, four evaluation metrics on 2048 PickScore test prompts",
+  "ResourceConfig": {
+    "MaxRuntimeSeconds": 86400,
+    "Priority": 4,
+    "Preemptible": false,
+    "ResourceQueueId": "q-20251224103048-8xwhn",
+    "Roles": [
+      {
+        "Name": "worker",
+        "Replicas": 2,
+        "Resource": {
+          "Type": "Preset",
+          "InstanceTypeId": "ml.hpcpni2.28xlarge",
+          "ZoneId": "cn-beijing-c"
+        }
+      }
+    ]
+  },
+  "RuntimeConfig": {
+    "Framework": "PyTorch",
+    "Image": {
+      "Type": "Prebuild",
+      "Url": "vemlp-cn-beijing.cr.volces.com/preset-images/pytorch:2.7.1-cu12.8.1-py3.12-ubuntu22.04"
+    },
+    "Code": {
+      "MountPath": "/root/code/ReFormFlow-main",
+      "SavedPath": "tos://c20250506/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/train-code/"
+    },
+    "Command": "bash /root/code/ReFormFlow-main/jobs/cloud_bootstrap.sh",
+    "Envs": [
+      {
+        "Name": "HF_HOME",
+        "Value": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/hf-cache",
+        "IsPrivate": false
+      },
+      {
+        "Name": "SD3_MODEL",
+        "Value": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium",
+        "IsPrivate": false
+      },
+      {
+        "Name": "REWARD_CKPT_PATH",
+        "Value": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/reward_ckpts",
+        "IsPrivate": false
+      },
+      {
+        "Name": "DMD_WHEELHOUSE",
+        "Value": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/wheels",
+        "IsPrivate": false
+      },
+      {
+        "Name": "DMD_SAVE_DIR",
+        "Value": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/outputs",
+        "IsPrivate": false
+      },
+      {
+        "Name": "DMD_NNODES",
+        "Value": "2",
+        "IsPrivate": false
+      },
+      {
+        "Name": "DMD_GPUS_PER_NODE",
+        "Value": "8",
+        "IsPrivate": false
+      },
+      {
+        "Name": "DMD_RUN_NAME",
+        "Value": "sd3-dmd-16gpu-10000",
+        "IsPrivate": false
+      },
+      {
+        "Name": "TOKENIZERS_PARALLELISM",
+        "Value": "false",
+        "IsPrivate": false
+      },
+      {
+        "Name": "OMP_NUM_THREADS",
+        "Value": "8",
+        "IsPrivate": false
+      },
+      {
+        "Name": "TORCH_NCCL_ASYNC_ERROR_HANDLING",
+        "Value": "1",
+        "IsPrivate": false
+      }
+    ]
+  },
+  "StorageConfig": {
+    "Credential": {
+      "UseServiceLinkedRole": true
+    },
+    "Storages": [
+      {
+        "Type": "Vepfs",
+        "MountPath": "/mnt/vepfs",
+        "ReadOnly": false,
+        "Config": {
+          "Vepfs": {
+            "Id": "REPLACE_WITH_AUTHORIZED_VEPFS_ID",
+            "FileSystemName": "REPLACE_WITH_AUTHORIZED_VEPFS_NAME",
+            "HostPath": "REPLACE_WITH_AUTHORIZED_VEPFS_HOST_PATH",
+            "SubPath": "REPLACE_WITH_AUTHORIZED_SUBDIRECTORY"
+          }
+        }
+      }
+    ]
+  }
+}
