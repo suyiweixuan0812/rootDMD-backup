@@ -1,0 +1,20 @@
+{
+  "methods": [
+    {
+      "id": "DMD",
+      "root": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/outputs/sd3-dmd-16gpu-10000"
+    },
+    {
+      "id": "last",
+      "root": "/mnt/vepfs/rootDMD/sd3-rtdmd-v31-last-pickscore-16a100-20261021-163241/outputs/sd3-rtdmd-v31-last-pickscore-10000"
+    },
+    {
+      "id": "Bridge",
+      "root": "/mnt/vepfs/rootDMD/sd3-rtdmd-v31-bridge-pickscore-16a100-20261021-165822/outputs/sd3-rtdmd-v31-bridge-pickscore-10000"
+    }
+  ],
+  "benchmark_file": "/mnt/vepfs/rootDMD/sd3-rtdmd-v31-bridge-pickscore-16a100-20261021-165822/outputs/inference-benchmark.json",
+  "world_size": 16,
+  "num_images": 1000,
+  "repetitions": 3
+}

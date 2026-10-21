@@ -1,0 +1,200 @@
+{
+  "common_training_parameters_match": true,
+  "differences": {
+    "eval.reward_fn.pickscore": {
+      "last": 1.0,
+      "bridge": null
+    },
+    "eval.dataset": {
+      "last": "/dev/shm/rtdmd-v31-bridge-20261021/source/dataset/pickscore",
+      "bridge": "/dev/shm/rtdmd-v31-bridge-20261021/source/dataset/drawbench"
+    },
+    "path_is.weighting": {
+      "last": "Exact Student/Teacher path ratio times observation likelihood times Gaussian innovation prior correction phi(E)/phi(E_reference)",
+      "bridge": "(Student/Teacher)*(Teacher/bridged-proposal)*Gaussian observation likelihood; effective Student/Q ratio computed directly"
+    },
+    "save_dir": {
+      "last": "/dev/shm/rtdmd-v31-bridge-20261021/source/logs/rtdmd-v31-last",
+      "bridge": "/dev/shm/rtdmd-v31-bridge-20261021/source/logs/rtdmd-v31-bridge"
+    },
+    "eval.final_num_prompts": {
+      "last": 2048,
+      "bridge": 1000
+    },
+    "path_is.particle_kernel": {
+      "last": "Symmetric conditional i-SIR on last positive innovation block; no change to Teacher path fields or Student/Teacher ratios",
+      "bridge": "Same auxiliary conditional i-SIR with deterministic noise-dependent block and radius bound"
+    },
+    "method_name": {
+      "last": "rtdmd_v31_last",
+      "bridge": "rtdmd_v31_bridge"
+    },
+    "path_is.prefix_cache": {
+      "last": "Exact field reuse only after unchanged-parent tensor equality checks",
+      "bridge": null
+    },
+    "path_is.bridge_strength": {
+      "last": null,
+      "bridge": 0.9
+    },
+    "path_is.long_bridge_strength": {
+      "last": null,
+      "bridge": 0.99
+    },
+    "eval.num_prompts": {
+      "last": 16,
+      "bridge": 1000
+    },
+    "path_is.long_bridge_min_stop": {
+      "last": null,
+      "bridge": 3
+    },
+    "run_name": {
+      "last": "sd3-rtdmd-v31-last-pickscore-16a100-10000",
+      "bridge": "sd3-rtdmd-v31-bridge-pickscore-10000"
+    },
+    "path_is.bank_policy": {
+      "last": "last",
+      "bridge": null
+    },
+    "path_is.target": {
+      "last": "Same Student random-stop posterior; pure Teacher CPS mapping and shared Student readout",
+      "bridge": "Unchanged actual Student random-stop source posterior; shared Student readout"
+    }
+  },
+  "bridge_config": {
+    "ac_dmd.all_include_terminal_when_no_random_stop": true,
+    "ac_dmd.consistency_enabled": true,
+    "ac_dmd.consistency_epsilon_timestep": 200.0,
+    "ac_dmd.consistency_num_steps": 1,
+    "ac_dmd.consistency_stopgrad_transitions": true,
+    "ac_dmd.consistency_use_two_sample_unbiased": true,
+    "ac_dmd.consistency_weight": 0.01,
+    "ac_dmd.enabled": false,
+    "ac_dmd.end_timestep": 1000.0,
+    "ac_dmd.fake_loss_weight_clamp_max": 10.0,
+    "ac_dmd.fake_loss_weight_clamp_min": 0.0,
+    "ac_dmd.max_renoise_step": 980,
+    "ac_dmd.min_renoise_step": 20,
+    "ac_dmd.target_formula_move_scale_out": true,
+    "ac_dmd.timestep_offset": 10.0,
+    "allow_tf32": true,
+    "base_model": "sd3",
+    "dataset": "/dev/shm/rtdmd-v31-bridge-20261021/source/dataset/pickscore",
+    "debug": false,
+    "dmd.dmd_logit_mean": 0.0,
+    "dmd.dmd_logit_std": 1.0,
+    "dmd.dmd_timestep_sampling": "uniform",
+    "dmd.fake_guidance_scale": 1.0,
+    "dmd.fake_max_step": 999,
+    "dmd.fake_min_step": 0,
+    "dmd.fake_timestep_sampling": "logit_normal",
+    "dmd.fake_train_guidance_scale": 1.0,
+    "dmd.fake_update_ratio": 10,
+    "dmd.gradient_normalization": true,
+    "dmd.logit_mean": 0.0,
+    "dmd.logit_std": 1.0,
+    "dmd.max_step": 980,
+    "dmd.min_step": 20,
+    "dmd.real_guidance_scale_max": 4.5,
+    "dmd.real_guidance_scale_min": 4.5,
+    "eval.dataset": "/dev/shm/rtdmd-v31-bridge-20261021/source/dataset/drawbench",
+    "eval.enabled": true,
+    "eval.final_num_prompts": 1000,
+    "eval.num_prompts": 1000,
+    "eval.seed": 42,
+    "eval.use_ema": true,
+    "eval_freq": 1000,
+    "filter_zero_advantage": false,
+    "gdpo": false,
+    "logdir": "logs",
+    "logging.enabled": false,
+    "logging.project": "ReFormDMD",
+    "lora.fake_score_path": "",
+    "lora.generator_path": "",
+    "method_name": "rtdmd_v31_bridge",
+    "mixed_precision": "bf16",
+    "num_epochs": 10000,
+    "path_is.base_scale": 0.05,
+    "path_is.block_size": 16,
+    "path_is.bridge_strength": 0.9,
+    "path_is.enabled": true,
+    "path_is.field_microbatch": 1,
+    "path_is.high_noise_block_size": 4096,
+    "path_is.high_noise_threshold": 0.9,
+    "path_is.initialization": "Paired Student reference with conditional Teacher-innovation lift",
+    "path_is.long_bridge_min_stop": 3,
+    "path_is.long_bridge_strength": 0.99,
+    "path_is.max_innovation_radius": 0.5,
+    "path_is.num_particles": 8,
+    "path_is.num_sweeps": 2,
+    "path_is.numerical_scope": "Gaussian rounding-cell model; finite RNG and source FP32 multiply/add remain numerical approximations",
+    "path_is.particle_kernel": "Same auxiliary conditional i-SIR with deterministic noise-dependent block and radius bound",
+    "path_is.proposal_cfg": 1.0,
+    "path_is.proposal_innovation_dtype": "float64; BF16 network and latent states unchanged",
+    "path_is.target": "Unchanged actual Student random-stop source posterior; shared Student readout",
+    "path_is.weighting": "(Student/Teacher)*(Teacher/bridged-proposal)*Gaussian observation likelihood; effective Student/Q ratio computed directly",
+    "per_prompt_stat_tracking": true,
+    "posterior_consistency.enabled": true,
+    "posterior_consistency.role": "Independent-development regularization ablation; unchanged path sampler",
+    "posterior_consistency.schedule": "constant",
+    "posterior_consistency.weight": 0.1,
+    "posterior_time_weight.calibration": "Training gradient norms only; k/sigma predicts 9/12% clipping for seeds42/43 at frozen previous states",
+    "posterior_time_weight.mode": "none",
+    "posterior_time_weight.scale": 0.3,
+    "pretrained.local_files_only": true,
+    "pretrained.model": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/models/sd3-medium",
+    "pretrained.revision": "",
+    "pretrained.variant": "",
+    "prompt_fn": "general_ocr",
+    "resolution": 512,
+    "resume_from": "",
+    "run_name": "sd3-rtdmd-v31-bridge-pickscore-10000",
+    "sample.denoising_step_list": [
+      1000,
+      750,
+      500,
+      250
+    ],
+    "sample.eval_guidance_scale": 1.0,
+    "sample.eval_num_steps": 40,
+    "sample.global_std": true,
+    "sample.guidance_scale": 4.5,
+    "sample.noise_level": 0.9,
+    "sample.num_batches_per_epoch": 2,
+    "sample.num_image_per_prompt": 1,
+    "sample.num_steps": 4,
+    "sample.random_stop_idx": true,
+    "sample.test_batch_size": 4,
+    "sample.train_batch_size": 1,
+    "save_dir": "/dev/shm/rtdmd-v31-bridge-20261021/source/logs/rtdmd-v31-bridge",
+    "save_freq": 1000,
+    "seed": 42,
+    "train.adam_beta1": 0.9,
+    "train.adam_beta2": 0.999,
+    "train.adam_epsilon": 1e-08,
+    "train.adam_weight_decay": 0.0,
+    "train.adv_clip_max": 5,
+    "train.batch_size": 1,
+    "train.beta": 0.0001,
+    "train.ema": true,
+    "train.ema_decay": 0.99,
+    "train.ema_every": 1,
+    "train.energy_mode": false,
+    "train.fake_learning_rate": 3e-05,
+    "train.gradient_accumulation_steps": 1,
+    "train.gradient_checkpointing": true,
+    "train.guidance_scale": 1.0,
+    "train.learning_rate": 3e-05,
+    "train.log_interval": 1,
+    "train.lora_path": null,
+    "train.max_grad_norm": 1.0,
+    "train.max_sequence_length": 128,
+    "train.num_inner_epochs": 1,
+    "train.ref_resumed": false,
+    "train.temperature": 1.0,
+    "train.timestep_fraction": 0.99,
+    "train.warmup_steps": 0,
+    "use_lora": true
+  }
+}
