@@ -32,8 +32,10 @@ for p in sorted(R.glob('comparison-optional-*/*')):
  if p.suffix in {'.json','.csv','.md'}:add(p,'results/'+str(p.relative_to(R)))
 for p in sorted(R.glob('comparison-faithful-*/*')):
  if p.suffix in {'.json','.csv','.md'}:add(p,'results/'+str(p.relative_to(R)))
+for p in sorted((R/'archived-samples').rglob('*')):
+ if p.suffix in {'.json','.png'}:add(p,'results/'+str(p.relative_to(R)))
 for p in sorted(R.glob('visual-*-fixed/*')):
- if p.suffix in {'.json','.png','.pdf'}:add(p,'results/'+str(p.relative_to(R)))
+ if p.suffix in {'.json','.png'}:add(p,'results/'+str(p.relative_to(R)))
 for p in sorted(R.glob('archived-checkpoints/*/*manifest*.json')):add(p,'results/'+str(p.relative_to(R)))
 for p in sorted(R.glob('archived-images/*/*manifest*.json')):add(p,'results/'+str(p.relative_to(R)))
 for name in ['RTDMD_v31.tex','RTDMD_v31.pdf','RTDMD_v31_results.csv','RTDMD_v31_修改与结果说明.txt','RTDMD_v31_代码与运行说明.txt','RTDMD_v31_纯Teacher入口.txt','RTDMD_v31_资源与预算.txt']:add(OUT/name,name)

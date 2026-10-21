@@ -47,6 +47,48 @@
 \hypersetup{pdftitle={RTDMD v31 path-ratio repair},pdfauthor={YYPF}}
 \begin{document}
 \maketitle
+\begin{frame}{本轮完整测试结论：与两种 DMD 对照}
+\scriptsize\centering
+\begin{tabular}{cclrrrr}\toprule
+Seed & NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+42 & 4 & DMD & 25.2776 & 5.9045 & 20.1712 & 26.6521 \\
+42 & 4 & DMD, FP32 query & 25.4535 & 5.9232 & 20.3636 & 27.3221 \\
+42 & 4 & Bridge & 25.6785 & 5.9957 & 20.6024 & 27.7555 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{5pt}
+候选减原 DMD 的已完成种子均值差：CLIP +0.4009；Aesthetic +0.0912；Pick +0.4313；HPS +1.1034。
+\begin{alertblock}{结论的范围}
+本页仅含一个完整训练种子；即使均值上升，也不能据此认定训练稳定性。
+\end{alertblock}
+完整2048提示词、相同推理噪声与四项模型；本轮双方统一确定性 CUDA，旧 DMD/MH/PCMH 队列另表报告。
+\end{frame}
+\begin{frame}{纯教师路径版：保留核心的完整测试}
+\scriptsize\centering
+\begin{tabular}{cclrrrr}\toprule
+Seed & NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+42 & 4 & DMD & 25.2776 & 5.9045 & 20.1712 & 26.6521 \\
+42 & 4 & DMD, FP32 query & 25.4535 & 5.9232 & 20.3636 & 27.3221 \\
+42 & 4 & Teacher, last block & 25.6501 & 5.9969 & 20.6136 & 27.7796 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{5pt}
+候选减原 DMD 的已完成种子均值差：CLIP +0.3725；Aesthetic +0.0925；Pick +0.4424；HPS +1.1275。
+\begin{alertblock}{结论的范围}
+本页仅含一个完整训练种子；即使均值上升，也不能据此认定训练稳定性。
+\end{alertblock}
+完整2048提示词、相同推理噪声与四项模型；本轮双方统一确定性 CUDA，旧 DMD/MH/PCMH 队列另表报告。
+\end{frame}
+\begin{frame}{粒子平均的额外收益：匹配无粒子对照}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+Seed & 路径版减匹配控制 & $\Delta$CLIP & $\Delta$Aes & $\Delta$Pick & $\Delta$HPS\\\midrule
+42 & Bridge & +0.0626 & +0.0118 & +0.0206 & +0.0956 \\
+42 & Teacher, last block & +0.0341 & +0.0131 & +0.0318 & +0.1197 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{5pt}
+Bridge：仅一组已完成，尚不足判断训练种子稳定性。\par Teacher, last block：仅一组已完成，尚不足判断训练种子稳定性。
+\begin{itemize}\itemsep4pt
+\item 控制保留同查询 Jacobian、精度、正则、时间权重及观测次数，只去掉条件粒子平均。
+\item 相对 DMD 的收益不能全部归于路径比；控制与粒子版的训练计算量不同。
+\item 每行使用完整2048提示词；不同历史方法与开发集不参与此表。
+\end{itemize}
+\end{frame}
 
 
 \begin{frame}{本版保留什么，必须改动什么}
@@ -736,8 +778,32 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
 4 & Bridge & 26.3688 & 5.5182 & 21.4673 & 26.4020 \\
 4 & Bridge + time & 26.0968 & 5.4042 & 21.3031 & 25.7041 \\
 4 & Past-KL bridge & 26.4519 & 5.4606 & 21.4091 & 25.8204 \\
+4 & Past-KL + time & 26.4221 & 5.4998 & 21.3940 & 25.9904 \\
 \bottomrule\end{tabular}\par\raggedright\vspace{6pt}
 仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。
+\end{frame}
+\begin{frame}{确定性开发集：纯教师最后正方差块}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & Teacher, last block & 26.0062 & 5.4923 & 21.4304 & 26.3544 \\
+4 & Teacher, last + time & 25.7522 & 5.4687 & 21.3730 & 25.9744 \\
+4 & Teacher, 2 queries & 26.2867 & 5.4537 & 21.3964 & 26.1970 \\
+4 & One-source, 2 queries & 26.1963 & 5.4557 & 21.4411 & 26.1396 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+仅 DrawBench64 开发结果；不同于 PickScore2048。所有已完成的预先声明项目均保留，不能仅列最好的一组。
+\end{frame}
+\begin{frame}{确定性完整 PickScore 测试：seed42}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & DMD & 25.2776 & 5.9045 & 20.1712 & 26.6521 \\
+4 & DMD, FP32 query & 25.4535 & 5.9232 & 20.3636 & 27.3221 \\
+4 & Bridge & 25.6785 & 5.9957 & 20.6024 & 27.7555 \\
+4 & One-source control & 25.6159 & 5.9839 & 20.5818 & 27.6599 \\
+4 & Teacher, last block & 25.6501 & 5.9969 & 20.6136 & 27.7796 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+固定开发候选后的2048条完整测试；同推理噪声与四项评分模型。
 \end{frame}
 \begin{frame}{原路径版长训练确认：10000轮}
 \scriptsize\centering
@@ -762,6 +828,21 @@ Teacher-only 原路径版；每行统计截至所列轮次的最近1000轮（100
 固定 Teacher 提议随 Student 更新逐渐失配，是后续桥接与最后正方差块消融的动机。
 链冻结指两次参考重采样均未移动，加权均值仍可能变化。分噪声/停止点诊断另存；总平均 ESS 不代表所有层均有效。此表不是图像质量或全局收敛证明。
 \end{frame}
+\begin{frame}{长训练场诊断：固定教师提议的失配}
+\scriptsize\centering
+两条旧10000轮模型；每条用2个固定开发提示词、4个种子、$J=4$，文本长度128。
+\begin{tabular}{lrrr}\toprule
+Student & Gaussian $K$, CFG1 & Gaussian $K$, CFG4.5 & 样本$\log(p_S/q_{T,1})$\\\midrule
+DMD10000 & 5118.0 & 8409.8 & 5174.6 \\
+Old Path10000 & 218049.4 & 218251.8 & 218201.4 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{5pt}
+$K$ 为8条源路径的逐父状态等方差 Gaussian KL 之和的样本均值；最后一列用 BF16 单元质量计算。
+\begin{itemize}\itemsep4pt
+\item 健康 DMD 也可与固定 Teacher 路径明显失配；崩溃旧路径版在此组的 CFG1 代理约为其43倍。
+\item 简单把提议 CFG 改成4.5，在这两组均未降低失配；本轮不据此增加新训练候选。
+\item 此为机制诊断，没有新增图像质量实验；不能把先验失配代理当成后验 ESS 或唯一崩溃因果。
+\end{itemize}
+\end{frame}
 \begin{frame}{最后正方差块：用物理坐标避免极小单元逆变换}
 \small
 固定更早前缀，最后 Teacher 核为 $U\sim\N(\mu_T,\nu^2I)$，
@@ -776,6 +857,23 @@ U\mid x&\sim q_T(U)\,\mathbf1\{R_{\rm BF16}(U)=x\}/M_T(x),\\
 \item $U=\mu_T+\nu E$ 是同一理想条件核的仿射换元；辅助尺度改为 $\nu\delta$，先验校正仍必须保留。
 \item 零附近 BF16 单元宽度可远小于非零 $\mu_T$ 的 FP64 间距；先减均值会使两个端点重合。
 \item 直接在物理单元内拒绝采样，不抖动原状态，不添加零方差末步噪声。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{第650轮定点复现：极小单元的数值消去}
+\small
+保留旧采样代码重新运行；失败前64次生成器更新的所有已记录数值逐值一致。
+第650轮捕获到一个异常坐标，状态与均值均有限：
+\begin{align}
+x&=0,\quad \mu_T=-0.02420189977,\quad \nu=0.74076625545,\\
+[\ell,u]&=[-4.5917748079,\,4.5917748079]\times10^{-41},\\
+\operatorname{FP64}((\ell-\mu_T)/\nu)
+&=\operatorname{FP64}((u-\mu_T)/\nu)=0.03267143932243376.
+\end{align}
+\begin{itemize}\itemsep5pt
+\item 数学单元非空，但标准化后的两个计算机端点重合，旧截断 Gaussian 检查因此报错。
+\item 物理坐标直接在原非空区间采样；两项修复版1000轮实验均完成，所有参考重放检查通过。
+\item 此处 $\nu>0$；这是正方差前缀的浮点问题，区别于零方差末步的测度问题。64次日志一致也不等于全权重逐位比较。
 \end{itemize}
 \end{frame}
 
@@ -816,7 +914,7 @@ K_{A^c}(h,\cdot),&h\notin A,
 
 \begin{frame}{保留同一更新期望：两次独立查询后平均梯度}
 \small
-同一个源 $H$ 和噪声尺度 $\sigma$，独立生成两个观测及其条件粒子随机数，
+同一条完整源前缀 $H$（含停止点）和噪声尺度 $\sigma$，独立生成两个观测及其条件粒子随机数，
 得到 $g_1,g_2$，使用 $\bar g=(g_1+g_2)/2$：
 \begin{align}
 \E[\bar g\mid H,\sigma]&=\E[g_1\mid H,\sigma],\\
@@ -863,14 +961,16 @@ K_{A^c}(h,\cdot),&h\notin A,
 理论与修订 & \texttt{docs/RTDMD\_PathRatio\_Repair\_CN.txt}\\
 路径核比 / BF16 质量 & \texttt{flow\_grpo/path\_ratio\_smc.py}\\
 参考提升 / 条件 i-SIR & \texttt{flow\_grpo/conditional\_path\_is.py}\\
-真实 SD3 接口 & \texttt{diffusers\_patch/sd3\_conditional\_path\_is.py}\\
+真实 SD3 接口 & \texttt{flow\_grpo/diffusers\_patch/sd3\_conditional\_path\_is.py}\\
 训练与细节消融 & \texttt{train\_rtdmd\_path\_is\_sd3.py} / \texttt{train\_rtdmd\_path\_is\_refined\_sd3.py}\\
 最后正方差块 & \texttt{scripts/train\_rtdmd\_path\_is\_last\_sd3.py}\\
-精确前缀缓存 & \texttt{diffusers\_patch/sd3\_last\_innovation\_path\_is.py}\\
+固定前缀物理内核 & \texttt{flow\_grpo/diffusers\_patch/sd3\_last\_innovation\_path\_is.py}\\
+物理坐标 / 保护分区 & \texttt{flow\_grpo/physical\_path\_is.py} / \texttt{rounding\_cells.py}\\
+双查询平均 & \texttt{scripts/train\_rtdmd\_path\_is\_query\_views\_sd3.py}\\
 桥接及历史校准 & \texttt{flow\_grpo/bridged\_path\_is.py} / \texttt{adaptive\_bridge.py}\\
-统一 EMA 评测 & \texttt{jobs/evaluate\_loaded\_path\_checkpoint.sh}\\
-逐图结果与统计 & \texttt{logs/path-ratio-round1/evidence/} 与 \texttt{comparison-final/}\\
-冻结与选择记录 & \texttt{source-manifest.json} / \texttt{refinement-manifest.json} / \texttt{selection.json}\\
+统一 EMA 评测 & \texttt{jobs/evaluate\_loaded\_path\_checkpoint\_v2.sh}\\
+逐图结果与统计 & \texttt{logs/path-ratio-round1/evidence/} 与 \texttt{RTDMD\_v31\_results.csv}\\
+当前冻结与选择 & \texttt{deterministic-selection.json} / \texttt{deterministic-validation-plan.json}\\
 \bottomrule\end{tabularx}
 \par\vspace{4pt}权重、完整 PNG 与持久保存的位置由交付说明列出；RAM 存储不冒充持久归档。
 \end{frame}

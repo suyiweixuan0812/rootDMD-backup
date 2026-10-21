@@ -36,14 +36,14 @@ def completed(name):
     return report
 
 
-def pair_statistics(reports, candidate, comparator):
+def pair_statistics(reports, candidate, comparator, suffix='pick2048-exact', count=2048):
     matched = []
     for seed in [42, 43, 44]:
-        a = reports.get(f'sd3-det-{comparator}-seed{seed}-pick2048-exact')
-        b = reports.get(f'sd3-det-{candidate}-seed{seed}-pick2048-exact')
+        a = reports.get(f'sd3-det-{comparator}-seed{seed}-{suffix}')
+        b = reports.get(f'sd3-det-{candidate}-seed{seed}-{suffix}')
         if a is None or b is None:
             continue
-        assert a['num_images'] == b['num_images'] == 2048
+        assert a['num_images'] == b['num_images'] == count
         assert a['protocol']['checkpoint_training_configuration']['seed'] == b['protocol']['checkpoint_training_configuration']['seed'] == seed
         for key in ['test_file_sha256', 'resolution', 'seed', 'ema', 'clip', 'aesthetic', 'pickscore', 'hp']:
             assert a['protocol'][key] == b['protocol'][key], key
@@ -54,7 +54,7 @@ def pair_statistics(reports, candidate, comparator):
         data = [x['deltas'][key] for x in matched]
         stats[key] = dict(mean_delta=float(np.mean(data)) if data else None,
                          sample_std_across_seed_deltas=float(np.std(data, ddof=1)) if len(data)>1 else None)
-    return dict(matched_training_seeds=[x['seed'] for x in matched], per_seed=matched, statistics=stats,
+    return dict(num_prompts=count, dataset_suffix=suffix, matched_training_seeds=[x['seed'] for x in matched], per_seed=matched, statistics=stats,
                 all_seeds_improve_both_preferences=bool(matched) and all(
                     x['deltas']['Pick Score']>0 and x['deltas']['HP Score']>0 for x in matched))
 
@@ -82,8 +82,12 @@ def main():
     faithful = selection.get('pure_teacher_alternative', dict(case=best, paired_control=control))
     faithful_pairs = {comparator:pair_statistics(reports, faithful['case'], comparator)
                       for comparator in ['dmd', 'dmd_fp32', faithful['paired_control']]}
+    holdout = {case:{comparator:pair_statistics(reports,case,comparator,
+                    suffix='holdout138-exact',count=138)
+                    for comparator in ['dmd','dmd_fp32',paired_case]}
+               for case,paired_case in [(best,control),(faithful['case'],faithful['paired_control'])]}
     summary = dict(created_utc=datetime.now(timezone.utc).isoformat(), selected_case=best,
-        dev_selection_status=selection['status'], paired_control=control, comparisons=pairs,
+        dev_selection_status=selection['status'], paired_control=control, comparisons=pairs, independent_holdout=holdout,
         pure_teacher_alternative=dict(**faithful, comparisons=faithful_pairs),
         statistical_scope='Every available matched trained seed is retained, including negative replications. No reliable training-seed CI is claimed from two or three seeds. Prompt bootstrap reports are conditional on the saved trained models.',
         incomplete_groups='Individual completed rows remain in CSV; pair means use every seed with both reports, with seed sets explicitly listed. Historical nondeterministic and deterministic cohorts are never averaged together.')
@@ -124,6 +128,12 @@ def main():
         for comparator,pair in faithful_pairs.items():
             lines.append('  对照 '+comparator+'；种子 '+str(pair['matched_training_seeds'])+'；均值差 '+json.dumps(
                 {k:v['mean_delta'] for k,v in pair['statistics'].items()},ensure_ascii=False))
+    lines += ['', '独立138提示词验证：固定方案，不用于选择参数']
+    for case,comparators in holdout.items():
+        for comparator,pair in comparators.items():
+            if pair['matched_training_seeds']:
+                lines.append(case+' 减 '+comparator+'：'+json.dumps(
+                    {k:v['mean_delta'] for k,v in pair['statistics'].items()},ensure_ascii=False))
     lines += [
         '', '三、公平性与结论边界',
         '共同配置审计覆盖模型、512分辨率、BF16、TF32、种子、CPS、随机停止、batch1、LoRA32/alpha64、优化器、LR3e-5、EMA.99及训练轮次。',
