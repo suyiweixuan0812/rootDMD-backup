@@ -1,0 +1,17 @@
+{
+  "paper": "Testing Prompt-Revision Failures and Reward Repair After Few-Step DMD",
+  "hardware_observed": "NVIDIA A100-SXM4-80GB",
+  "primary_baseline": "dmd",
+  "controls": ["pair_lambda0", "pair_lambda1"],
+  "fixed_protocol": {
+    "model": "SD3.5-Medium",
+    "resolution": 512,
+    "steps": 4,
+    "eta": 0.9,
+    "pair_size": 2,
+    "seed": 42,
+    "updates_for_smoke": 200
+  },
+  "external_baselines": ["Pair-GRPO", "CMO", "CAST", "Flash-DMD", "DMAD"],
+  "status": "math_validation_complete; full_vlm_training_pending"
+}

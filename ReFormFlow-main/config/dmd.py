@@ -55,6 +55,12 @@ def _get_config(model, variant):
         consistency_num_steps=1, consistency_use_two_sample_unbiased=True,
         consistency_stopgrad_transitions=True,
     ))
+    # Optional independent pair-reward experiment.  The default is disabled,
+    # preserving the original DMD training path byte-for-byte.
+    config.pair_reward = ConfigDict(dict(
+        enabled=False, lambda_cross=0.0, pair_size=2,
+        scorer="soft_tifa", score_range=(0.0, 1.0),
+    ))
     # LoRA structure is fixed in the training script; paths are warm-start inputs only.
     config.lora = ConfigDict(dict(generator_path="", fake_score_path=""))
     # Each outer iteration consumes one prompt batch; both role updates reuse it.
