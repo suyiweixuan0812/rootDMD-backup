@@ -14,6 +14,12 @@ Pair-GRPO, CMO/CAST, Flash-DMD and DMAD are external literature baselines. They
 must be reported as external references unless their implementations and model,
 data, seed and compute budgets are reproduced locally.
 
+The runnable SD3 adapter currently adds the pair objective as a differentiable
+pathwise term to the existing DMD generator loss.  It is a faithful test of the
+pair objective and common-noise protocol, but it is not yet the paper's full
+AC-DMD score-function estimator.  Results must therefore be labelled as the
+`pair-reward DMD proxy` until that estimator is implemented.
+
 Run the mathematical validation (CPU or A800):
 
 ```bash

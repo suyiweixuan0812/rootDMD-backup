@@ -1,0 +1,12 @@
+{
+  "hardware": "NVIDIA A100-SXM4-80GB (host reports A100, not A800)",
+  "scorer": "PickScore_v1 with cached LAION CLIP processor; proxy for paper's unavailable Soft-TIFA/Qwen3-VL scorer",
+  "protocol": {"seed": 42, "outer_steps": 2000, "generator_updates": 200, "batch_size": 2, "steps": 4, "eta": 0.9, "reward_weight": 0.1},
+  "results": [
+    {"run": "paper-pair-dmd-seed42", "lambda_cross": 0.0, "pair_enabled": false, "pickscore_proxy": 0.8284673504531384},
+    {"run": "paper-pair-lambda0-seed42", "lambda_cross": 0.0, "pair_enabled": true, "pickscore_proxy": 0.8370572533458471},
+    {"run": "paper-pair-lambda1-seed42", "lambda_cross": 1.0, "pair_enabled": true, "pickscore_proxy": 0.8435009866952896}
+  ],
+  "delta_vs_dmd": {"pair_lambda0": 0.0085899028927087, "pair_lambda1": 0.0150336362421512},
+  "artifacts": "/dev/shm/paper-pair-runs"
+}
