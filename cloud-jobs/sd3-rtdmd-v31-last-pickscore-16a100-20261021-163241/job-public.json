@@ -1,5 +1,5 @@
 {
-  "Name": "sd3-rtdmd-v31-last-pickscore-16a100-20261021-163241-r2",
+  "Name": "sd3-rtdmd-v31-last-pickscore-16a100-20261021-163241-r3",
   "Description": "RTDMD v31 pure Teacher last: SD3-Medium, PickScore prompts, 16 A100-80GB, 10000 outer/1000 generator steps, no rewards; original DMD common hyperparameters; final PickScore2048 and DrawBench1000 x 11 four-score evaluation.",
   "ResourceConfig": {
     "MaxRuntimeSeconds": 86400,

@@ -1,0 +1,32 @@
+{
+  "job_id": "t-20261021164017-srhsr",
+  "checked_at": "2026-10-21T16:43:25.664667+08:00",
+  "status": {
+    "State": "Running",
+    "SecondaryState": "",
+    "Message": "2 \u4e2a\u5b9e\u4f8b\u7686\u5728\u8fd0\u884c\u4e2d\u3002",
+    "StartTime": "2026-10-21T08:40:53Z",
+    "EndTime": "",
+    "HoldingEndTime": "",
+    "RetriedTimes": 0
+  },
+  "verified_world_size": 16,
+  "latest_outer_step": 359,
+  "latest_generator_step": 35,
+  "replica_checks": [
+    "REPLICA_CHECK_OK averaged_gradient_1 ranks=16 sha256=7598b6f746f0b82a83dc62f7046da8916b36869a396d3e16ab1fbbc310e78ae1",
+    "REPLICA_CHECK_OK averaged_gradient_2 ranks=16 sha256=81a98dad8009b0002e813cb3c81f7b499a9c97b83e1f675f1d874baad165b068",
+    "REPLICA_CHECK_OK ema_step_10 ranks=16 sha256=de02fcee1365cf2e2c24f70f1ce68c236ff121ffb4b5b65dcbe888f10acfc880",
+    "REPLICA_CHECK_OK ema_step_20 ranks=16 sha256=d18b9519abcc796b9ed69733995915d472047d712c81b4a326328e1012360e0d",
+    "REPLICA_CHECK_OK generator_step_1 ranks=16 sha256=7f67c03676a745fcd5e32d999b0be02e1241c15793a33b95c800f260fc420b28",
+    "REPLICA_CHECK_OK generator_step_2 ranks=16 sha256=61f9e986cccef02dd0b697636150d8821845a773c91ad69692393497b8e421c1",
+    "REPLICA_CHECK_OK initial_generator ranks=16 sha256=4b49cfe972103ffe79c32ab2e5a61bf8646f86ecd671a5aac435101ab13abb98"
+  ],
+  "particles": 8,
+  "sweeps": 2,
+  "reference_replay_exact_observed": true,
+  "all_scores_pending": true,
+  "mathematical_tests_passed": 68,
+  "cpu_ddp_reference_test": "passed",
+  "single_a100_smoke20_with_save": "passed"
+}

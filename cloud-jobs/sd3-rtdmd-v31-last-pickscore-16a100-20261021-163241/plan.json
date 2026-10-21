@@ -108,7 +108,7 @@
     "config/dmd_sd3_pickscore.py": "5d1d5941d66c9372b19efa989faf2d62c5d58613f5cc8dc9eee7b7f54a745e1e",
     "config/base.py": "cf350d56b84cbe5f7597fa1f04ad2d08cbcde6a4032b1bf118e833022230b3c8",
     "scripts/train_reform_sd3.py": "279b4bdc97c0e9beb1e3aa15c3f84b6b29c3b32889e033502f1078e08843786c",
-    "scripts/check_runtime.py": "7e5cd5a37cf1a2de06d02f0b419073c823a5efd2c87af11dbdb5d8a314fd577e",
+    "scripts/check_runtime.py": "931dad02c82dc77109cb92c6cb37367a363112dd9a9f481f7c1cc61de634656d",
     "scripts/train_dmd_sd3.py": "65c562035f3802a1cc197331ffe0e4bd9daa4243e26593c10ecaa491cae657af",
     "scripts/train_reform_flux.py": "a6f65321ab59b624bc2ed8324ecfa4ee8db402bc8feeed09fcfc02713807d66d",
     "scripts/score_dmd_images.py": "8b1a0f057e87ca21b1818e40397033d6c5820b17f866467dd8dedfe16a9ab069",
@@ -191,8 +191,21 @@
         "RetriedTimes": 0
       },
       "reason": "Original .gitignore excluded jobs/; cloud CLI skipped bootstrap; no training started."
+    },
+    {
+      "job_id": "t-20261021163723-ndm57",
+      "status": {
+        "State": "Failed",
+        "SecondaryState": "",
+        "Message": "worker-0, worker-1 \u5171 2 \u5b9e\u4f8b\u5f02\u5e38\u7ed3\u675f\uff0c\u8be6\u60c5\u8bf7\u67e5\u770b\u5bf9\u5e94\u5b9e\u4f8b\u7684\u5931\u8d25\u4fe1\u606f\u548c\u65e5\u5fd7\u3002",
+        "StartTime": "2026-10-21T08:38:11Z",
+        "EndTime": "2026-10-21T08:38:47Z",
+        "HoldingEndTime": "",
+        "RetriedTimes": 0
+      },
+      "reason": "Environment preflight used repository-relative reward paths; replaced with actual baseline checker honoring REWARD_CKPT_PATH; no training started."
     }
   ],
-  "job_name": "sd3-rtdmd-v31-last-pickscore-16a100-20261021-163241-r2",
-  "job_id": "t-20261021163723-ndm57"
+  "job_name": "sd3-rtdmd-v31-last-pickscore-16a100-20261021-163241-r3",
+  "job_id": "t-20261021164017-srhsr"
 }
