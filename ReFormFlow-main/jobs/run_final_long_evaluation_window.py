@@ -11,6 +11,7 @@ import json,subprocess,time
 import run_selected_deterministic_validation_v3 as v
 R,ROOT,D=v.R,v.ROOT,v.D
 P=R/'optional-long-final-evaluation-window-progress.json'
+EVALUATOR='jobs/evaluate_loaded_path_checkpoint_v2.sh'
 def record(status,**x):
  p=P.with_suffix('.pending');p.write_text(json.dumps(dict(status=status,utc=datetime.now(timezone.utc).isoformat(),**x),indent=2));p.replace(P)
 def evaluate(training):
@@ -20,7 +21,7 @@ def evaluate(training):
  assert (checkpoint/'adapter_model.safetensors').is_file()
  with (Path('/rootDMD')/f'path-is-{name}-final-window.log').open('w') as log:
   subprocess.run(['timeout','--signal=TERM','--kill-after=30s',str(int(D-time.time()-180)),
-   'bash','jobs/evaluate_loaded_path_checkpoint_v2.sh',str(checkpoint),name,'dataset/pickscore','2048',training],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,check=True)
+   'bash',EVALUATOR,str(checkpoint),name,'dataset/pickscore','2048',training],cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,check=True)
  return name
 record('WAITING_FOR_REQUIRED_TRAINING_AND_VALIDATION')
 try:
@@ -40,10 +41,13 @@ try:
    time.sleep(2)
    old=R/'optional-faithful-long-before-final-evaluation-window.json'
    assert not old.exists();old.write_text(json.dumps(long,indent=2))
-   record('RUNNING_SAME_FROZEN_3000_FULL_TEST',training=training)
+   parity=v.read(R/'unused-online-score-parity-audit.json')
+   if parity.get('all_eight_PNG_bytes_exactly_equal'):
+    EVALUATOR='jobs/evaluate_loaded_path_checkpoint_no_online_v2.sh'
+   record('RUNNING_SAME_FROZEN_3000_FULL_TEST',training=training,evaluator=EVALUATOR)
    with ThreadPoolExecutor(max_workers=2) as pool:reports=list(pool.map(evaluate,training))
    v.compare(reports[0],[reports[1]],'comparison-optional-faithful-long3000')
-   result=dict(status='OPTIONAL_FAITHFUL_LONG_CHECK_COMPLETE',utc=datetime.now(timezone.utc).isoformat(),faithful_case=v.read(R/'deterministic-selection.json')['pure_teacher_alternative']['case'],reports=reports,training=training,archived=long.get('archived',[]),prefix_audit='deterministic-full-prefix-reproduction.json',evaluation_window='Same full2048 test launched in final15-to25-minute window; no score-based selection')
+   result=dict(status='OPTIONAL_FAITHFUL_LONG_CHECK_COMPLETE',utc=datetime.now(timezone.utc).isoformat(),faithful_case=v.read(R/'deterministic-selection.json')['pure_teacher_alternative']['case'],reports=reports,training=training,archived=long.get('archived',[]),prefix_audit='deterministic-full-prefix-reproduction.json',evaluation_window='Same full2048 test launched in final15-to25-minute window; no score-based selection',evaluator=EVALUATOR)
    target=R/'optional-faithful-long-progress.json';pending=target.with_suffix('.pending');pending.write_text(json.dumps(result,indent=2));pending.replace(target)
    record('SAME_FROZEN_LONG_TEST_COMPLETED',reports=reports);break
   time.sleep(5)
