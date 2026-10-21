@@ -1,5 +1,5 @@
 RTDMD v31：本轮修改与结果说明
-生成时间：2026-10-21T01:03:35.845085+00:00
+生成时间：2026-10-21T01:07:31.942887+00:00
 
 一、保留与改动
 保留实际 Student/Teacher 路径核比、粒子加权条件均值、Tweedie 接口、无 Fake 训练和四步 Student 推理。
@@ -48,8 +48,8 @@ last 减 dmd：{"CLIP Score": 1.2691769964885005, "Aesthetic Score": 0.024028062
 last 减 dmd_fp32：{"CLIP Score": 0.5794168544420302, "Aesthetic Score": 0.015762125236400415, "Pick Score": 0.26269363838693494, "HP Score": 0.6577504069908819}
 last 减 paired：{"CLIP Score": 0.44928461421227084, "Aesthetic Score": -0.013879171316174777, "Pick Score": 0.05755887515303115, "HP Score": 0.29689849934716506}
 
-附加固定3000轮确认：RUNNING_FRESH_MATCHED_3000_TRAINING
-最后剩余窗口评分状态：WAITING_FOR_REQUIRED_TRAINING_AND_VALIDATION
+附加固定3000轮确认：BUDGET_STOP_BEFORE_COMPLETE_LONG_TEST
+最后剩余窗口评分状态：RUNNING_SAME_FROZEN_3000_FULL_TEST
 未完成双方完整2048评分时，不把训练结束或单方评分视为新的长程质量结论。
 1000轮原生EMA与本次从头训练前缀比较：[{"case": "dmd", "equal_tensors": 382, "tensor_count": 382, "all_bit_exact": true, "max_abs_difference": 0.0}, {"case": "last", "equal_tensors": 382, "tensor_count": 382, "all_bit_exact": true, "max_abs_difference": 0.0}]
 第三种子时间门槛状态：NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED
@@ -68,6 +68,7 @@ Dev 为 DrawBench64（61唯一文本），另留138条唯一提示词与开发�
 四、文件位置
 更新论文：/rootDMD/RTDMD_v31.tex 与 /rootDMD/RTDMD_v31.pdf
 完整方法说明：/rootDMD/ReFormFlow-main/docs/RTDMD_PathRatio_Repair_CN.txt
+本轮详细分析与下一步：/rootDMD/ReFormFlow-main/docs/RTDMD_PathRatio_Conclusions_CN.txt
 所有已完成指标：/rootDMD/RTDMD_v31_results.csv
 逐图分数/配置/训练日志：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence
 原始FP32 EMA权重：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints

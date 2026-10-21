@@ -23,6 +23,14 @@ bash jobs/evaluate_loaded_path_checkpoint_v2.sh /rootDMD/ReFormFlow-main/logs/pa
 代码补丁包需要现有ReFormFlow项目及对应模型/依赖；不包含大模型和凭据。完整版本/模型指纹见 dependency-fingerprints.json。
 本轮一次性队列写有固定截止时间；复现实验请使用上述训练入口，不照搬已过期的队列截止日期。
 
+已保存的固定3000轮原生EMA：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints/sd3-det-dmd-seed42-3000-confirm-ema3000/lora/generator
+下轮获准预算后可从此完整复评2048提示词；本命令不自动执行：
+bash jobs/evaluate_loaded_path_checkpoint_v2.sh /rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints/sd3-det-dmd-seed42-3000-confirm-ema3000/lora/generator rtdmd-v31-dmd-3000-user-repeat dataset/pickscore 2048 RTDMD-v31-dmd-3000
+
+已保存的固定3000轮原生EMA：/rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints/sd3-det-last-seed42-3000-confirm-ema3000/lora/generator
+下轮获准预算后可从此完整复评2048提示词；本命令不自动执行：
+bash jobs/evaluate_loaded_path_checkpoint_v2.sh /rootDMD/ReFormFlow-main/logs/path-ratio-round1/archived-checkpoints/sd3-det-last-seed42-3000-confirm-ema3000/lora/generator rtdmd-v31-last-3000-user-repeat dataset/pickscore 2048 RTDMD-v31-last-3000
+
 更贴近原稿的纯Teacher选项：last
 入口：/rootDMD/ReFormFlow-main/scripts/train_rtdmd_path_is_last_sd3.py
 配置：config/rtdmd_path_is_last.py:last

@@ -97,6 +97,10 @@ def main():
     summary['optional_long_confirmation']=long_status
     window_path=R/'optional-long-final-evaluation-window-progress.json'
     window=json.loads(window_path.read_text()) if window_path.exists() else {'status':'NOT_PLANNED'}
+    user_window_path=R/'user-budget-final-evaluation-progress.json'
+    if user_window_path.exists():
+        summary['superseded_final_window_monitor']=window
+        window=json.loads(user_window_path.read_text())
     summary['optional_final_evaluation_window']=window
     prefix_path=R/'deterministic-full-prefix-reproduction.json'
     prefix=(json.loads(prefix_path.read_text()) if prefix_path.exists() else
@@ -178,6 +182,7 @@ def main():
         '', '四、文件位置',
         '更新论文：'+str(OUT/'RTDMD_v31.tex')+' 与 '+str(OUT/'RTDMD_v31.pdf'),
         '完整方法说明：'+str(ROOT/'docs/RTDMD_PathRatio_Repair_CN.txt'),
+        '本轮详细分析与下一步：'+str(ROOT/'docs/RTDMD_PathRatio_Conclusions_CN.txt'),
         '所有已完成指标：'+str(OUT/'RTDMD_v31_results.csv'),
         '逐图分数/配置/训练日志：'+str(R/'evidence'),
         '原始FP32 EMA权重：'+str(R/'archived-checkpoints'),
@@ -208,6 +213,14 @@ def main():
             '如果应用的PDF链接没有响应，可打开同目录TeX的LaTeX预览，或在开发机文件系统取回PDF/ZIP。',
             '代码补丁包需要现有ReFormFlow项目及对应模型/依赖；不包含大模型和凭据。完整版本/模型指纹见 dependency-fingerprints.json。',
             '本轮一次性队列写有固定截止时间；复现实验请使用上述训练入口，不照搬已过期的队列截止日期。']
+    for case in ['dmd',faithful['case']]:
+        checkpoint=R/'archived-checkpoints'/f'sd3-det-{case}-seed42-3000-confirm-ema3000/lora/generator'
+        if not (checkpoint/'adapter_model.safetensors').exists():
+            continue
+        code += ['', '已保存的固定3000轮原生EMA：'+str(checkpoint),
+                 '下轮获准预算后可从此完整复评2048提示词；本命令不自动执行：',
+                 shlex.join(['bash','jobs/evaluate_loaded_path_checkpoint_v2.sh',str(checkpoint),
+                    f'rtdmd-v31-{case}-3000-user-repeat','dataset/pickscore','2048',f'RTDMD-v31-{case}-3000'])]
     if faithful['case'] != best:
         faithful_trainer,faithful_config,_ = ENTRIES[faithful['case']]
         code += ['', '更贴近原稿的纯Teacher选项：'+faithful['case'], '入口：'+str(ROOT/faithful_trainer),

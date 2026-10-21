@@ -10,7 +10,7 @@ for folder in ['flow_grpo','config','scripts','tests']:
  for p in sorted((ROOT/folder).rglob('*.py')):
   if '__pycache__' not in p.parts:add(p,'code/ReFormFlow-main/'+str(p.relative_to(ROOT)))
 for p in sorted((ROOT/'jobs').iterdir()):
- if p.suffix in {'.py','.sh'} and any(w in p.name for w in ['path','deterministic','query','load_guard','local_env','restore_public','optional','long_evaluation_window','unused_online_score']):
+ if p.suffix in {'.py','.sh'} and any(w in p.name for w in ['path','deterministic','query','load_guard','local_env','restore_public','optional','long_evaluation_window','unused_online_score','user_budget']):
   add(p,'code/ReFormFlow-main/jobs/'+p.name)
 for p in sorted(ROOT.glob('requirements*.txt')):add(p,'code/ReFormFlow-main/'+p.name)
 for name in ['setup.py','README.md']:add(ROOT/name,'code/ReFormFlow-main/'+name)
