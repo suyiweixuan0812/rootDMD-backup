@@ -1,0 +1,26 @@
+{
+  "dmd-drawbench-eval": {
+    "job_id": "t-20261021113034-rcqvf",
+    "status": {
+      "State": "Completed",
+      "SecondaryState": "",
+      "Message": "all pods(2) are succeeded",
+      "StartTime": "2026-10-21T03:31:11Z",
+      "EndTime": "2026-10-21T03:43:16Z",
+      "HoldingEndTime": "",
+      "RetriedTimes": 0
+    }
+  },
+  "dmd-drawbench-relay": {
+    "job_id": "t-20261021113049-vkhlx",
+    "status": {
+      "State": "Completed",
+      "SecondaryState": "",
+      "Message": "all pods(1) are succeeded",
+      "StartTime": "2026-10-21T03:31:31Z",
+      "EndTime": "2026-10-21T03:43:33Z",
+      "HoldingEndTime": "",
+      "RetriedTimes": 0
+    }
+  }
+}
