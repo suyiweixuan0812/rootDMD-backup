@@ -88,4 +88,20 @@ K_{A^c}(h,\cdot),&h\notin A,
 \item 该结论针对明确的查询 Jacobian surrogate，不补上它与完整 DMD KL 梯度的等价证明。
 \end{itemize}
 \end{frame}
+
+\begin{frame}{后续候选：停止点条件平均（尚未训练）}
+\small
+把每个候选的未用后缀按\textbf{Student CPS}补齐成完整路径 $F$，则
+\begin{align}
+\Pi(F,J\mid y)&\propto p_\theta^{\rm full}(F)\,p_J(J)L(y\mid f_J(F)),\\
+\rho_j(F,y)&=\frac{p_J(j)L(y\mid f_j(F))}{\sum_\ell p_J(\ell)L(y\mid f_\ell(F))},\\
+\widehat m_{\rm stop}&=\sum_i\bar w_i\sum_j\rho_j(F_i,y)f_j(F_i).
+\end{align}
+\begin{itemize}\itemsep4pt
+\item $\bar w_i$仍来自Teacher/Student路径比的条件i-SIR；Student辅助后缀在实际提议与目标中相消。
+\item 虚拟地先抽候选，再按条件分布更新$J$，保持同一后验；对这两步取条件均值得到上式。
+\item 8状态精确枚举核验均值、平稳性与方差分解；没有SD3训练或图像质量结果，不计入本轮增益。
+\item 不能用未修正的Teacher后缀替代Student补齐；仍需额外计算和匹配无粒子控制，也未补上完整KL梯度证明。
+\end{itemize}
+\end{frame}
 '''
