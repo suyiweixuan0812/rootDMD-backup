@@ -23,7 +23,8 @@ def get_config(name="dmd"):
     cfg.pair_reward.enabled = name != "dmd"
     cfg.pair_reward.lambda_cross = 0.0 if name == "pair_lambda0" else (1.0 if name == "pair_lambda1" else 0.0)
     cfg.pair_reward.pair_size = 2
-    cfg.pair_reward.scorer = "soft_tifa"
+    cfg.pair_reward.reward_weight = 0.1
+    cfg.pair_reward.scorer = "pickscore_proxy"
     cfg.pair_reward.score_range = (0.0, 1.0)
     return cfg
 

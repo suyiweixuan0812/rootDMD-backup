@@ -58,8 +58,8 @@ def _get_config(model, variant):
     # Optional independent pair-reward experiment.  The default is disabled,
     # preserving the original DMD training path byte-for-byte.
     config.pair_reward = ConfigDict(dict(
-        enabled=False, lambda_cross=0.0, pair_size=2,
-        scorer="soft_tifa", score_range=(0.0, 1.0),
+        enabled=False, lambda_cross=0.0, reward_weight=0.1, pair_size=2,
+        scorer="pickscore_proxy", score_range=(0.0, 1.0),
     ))
     # LoRA structure is fixed in the training script; paths are warm-start inputs only.
     config.lora = ConfigDict(dict(generator_path="", fake_score_path=""))

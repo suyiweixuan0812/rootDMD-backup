@@ -65,6 +65,25 @@ def ac_loss(anchor, first, second=None):
     return torch.nan_to_num(loss.float(), nan=0.0, posinf=0.0, neginf=0.0)
 
 
+def pair_reward_loss(pipeline, x0, prompts, config, device):
+    """Decode paired generator samples and add the differentiable proxy reward."""
+    if not getattr(config, "pair_reward", {}).get("enabled", False):
+        return x0.new_zeros(())
+    if len(prompts) % 2:
+        raise ValueError("pair reward requires an even generator batch")
+    from research.rtdmd_reward.differentiable_pickscore import DifferentiablePickScore
+    scorer = getattr(pipeline, "_pair_reward_scorer", None)
+    if scorer is None:
+        scorer = DifferentiablePickScore(device=str(device), dtype=torch.float32)
+        pipeline._pair_reward_scorer = scorer
+    vae_latents = x0.float() / pipeline.vae.config.scaling_factor + pipeline.vae.config.shift_factor
+    images = (pipeline.vae.decode(vae_latents, return_dict=False)[0] / 2 + 0.5).clamp(0, 1)
+    scores = scorer(images, list(prompts)).reshape(-1, 2)
+    from research.rtdmd_reward.pair_objective import pair_reward
+    reward = pair_reward(scores, float(config.pair_reward.lambda_cross)).mean()
+    return -float(config.pair_reward.reward_weight) * reward
+
+
 def save_ckpt(
     save_dir, transformer, global_step, rank, ema, parameters, config, optimizers, scalers,
 ):
