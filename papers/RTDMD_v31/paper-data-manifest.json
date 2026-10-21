@@ -37,6 +37,7 @@
     "sd3-det-dmd_fp32-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
     "sd3-det-bridge-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed43-pick2048-exact/final-metrics.json",
     "sd3-det-paired-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-paired-seed43-pick2048-exact/final-metrics.json",
+    "sd3-det-last-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed43-pick2048-exact/final-metrics.json",
     "dmd-seed42-10000-pick2048": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-seed42-10000-pick2048/final-metrics.json",
     "path-is-seed42-10000-pick2048": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed42-10000-pick2048/final-metrics.json"
   },
@@ -78,6 +79,7 @@
     "sd3-det-dmd_fp32-seed43-pick2048-exact": "76e0c4b43cf03d4b4cbd2177c639c20dc7386bef6a7281eef18491a0f05c272e",
     "sd3-det-bridge-seed43-pick2048-exact": "5b3eec8734f1355111728d3e73759942e0fe66bd8d9ec6e0ab3d6fc628dc7b15",
     "sd3-det-paired-seed43-pick2048-exact": "c3f840c5c8213f45be7fd1cd5ad9057a8347c80b3438d8fdafea440e3d8ff5c2",
+    "sd3-det-last-seed43-pick2048-exact": "0a2a4b00c8b739c4bb1987c76fa2d720577185103968172f868bdb63fbbd46f7",
     "dmd-seed42-10000-pick2048": "96c2a58cd9cb3ae6f25aa68ceb380feedbb7b05ad89d376b5d960d21a622470a",
     "path-is-seed42-10000-pick2048": "29fc3b983afc649a9f47fa9b88a6a2a76492d6ebf6f403c060e0029c94154020"
   },
@@ -163,7 +165,8 @@
         "sd3-det-dmd-seed43-pick2048-exact",
         "sd3-det-dmd_fp32-seed43-pick2048-exact",
         "sd3-det-bridge-seed43-pick2048-exact",
-        "sd3-det-paired-seed43-pick2048-exact"
+        "sd3-det-paired-seed43-pick2048-exact",
+        "sd3-det-last-seed43-pick2048-exact"
       ]
     },
     {
@@ -189,7 +192,10 @@
       "names": [
         "sd3-det-dmd-seed42-pick2048-exact",
         "sd3-det-dmd_fp32-seed42-pick2048-exact",
-        "sd3-det-last-seed42-pick2048-exact"
+        "sd3-det-last-seed42-pick2048-exact",
+        "sd3-det-dmd-seed43-pick2048-exact",
+        "sd3-det-dmd_fp32-seed43-pick2048-exact",
+        "sd3-det-last-seed43-pick2048-exact"
       ]
     }
   ],
@@ -267,7 +273,7 @@
       1500
     ]
   },
-  "source_sha256": "f95e4e2f6c705fd1ee64b573313c586b80d2b8fa149a493232a09dc6c4f92a73",
+  "source_sha256": "2731ddbaca93e3a40e005b35332b31af5c4fe2609cbd77cfe152599401493e98",
   "selection_role": "Legacy first-phase choice for older tables; new cohort selection is separately stored",
   "deterministic_selection": {
     "frozen_utc": "2026-10-20T22:56:38.501425+00:00",
@@ -785,6 +791,46 @@
       "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
     },
     {
+      "title_contains": "粒子以外的瓶颈：优化接口与梯度裁剪",
+      "value": "10.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "粒子以外的瓶颈：优化接口与梯度裁剪",
+      "value": "12.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "粒子以外的瓶颈：优化接口与梯度裁剪",
+      "value": "46.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "粒子以外的瓶颈：优化接口与梯度裁剪",
+      "value": "45.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "粒子以外的瓶颈：优化接口与梯度裁剪",
+      "value": "16.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "粒子以外的瓶颈：优化接口与梯度裁剪",
+      "value": "15.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "粒子以外的瓶颈：优化接口与梯度裁剪",
+      "value": "51.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "粒子以外的瓶颈：优化接口与梯度裁剪",
+      "value": "48.0",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
       "title_contains": "长路径采样诊断",
       "value": "7.09",
       "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/bridged-exact-geometry-diagnostics/diagnostics.json"
@@ -1053,41 +1099,53 @@
     },
     {
       "title_contains": "纯教师路径版：保留核心的完整测试",
-      "value": "+0.3725",
+      "value": "+0.0818",
       "sources": [
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
-        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json"
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed43-pick2048-exact/final-metrics.json"
       ],
       "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
     },
     {
       "title_contains": "纯教师路径版：保留核心的完整测试",
-      "value": "+0.0925",
+      "value": "-0.0385",
       "sources": [
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
-        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json"
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed43-pick2048-exact/final-metrics.json"
       ],
       "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
     },
     {
       "title_contains": "纯教师路径版：保留核心的完整测试",
-      "value": "+0.4424",
+      "value": "+0.1597",
       "sources": [
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
-        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json"
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed43-pick2048-exact/final-metrics.json"
       ],
       "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
     },
     {
       "title_contains": "纯教师路径版：保留核心的完整测试",
-      "value": "+1.1275",
+      "value": "+0.4140",
       "sources": [
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
-        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json"
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed43-pick2048-exact/final-metrics.json"
       ],
       "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
     },
@@ -1198,6 +1256,42 @@
         "sd3-det-paired-seed42-pick2048-exact"
       ],
       "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "-0.0643",
+      "sources": [
+        "sd3-det-last-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "-0.0011",
+      "sources": [
+        "sd3-det-last-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0196",
+      "sources": [
+        "sd3-det-last-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.1057",
+      "sources": [
+        "sd3-det-last-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
     }
   ],
   "source_artifacts": {
@@ -1221,6 +1315,7 @@
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-conditioning-revision.json": "ac2e71555e3abad257b49ef9cae4204c3039518eafcfbe107617a611368f6ccd",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/research-stop-rb-oracle.json": "d9f8536760ad9471e84cc1cf1d8eb0b561db6cc09bdc2bb9771ed358c533ff66",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-dmd1000-prefix-live-audit.json": "469ae768790d64deef59b63d01dfa0295b3bf6b7102d479baaf74692ced05919",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-last1000-prefix-live-audit.json": "2ed4d26164be512d04270087943aee9c27091a48410aeef5bfdec7796dd6c9aa",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/unused-text-encoding-optimization-audit.json": "4711dc245256a8f49a787f6c7cbc34817c95bd98c42d253248802c6c48aa3e34",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json": "f87811c19710355f975fa89cd24065f23c83b8acaec8c123fef2e141fc925945",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/failed-attempts/last-inverse-bounds-20261020T220837Z/failure-numeric-state.json": "f72bd5a4cd5250def4ab4d54118d8f4dbaebcd9c4d23f0bb6b5f14c517904177",

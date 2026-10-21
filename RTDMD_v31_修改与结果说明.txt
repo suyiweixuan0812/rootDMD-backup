@@ -1,5 +1,5 @@
 RTDMD v31：本轮修改与结果说明
-生成时间：2026-10-21T00:42:18.850087+00:00
+生成时间：2026-10-21T01:03:35.845085+00:00
 
 一、保留与改动
 保留实际 Student/Teacher 路径核比、粒子加权条件均值、Tweedie 接口、无 Fake 训练和四步 Student 推理。
@@ -12,6 +12,7 @@ RTDMD v31：本轮修改与结果说明
 7. 最后正方差块使用物理 Gaussian 坐标和直接 BF16 舍入，修复极小单元逆变换与两次舍入问题；通用创新实现配套正确的后验保护分区。
 8. 双查询选项固定源与时间，对两个独立观测的梯度取平均后只裁剪/更新一次；查询计算约加倍，有相同计算量无粒子对照。
 9. 纯Teacher入口跳过9/10无更新轮次中未使用的冻结文本编码；数据位置、逐轮种子、EMA及有效更新不变，40轮真实训练的全部更新日志一致。完整1000轮权重比较另存，不能仅凭4次更新声称已验证全程。
+最后块的边界：固定前缀后，更早路径比在候选间抵消；连续物理坐标目标是 M_Student×观测似然。Teacher 比值用于校正提议，不能声称完整教师路径探索已保留，或给 Student 后验增加了教师目标。BF16 的单元内提升密度及质量比仍必须保留。
 
 本轮固定开发候选：bridge；开发守门状态：QUALIFIED_DEV_CANDIDATE
 所选细节改变提议为 Teacher/Student 桥接 Q；真实权重为 (Student/Teacher)*(Teacher/Q)*似然，即 Student/Q。
@@ -35,9 +36,9 @@ RTDMD v31：本轮修改与结果说明
   每个已测种子 Pick/HPS 都上升：True
 
 更贴近原稿的纯Teacher版本：last；按同一Dev规则在纯Teacher版本内选出，主完整测试不回调选择。
-  对照 dmd；种子 [42]；均值差 {"CLIP Score": 0.37246084884827724, "Aesthetic Score": 0.09245303086936474, "Pick Score": 0.44241846073418856, "HP Score": 1.127483363598003}
-  对照 dmd_fp32；种子 [42]；均值差 {"CLIP Score": 0.19653964591270778, "Aesthetic Score": 0.07371303718537092, "Pick Score": 0.2500147362006828, "HP Score": 0.4575313945679227}
-  对照 paired；种子 [42]；均值差 {"CLIP Score": 0.03410813005757518, "Aesthetic Score": 0.013069594977423549, "Pick Score": 0.03175685973837972, "HP Score": 0.11970811465289444}
+  对照 dmd；种子 [42, 43]；均值差 {"CLIP Score": 0.0818360953417141, "Aesthetic Score": -0.03854659548960626, "Pick Score": 0.15966578523511998, "HP Score": 0.4139919990848284}
+  对照 dmd_fp32；种子 [42, 43]；均值差 {"CLIP Score": 0.03593859200918814, "Aesthetic Score": -0.06254330382216722, "Pick Score": 0.055841571069322526, "HP Score": -0.0018891863874159753}
+  对照 paired；种子 [42, 43]；均值差 {"CLIP Score": -0.0150843621668173, "Aesthetic Score": 0.006004481925629079, "Pick Score": 0.02569186029722914, "HP Score": 0.11268389644101262}
 
 独立138提示词验证：固定方案，不用于选择参数
 bridge 减 dmd：{"CLIP Score": 1.1501267552375758, "Aesthetic Score": 0.06715826020724514, "Pick Score": 0.44910611277040857, "HP Score": 1.453676641635269}
@@ -48,7 +49,9 @@ last 减 dmd_fp32：{"CLIP Score": 0.5794168544420302, "Aesthetic Score": 0.0157
 last 减 paired：{"CLIP Score": 0.44928461421227084, "Aesthetic Score": -0.013879171316174777, "Pick Score": 0.05755887515303115, "HP Score": 0.29689849934716506}
 
 附加固定3000轮确认：RUNNING_FRESH_MATCHED_3000_TRAINING
+最后剩余窗口评分状态：WAITING_FOR_REQUIRED_TRAINING_AND_VALIDATION
 未完成双方完整2048评分时，不把训练结束或单方评分视为新的长程质量结论。
+1000轮原生EMA与本次从头训练前缀比较：[{"case": "dmd", "equal_tensors": 382, "tensor_count": 382, "all_bit_exact": true, "max_abs_difference": 0.0}, {"case": "last", "equal_tensors": 382, "tensor_count": 382, "all_bit_exact": true, "max_abs_difference": 0.0}]
 第三种子时间门槛状态：NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED
 
 三、公平性与结论边界
@@ -56,7 +59,7 @@ last 减 paired：{"CLIP Score": 0.44928461421227084, "Aesthetic Score": -0.0138
 原 DMD 查询噪声继承 BF16，新路径版为 FP32；因此同时保留原 DMD 与 FP32 精度对照。相同 seed 不代表移除 Fake 后随机流逐次相同。
 主短训练为1000轮/100次生成器更新；另有原 Teacher-only 版本双方10000轮/1000更新的长训练，不能混作新细节版长训练成绩。
 Dev 为 DrawBench64（61唯一文本），另留138条唯一提示词与开发、PickScore训练/测试逐字去重；不使用保留集重新选参数。
-旧 seed42 上升、旧 seed43 下降的结果均保留；旧 MH/PCMH 是不同方法，不能冒充本轮路径比成绩。
+本轮不同训练种子的上升与下降均保留；旧 MH/PCMH 是不同方法，不能冒充本轮路径比成绩。
 参考链两次未移动不等于加权均值不变；候选池权重 ESS 不等于独立后验样本 ESS。
 每项提示词 bootstrap 仅反映给定训练模型的提示词抽样误差，不代表训练种子稳定性。
 68项数学/数值测试通过；真实A100训练、原生FP32 LoRA和评分数值路径另有审计。

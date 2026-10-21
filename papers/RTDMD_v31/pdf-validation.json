@@ -1,5 +1,5 @@
 {
-  "page_count": 67,
+  "page_count": 68,
   "all_pages_rendered": true,
   "numeric_values_verified": [
     {
@@ -783,6 +783,26 @@
       "rendered_value": "28.2329"
     },
     {
+      "run": "sd3-det-last-seed43-pick2048-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "25.4931"
+    },
+    {
+      "run": "sd3-det-last-seed43-pick2048-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.9354"
+    },
+    {
+      "run": "sd3-det-last-seed43-pick2048-exact",
+      "metric": "Pick Score",
+      "rendered_value": "20.5739"
+    },
+    {
+      "run": "sd3-det-last-seed43-pick2048-exact",
+      "metric": "HP Score",
+      "rendered_value": "28.3385"
+    },
+    {
       "run": "dmd-seed42-10000-pick2048",
       "metric": "CLIP Score",
       "rendered_value": "26.3654"
@@ -1001,13 +1021,73 @@
       "run": "sd3-det-last-seed42-pick2048-exact",
       "metric": "HP Score",
       "rendered_value": "27.7796"
+    },
+    {
+      "run": "sd3-det-dmd-seed43-pick2048-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "25.7019"
+    },
+    {
+      "run": "sd3-det-dmd-seed43-pick2048-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "6.1050"
+    },
+    {
+      "run": "sd3-det-dmd-seed43-pick2048-exact",
+      "metric": "Pick Score",
+      "rendered_value": "20.6970"
+    },
+    {
+      "run": "sd3-det-dmd-seed43-pick2048-exact",
+      "metric": "HP Score",
+      "rendered_value": "28.6380"
+    },
+    {
+      "run": "sd3-det-dmd_fp32-seed43-pick2048-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "25.6177"
+    },
+    {
+      "run": "sd3-det-dmd_fp32-seed43-pick2048-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "6.1342"
+    },
+    {
+      "run": "sd3-det-dmd_fp32-seed43-pick2048-exact",
+      "metric": "Pick Score",
+      "rendered_value": "20.7122"
+    },
+    {
+      "run": "sd3-det-dmd_fp32-seed43-pick2048-exact",
+      "metric": "HP Score",
+      "rendered_value": "28.7998"
+    },
+    {
+      "run": "sd3-det-last-seed43-pick2048-exact",
+      "metric": "CLIP Score",
+      "rendered_value": "25.4931"
+    },
+    {
+      "run": "sd3-det-last-seed43-pick2048-exact",
+      "metric": "Aesthetic Score",
+      "rendered_value": "5.9354"
+    },
+    {
+      "run": "sd3-det-last-seed43-pick2048-exact",
+      "metric": "Pick Score",
+      "rendered_value": "20.5739"
+    },
+    {
+      "run": "sd3-det-last-seed43-pick2048-exact",
+      "metric": "HP Score",
+      "rendered_value": "28.3385"
     }
   ],
   "source_complete": true,
   "outside_page_text": [],
   "replacement_character_pages": [],
-  "pdf_sha256": "14f3fb95831ab1456a9427fd8d71c7f2f08ed8c0f8485d009981e2f38df15400",
-  "tex_sha256": "f95e4e2f6c705fd1ee64b573313c586b80d2b8fa149a493232a09dc6c4f92a73",
+  "pdf_sha256": "31859e075b9944fc71489196981ba97b4180e690928a8985140ba30ee3b0b4e5",
+  "tex_sha256": "2731ddbaca93e3a40e005b35332b31af5c4fe2609cbd77cfe152599401493e98",
   "preview_directory": "/dev/shm/rtdmd-v31-pdf-preview",
   "visual_review": "Pending review of rendered pages"
 }

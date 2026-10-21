@@ -304,10 +304,24 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
                   [(LABELS.get(c, c), name) for c, name in zip(
                       ['dmd', longer['faithful_case']], longer['reports'])],
                   r'预先固定的3000轮端点，不按中间评分选checkpoint；同生成器更新次数。双查询若启用有额外计算，本组没有3000轮FP32与无粒子控制。')
+        elif (root/'deterministic-full-prefix-reproduction.json').exists():
+            tex += r'''\begin{frame}{固定3000轮确认：完成状态与结论边界}
+\small
+\begin{itemize}\itemsep6pt
+\item 双方均从初始化训练到固定3000轮，即300次生成器更新；没有按中间评分挑选端点。
+\item 本轮8小时预算内，尚无双方完整2048提示词的四项评分，因此本页不填写长程质量比较。
+\item 推理EMA的实际持久化以 \texttt{archived-checkpoints/} 内的存储清单为准；权重不是完整优化器/RNG断点。
+\item 1000轮前缀逐张量重复性可独立验证，但不能替代3000轮的图像质量证据。
+\item 已完成双种子的短训练与旧10000轮负结果保留；不能因此推断新细节版的长程优势。
+\end{itemize}
+\end{frame}
+'''
     prefix = root/'deterministic-full-prefix-reproduction.json'
     live_prefix=root/'deterministic-dmd1000-prefix-live-audit.json'
     if prefix.exists() or live_prefix.exists():
-        checks = json.loads(prefix.read_text()) if prefix.exists() else [json.loads(live_prefix.read_text())]
+        checks = (json.loads(prefix.read_text()) if prefix.exists() else
+                  [json.loads(p.read_text()) for case in ['dmd','last']
+                   if (p:=root/f'deterministic-{case}1000-prefix-live-audit.json').exists()])
         message = '；'.join(x['case'].replace('_', r'\_')+': '+str(x['equal_tensors'])+'/'+str(x['tensor_count']) for x in checks)
         tex += r'''\begin{frame}{完整训练前缀的重复性复核}
 \small

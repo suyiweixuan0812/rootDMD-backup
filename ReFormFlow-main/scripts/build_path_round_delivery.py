@@ -95,8 +95,13 @@ def main():
     long_path=R/'optional-faithful-long-progress.json'
     long_status=json.loads(long_path.read_text()) if long_path.exists() else {'status':'NOT_PLANNED'}
     summary['optional_long_confirmation']=long_status
+    window_path=R/'optional-long-final-evaluation-window-progress.json'
+    window=json.loads(window_path.read_text()) if window_path.exists() else {'status':'NOT_PLANNED'}
+    summary['optional_final_evaluation_window']=window
     prefix_path=R/'deterministic-full-prefix-reproduction.json'
-    prefix=json.loads(prefix_path.read_text()) if prefix_path.exists() else None
+    prefix=(json.loads(prefix_path.read_text()) if prefix_path.exists() else
+            [json.loads(p.read_text()) for case in ['dmd','last']
+             if (p:=R/f'deterministic-{case}1000-prefix-live-audit.json').exists()] or None)
     summary['optional_long_prefix_reproduction']=prefix
     third=R/'optional-seed44-progress.json'
     summary['optional_third_seed_status']=json.loads(third.read_text()) if third.exists() else {'status':'NOT_LAUNCHED'}
@@ -145,6 +150,7 @@ def main():
                 lines.append(case+' 减 '+comparator+'：'+json.dumps(
                     {k:v['mean_delta'] for k,v in pair['statistics'].items()},ensure_ascii=False))
     lines += ['', '附加固定3000轮确认：'+long_status.get('status','UNKNOWN')]
+    lines.append('最后剩余窗口评分状态：'+window.get('status','UNKNOWN'))
     for training in long_status.get('training',[]):
         name=training+'-pick2048-exact'
         if name in reports:lines.append(name+'：'+json.dumps(reports[name]['table'],ensure_ascii=False))
@@ -164,7 +170,7 @@ def main():
         '原 DMD 查询噪声继承 BF16，新路径版为 FP32；因此同时保留原 DMD 与 FP32 精度对照。相同 seed 不代表移除 Fake 后随机流逐次相同。',
         '主短训练为1000轮/100次生成器更新；另有原 Teacher-only 版本双方10000轮/1000更新的长训练，不能混作新细节版长训练成绩。',
         'Dev 为 DrawBench64（61唯一文本），另留138条唯一提示词与开发、PickScore训练/测试逐字去重；不使用保留集重新选参数。',
-        '旧 seed42 上升、旧 seed43 下降的结果均保留；旧 MH/PCMH 是不同方法，不能冒充本轮路径比成绩。',
+        '本轮不同训练种子的上升与下降均保留；旧 MH/PCMH 是不同方法，不能冒充本轮路径比成绩。',
         '参考链两次未移动不等于加权均值不变；候选池权重 ESS 不等于独立后验样本 ESS。',
         '每项提示词 bootstrap 仅反映给定训练模型的提示词抽样误差，不代表训练种子稳定性。',
         '68项数学/数值测试通过；真实A100训练、原生FP32 LoRA和评分数值路径另有审计。',
