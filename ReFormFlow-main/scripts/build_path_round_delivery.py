@@ -218,6 +218,12 @@ def main():
         if not (checkpoint/'adapter_model.safetensors').exists():
             continue
         code += ['', '已保存的固定3000轮原生EMA：'+str(checkpoint),
+                 '本轮同模型2048张PNG已生成；若内存盘仍在，下轮可只补四项评分，省去重新生成：',
+                 shlex.join(['python','scripts/score_rtdmd_path_is_images.py','--run-dir',
+                    str(R/'runs'/f'sd3-det-{case}-seed42-3000-confirm-pick2048-exact'),
+                    '--step','1','--expected-count','2048','--batch-size','8']),
+                 shlex.join(['python','scripts/finalize_existing_path_scores_cpu.py','--evaluation-run',
+                    f'sd3-det-{case}-seed42-3000-confirm-pick2048-exact']),
                  '下轮获准预算后可从此完整复评2048提示词；本命令不自动执行：',
                  shlex.join(['bash','jobs/evaluate_loaded_path_checkpoint_v2.sh',str(checkpoint),
                     f'rtdmd-v31-{case}-3000-user-repeat','dataset/pickscore','2048',f'RTDMD-v31-{case}-3000'])]

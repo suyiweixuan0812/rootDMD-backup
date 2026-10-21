@@ -273,7 +273,7 @@
       1500
     ]
   },
-  "source_sha256": "2731ddbaca93e3a40e005b35332b31af5c4fe2609cbd77cfe152599401493e98",
+  "source_sha256": "8c5cf3bf8ac1d4eb7efff0b8ad0088f490e35af114ee17264033bba0f702e36b",
   "selection_role": "Legacy first-phase choice for older tables; new cohort selection is separately stored",
   "deterministic_selection": {
     "frozen_utc": "2026-10-20T22:56:38.501425+00:00",
@@ -1316,8 +1316,9 @@
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/research-stop-rb-oracle.json": "d9f8536760ad9471e84cc1cf1d8eb0b561db6cc09bdc2bb9771ed358c533ff66",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-dmd1000-prefix-live-audit.json": "469ae768790d64deef59b63d01dfa0295b3bf6b7102d479baaf74692ced05919",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-last1000-prefix-live-audit.json": "2ed4d26164be512d04270087943aee9c27091a48410aeef5bfdec7796dd6c9aa",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-full-prefix-reproduction.json": "e654acda0e65f86ce3979b52bef03b5b0a08f729ecee79c750c57c2d09b4b162",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/unused-text-encoding-optimization-audit.json": "4711dc245256a8f49a787f6c7cbc34817c95bd98c42d253248802c6c48aa3e34",
-    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json": "f87811c19710355f975fa89cd24065f23c83b8acaec8c123fef2e141fc925945",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json": "12fdeb1ec8e143dd61b3f5b6d32651a6b58e361347ff7e9d5d91c63aa8dbc3cf",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/failed-attempts/last-inverse-bounds-20261020T220837Z/failure-numeric-state.json": "f72bd5a4cd5250def4ab4d54118d8f4dbaebcd9c4d23f0bb6b5f14c517904177",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/scoring-numeric-source-audit-v31.json": "b9766440cb846fa1a827e7d0ea59a58539bce93a621287aad6c6c0eae4ddf310",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-inverse-repair-record.json": "989fe66ba571454b51a5b8ce2da256989fa37a637f848da792cf3a8d3e2eaa8c"

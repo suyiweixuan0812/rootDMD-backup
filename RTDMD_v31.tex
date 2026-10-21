@@ -54,10 +54,13 @@ Seed & NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ 
 42 & 4 & DMD & 25.2776 & 5.9045 & 20.1712 & 26.6521 \\
 42 & 4 & DMD, FP32 query & 25.4535 & 5.9232 & 20.3636 & 27.3221 \\
 42 & 4 & Bridge & 25.6785 & 5.9957 & 20.6024 & 27.7555 \\
+43 & 4 & DMD & 25.7019 & 6.1050 & 20.6970 & 28.6380 \\
+43 & 4 & DMD, FP32 query & 25.6177 & 6.1342 & 20.7122 & 28.7998 \\
+43 & 4 & Bridge & 25.5020 & 5.9394 & 20.5584 & 28.2378 \\
 \bottomrule\end{tabular}\par\raggedright\vspace{5pt}
-候选减原 DMD 的已完成种子均值差：CLIP +0.4009；Aesthetic +0.0912；Pick +0.4313；HPS +1.1034。
+候选减原 DMD 的已完成种子均值差：CLIP +0.1005；Aesthetic -0.0371；Pick +0.1463；HPS +0.3516。
 \begin{alertblock}{结论的范围}
-本页仅含一个完整训练种子；即使均值上升，也不能据此认定训练稳定性。
+训练种子复核存在未胜出的对比，尚未建立两个偏好指标的稳定优势；不能只列较好的一次。
 \end{alertblock}
 完整2048提示词、相同推理噪声与四项模型；本轮双方统一确定性 CUDA，旧 DMD/MH/PCMH 队列另表报告。
 \end{frame}
@@ -68,10 +71,13 @@ Seed & NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ 
 42 & 4 & DMD & 25.2776 & 5.9045 & 20.1712 & 26.6521 \\
 42 & 4 & DMD, FP32 query & 25.4535 & 5.9232 & 20.3636 & 27.3221 \\
 42 & 4 & Teacher, last block & 25.6501 & 5.9969 & 20.6136 & 27.7796 \\
+43 & 4 & DMD & 25.7019 & 6.1050 & 20.6970 & 28.6380 \\
+43 & 4 & DMD, FP32 query & 25.6177 & 6.1342 & 20.7122 & 28.7998 \\
+43 & 4 & Teacher, last block & 25.4931 & 5.9354 & 20.5739 & 28.3385 \\
 \bottomrule\end{tabular}\par\raggedright\vspace{5pt}
-候选减原 DMD 的已完成种子均值差：CLIP +0.3725；Aesthetic +0.0925；Pick +0.4424；HPS +1.1275。
+候选减原 DMD 的已完成种子均值差：CLIP +0.0818；Aesthetic -0.0385；Pick +0.1597；HPS +0.4140。
 \begin{alertblock}{结论的范围}
-本页仅含一个完整训练种子；即使均值上升，也不能据此认定训练稳定性。
+训练种子复核存在未胜出的对比，尚未建立两个偏好指标的稳定优势；不能只列较好的一次。
 \end{alertblock}
 完整2048提示词、相同推理噪声与四项模型；本轮双方统一确定性 CUDA，旧 DMD/MH/PCMH 队列另表报告。
 \end{frame}
@@ -80,9 +86,11 @@ Seed & NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ 
 \begin{tabular}{clrrrr}\toprule
 Seed & 路径版减匹配控制 & $\Delta$CLIP & $\Delta$Aes & $\Delta$Pick & $\Delta$HPS\\\midrule
 42 & Bridge & +0.0626 & +0.0118 & +0.0206 & +0.0956 \\
+43 & Bridge & -0.0554 & +0.0030 & +0.0041 & +0.0050 \\
 42 & Teacher, last block & +0.0341 & +0.0131 & +0.0318 & +0.1197 \\
+43 & Teacher, last block & -0.0643 & -0.0011 & +0.0196 & +0.1057 \\
 \bottomrule\end{tabular}\par\raggedright\vspace{5pt}
-Bridge：仅一组已完成，尚不足判断训练种子稳定性。\par Teacher, last block：仅一组已完成，尚不足判断训练种子稳定性。
+Bridge：2个已测种子的 Pick/HPS 均高于匹配控制，仍需更多种子与代价验证。\par Teacher, last block：2个已测种子的 Pick/HPS 均高于匹配控制，仍需更多种子与代价验证。
 \begin{itemize}\itemsep4pt
 \item 控制保留同查询 Jacobian、精度、正则、时间权重及观测次数，只去掉条件粒子平均。
 \item 相对 DMD 的收益不能全部归于路径比；控制与粒子版的训练计算量不同。
@@ -702,6 +710,45 @@ K_J=\sum_{k<J}\bar K_k,\\
 \item 历史代理有滞后，且提示词变化；$.25$ 不是当前真实路径/后验 KL 的保证。
 \end{itemize}
 \end{frame}
+\begin{frame}{纯教师版真实训练：低噪声仍会退化}
+\scriptsize\centering
+仅统计 $J>1$ 的真实生成器更新；每次8候选、2次条件更新，均值取自训练日志。
+\begin{tabular}{ccrrrr}\toprule
+Seed & $\sigma$ & 更新数 & ESS & 参考移动率 & RB方差迹/坐标\\\midrule
+42 & $<.3$ & 6 & 1.000 & 0.000 & 0.000000 \\
+42 & $[.3,.9)$ & 51 & 3.269 & 0.451 & 0.000094 \\
+42 & $\geq.9$ & 21 & 6.125 & 0.833 & 0.000268 \\
+43 & $<.3$ & 10 & 1.000 & 0.000 & 0.000000 \\
+43 & $[.3,.9)$ & 48 & 3.689 & 0.562 & 0.000178 \\
+43 & $\geq.9$ & 19 & 6.105 & 0.895 & 0.000194 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+\begin{itemize}\itemsep4pt
+\item 低噪声的观测似然仍可使候选退化，纯Teacher细节修订没有彻底解决此问题。
+\item 高噪声时 ESS 约6，但读出加权方差仍小；权重均匀不等于显著消除训练噪声。
+\item $J=1$ 无路径转移，另存统计；不把它混入正方差路径比的改善结论。
+\item 这些为有限训练样本的描述统计；不同噪声组不能直接作因果比较，RB迹也不是梯度方差。
+\end{itemize}
+\end{frame}
+\begin{frame}{粒子以外的瓶颈：优化接口与梯度裁剪}
+\scriptsize\centering
+\begin{tabular}{clrr}\toprule
+Seed & 训练版本 & 生成器更新数 & 裁剪率\%\\\midrule
+42 & DMD & 100 & 10.0 \\
+42 & DMD, FP32 query & 100 & 12.0 \\
+42 & One-source control & 100 & 46.0 \\
+42 & Teacher, last block & 100 & 45.0 \\
+43 & DMD & 100 & 16.0 \\
+43 & DMD, FP32 query & 100 & 15.0 \\
+43 & One-source control & 100 & 51.0 \\
+43 & Teacher, last block & 100 & 48.0 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+裁剪率按裁剪前梯度范数 $>1$ 的实际更新占比计算，不含未更新轮次。
+\begin{itemize}\itemsep4pt
+\item 同查询 Jacobian 与一致性正则改变更新；即使无粒子控制也明显更常触发裁剪。
+\item 这是优化差异的证据，尚不能单独确定哪一项导致质量波动。
+\item 正确后验均值、较高 ESS 或较小估计方差，均不能推出完整 DMD KL 梯度或 Adam 后质量改善。
+\end{itemize}
+\end{frame}
 \begin{frame}{长路径采样诊断：改善 ESS，不替代质量实验}
 \footnotesize\centering
 同一保存的 Student、固定开发提示词、$J=4$、8候选；表中为候选池权重 ESS。
@@ -733,6 +780,23 @@ C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
 \end{equation}
 两个对称辅助 Gaussian 密度相消；\textbf{标准 Gaussian 先验不能再省略}。
 包含正确条件参考的 i-SIR 保持原后验；没有桥接场、MH 接受率或新的末端噪声。
+\end{frame}
+
+\begin{frame}{最后块版本究竟保留了多少路径作用}
+\small
+固定更早父状态 $h$ 后，前缀比是所有候选的共同常数，只剩最后随机核的校正。
+连续理想模型在物理坐标 $u$ 下满足
+\begin{equation}
+q_T(u\mid h)\frac{M_S(u\mid h)}{M_T(u\mid h)}
+L_\sigma(y\mid D_\theta(u))
+=M_S(u\mid h)L_\sigma(y\mid D_\theta(u)).
+\end{equation}
+\begin{itemize}\itemsep5pt
+\item Teacher 路径比的作用是校正提议；它不会给 Student 后验额外增加一个教师目标。
+\item 该局部版保留比值与条件平均框架，却没有跨整条路径利用教师候选的全部探索能力。
+\item BF16 下实现保留单元质量比和单元内 Gaussian 提升密度；不能按连续式直接删除这些项。
+\item Teacher CFG4.5 仍是训练 score 的参考；此作用与条件采样提议的作用不同。
+\end{itemize}
 \end{frame}
 
 \begin{frame}{最后正方差块：收益、局限与精确缓存}
@@ -805,6 +869,30 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
 \bottomrule\end{tabular}\par\raggedright\vspace{6pt}
 固定开发候选后的2048条完整测试；同推理噪声与四项评分模型。
 \end{frame}
+\begin{frame}{保留提示词验证：138条唯一提示词}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & DMD & 24.2486 & 5.5233 & 20.7403 & 24.3090 \\
+4 & DMD, FP32 query & 24.9384 & 5.5316 & 20.9671 & 25.2387 \\
+4 & Bridge & 25.3987 & 5.5905 & 21.1894 & 25.7627 \\
+4 & One-source control & 25.0685 & 5.5612 & 21.1723 & 25.5996 \\
+4 & Teacher, last block & 25.5178 & 5.5474 & 21.2298 & 25.8965 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+与开发集及 PickScore 训练/测试逐字去重；结果不用于重新选择参数。
+\end{frame}
+\begin{frame}{确定性训练种子复核：seed43}
+\scriptsize\centering
+\begin{tabular}{clrrrr}\toprule
+NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\uparrow$\\\midrule
+4 & DMD & 25.7019 & 6.1050 & 20.6970 & 28.6380 \\
+4 & DMD, FP32 query & 25.6177 & 6.1342 & 20.7122 & 28.7998 \\
+4 & Bridge & 25.5020 & 5.9394 & 20.5584 & 28.2378 \\
+4 & One-source control & 25.5574 & 5.9365 & 20.5543 & 28.2329 \\
+4 & Teacher, last block & 25.4931 & 5.9354 & 20.5739 & 28.3385 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+已固定的方法重新训练；单提示词 bootstrap 区间不能代替训练种子不确定性。
+\end{frame}
 \begin{frame}{原路径版长训练确认：10000轮}
 \scriptsize\centering
 \begin{tabular}{clrrrr}\toprule
@@ -813,6 +901,27 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
 4 & Path-IS & 14.1075 & 3.7627 & 16.1528 & 8.8609 \\
 \bottomrule\end{tabular}\par\raggedright\vspace{6pt}
 原先固定的 $\lambda=.10$、Teacher-only、无时间权重；双方10000轮/1000次生成器更新。此组 CUDA 后向未启用新确定性设置，不能与新队列混为同组。
+\end{frame}
+\begin{frame}{固定3000轮确认：完成状态与结论边界}
+\small
+\begin{itemize}\itemsep6pt
+\item 双方均从初始化训练到固定3000轮，即300次生成器更新；没有按中间评分挑选端点。
+\item 本轮8小时预算内，尚无双方完整2048提示词的四项评分，因此本页不填写长程质量比较。
+\item 推理EMA的实际持久化以 \texttt{archived-checkpoints/} 内的存储清单为准；权重不是完整优化器/RNG断点。
+\item 1000轮前缀逐张量重复性可独立验证，但不能替代3000轮的图像质量证据。
+\item 已完成双种子的短训练与旧10000轮负结果保留；不能因此推断新细节版的长程优势。
+\end{itemize}
+\end{frame}
+\begin{frame}{完整训练前缀的重复性复核}
+\small
+新3000轮训练在1000轮处，与此前原生FP32 EMA逐张量比较；本页只列已完成的比较：\par
+dmd: 382/382；last: 382/382
+\begin{itemize}\itemsep5pt
+\item 此处报告实际一致数；不把40轮冒烟的重复性推广为完整训练已逐位复现。
+\item CPU加载线程数由96限制为1；LoRA形状uniform、训练randperm及normal抽样的单独检查一致，但仍以这里的完整权重比较为准。
+\item 纯Teacher入口还跳过无更新轮次的未用文本编码；40轮日志全等，完整权重比较以本表为准。
+\item 只保存推理EMA，无完整优化器/RNG状态；3000轮实验从初始化重新训练。
+\end{itemize}
 \end{frame}
 \begin{frame}{长训练中的提议漂移：直接来自训练日志}
 \scriptsize\centering
@@ -927,6 +1036,22 @@ K_{A^c}(h,\cdot),&h\notin A,
 \item 只减少给定源/时间的随机方差，不能消除源差异；裁剪/Adam 后的期望或质量提升没有保证。
 \item 增加同样两次查询的无粒子对照，区分额外观测计算与路径比条件平均各自的贡献。
 \item 该结论针对明确的查询 Jacobian surrogate，不补上它与完整 DMD KL 梯度的等价证明。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{后续候选：停止点条件平均（尚未训练）}
+\small
+把每个候选的未用后缀按\textbf{Student CPS}补齐成完整路径 $F$，则
+\begin{align}
+\Pi(F,J\mid y)&\propto p_\theta^{\rm full}(F)\,p_J(J)L(y\mid f_J(F)),\\
+\rho_j(F,y)&=\frac{p_J(j)L(y\mid f_j(F))}{\sum_\ell p_J(\ell)L(y\mid f_\ell(F))},\\
+\widehat m_{\rm stop}&=\sum_i\bar w_i\sum_j\rho_j(F_i,y)f_j(F_i).
+\end{align}
+\begin{itemize}\itemsep4pt
+\item $\bar w_i$仍来自Teacher/Student路径比的条件i-SIR；Student辅助后缀在实际提议与目标中相消。
+\item 虚拟地先抽候选，再按条件分布更新$J$，保持同一后验；对这两步取条件均值得到上式。
+\item 8状态精确枚举核验均值、平稳性与方差分解；没有SD3训练或图像质量结果，不计入本轮增益。
+\item 不能用未修正的Teacher后缀替代Student补齐；仍需额外计算和匹配无粒子控制，也未补上完整KL梯度证明。
 \end{itemize}
 \end{frame}
 \begin{frame}{仍未被实验或理论解决的边界}

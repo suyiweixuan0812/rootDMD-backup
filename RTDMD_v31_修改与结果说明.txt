@@ -1,5 +1,5 @@
 RTDMD v31：本轮修改与结果说明
-生成时间：2026-10-21T01:07:31.942887+00:00
+生成时间：2026-10-21T01:21:32.563426+00:00
 
 一、保留与改动
 保留实际 Student/Teacher 路径核比、粒子加权条件均值、Tweedie 接口、无 Fake 训练和四步 Student 推理。
@@ -49,7 +49,7 @@ last 减 dmd_fp32：{"CLIP Score": 0.5794168544420302, "Aesthetic Score": 0.0157
 last 减 paired：{"CLIP Score": 0.44928461421227084, "Aesthetic Score": -0.013879171316174777, "Pick Score": 0.05755887515303115, "HP Score": 0.29689849934716506}
 
 附加固定3000轮确认：BUDGET_STOP_BEFORE_COMPLETE_LONG_TEST
-最后剩余窗口评分状态：RUNNING_SAME_FROZEN_3000_FULL_TEST
+最后剩余窗口评分状态：INCOMPLETE_AT_USER_BUDGET
 未完成双方完整2048评分时，不把训练结束或单方评分视为新的长程质量结论。
 1000轮原生EMA与本次从头训练前缀比较：[{"case": "dmd", "equal_tensors": 382, "tensor_count": 382, "all_bit_exact": true, "max_abs_difference": 0.0}, {"case": "last", "equal_tensors": 382, "tensor_count": 382, "all_bit_exact": true, "max_abs_difference": 0.0}]
 第三种子时间门槛状态：NOT_LAUNCHED_TIME_ONLY_GATE_CLOSED

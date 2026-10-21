@@ -902,6 +902,16 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
 \bottomrule\end{tabular}\par\raggedright\vspace{6pt}
 原先固定的 $\lambda=.10$、Teacher-only、无时间权重；双方10000轮/1000次生成器更新。此组 CUDA 后向未启用新确定性设置，不能与新队列混为同组。
 \end{frame}
+\begin{frame}{固定3000轮确认：完成状态与结论边界}
+\small
+\begin{itemize}\itemsep6pt
+\item 双方均从初始化训练到固定3000轮，即300次生成器更新；没有按中间评分挑选端点。
+\item 本轮8小时预算内，尚无双方完整2048提示词的四项评分，因此本页不填写长程质量比较。
+\item 推理EMA的实际持久化以 \texttt{archived-checkpoints/} 内的存储清单为准；权重不是完整优化器/RNG断点。
+\item 1000轮前缀逐张量重复性可独立验证，但不能替代3000轮的图像质量证据。
+\item 已完成双种子的短训练与旧10000轮负结果保留；不能因此推断新细节版的长程优势。
+\end{itemize}
+\end{frame}
 \begin{frame}{完整训练前缀的重复性复核}
 \small
 新3000轮训练在1000轮处，与此前原生FP32 EMA逐张量比较；本页只列已完成的比较：\par
