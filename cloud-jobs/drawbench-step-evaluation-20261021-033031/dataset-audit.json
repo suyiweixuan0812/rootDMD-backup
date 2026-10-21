@@ -1,0 +1,22 @@
+{
+  "records": 1000,
+  "unique_prompts": 200,
+  "repeat_counts": {
+    "5": 200
+  },
+  "sha256": "9006b98feabb94b28a2bc0c88de42fd4f31a9ec3c2a19e308a02c5385b7172f0",
+  "exact_train_overlap": {
+    "pickscore": {
+      "training_records": 25432,
+      "overlapping_unique_drawbench_prompts": 1
+    },
+    "ocr": {
+      "training_records": 19653,
+      "overlapping_unique_drawbench_prompts": 0
+    },
+    "geneval": {
+      "training_records": 50000,
+      "overlapping_unique_drawbench_prompts": 0
+    }
+  }
+}

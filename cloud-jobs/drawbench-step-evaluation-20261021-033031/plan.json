@@ -1,0 +1,44 @@
+{
+  "job_id": "t-20261021113034-rcqvf",
+  "output_root": "/mnt/vepfs/rootDMD/drawbench-step-evaluation-20261021-033031",
+  "created_at": "2026-10-21T03:30:36.663012+00:00",
+  "spec": {
+    "output_root": "/mnt/vepfs/rootDMD/drawbench-step-evaluation-20261021-033031",
+    "runs": [
+      {
+        "id": "pickscore",
+        "count": 1000,
+        "root": "/mnt/vepfs/rootDMD/sd3-dmd-8gpu-10000-20261020-211547/outputs/sd3-dmd-16gpu-10000"
+      },
+      {
+        "id": "ocr",
+        "count": 1000,
+        "root": "/mnt/vepfs/rootDMD/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401/outputs/sd3-dmd-ocr-16gpu-10000"
+      },
+      {
+        "id": "geneval",
+        "count": 1000,
+        "root": "/mnt/vepfs/rootDMD/sd3-dmd-ocr-geneval-16gpu-10000-20261021-011401/outputs/sd3-dmd-geneval-16gpu-10000"
+      }
+    ],
+    "steps": [
+      0,
+      1000,
+      2000,
+      3000,
+      4000,
+      5000,
+      6000,
+      7000,
+      8000,
+      9000,
+      10000
+    ],
+    "requested_protocol": "shared full DrawBench at step 0 and every 1000 steps; no training",
+    "total_images": 33000,
+    "evaluation_dataset": "DrawBench",
+    "prompt_file_sha256": "9006b98feabb94b28a2bc0c88de42fd4f31a9ec3c2a19e308a02c5385b7172f0",
+    "unique_prompts": 200,
+    "eval_freq": 1000
+  }
+}
