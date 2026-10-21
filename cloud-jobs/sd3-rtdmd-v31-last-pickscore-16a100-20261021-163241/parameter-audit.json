@@ -1,0 +1,79 @@
+{
+  "baseline_job_id": "t-20261020220728-lmk7p",
+  "common_parameters_match": true,
+  "common_parameter_differences": {
+    "dataset": {
+      "baseline": "/tmp/dmd-training-stage/dataset/pickscore",
+      "current": "/tmp/rtdmd-v31-last-16gpu-20261021/source/dataset/pickscore"
+    },
+    "eval.dataset": {
+      "baseline": "/tmp/dmd-training-stage/dataset/pickscore",
+      "current": "/tmp/rtdmd-v31-last-16gpu-20261021/source/dataset/pickscore"
+    },
+    "method_name": {
+      "baseline": "dmd",
+      "current": "rtdmd_v31_last"
+    },
+    "run_name": {
+      "baseline": "sd3-medium-pickscore-no-reward-train",
+      "current": "sd3-rtdmd-v31-last-pickscore-16a100-10000"
+    },
+    "save_dir": {
+      "baseline": "/tmp/dmd-training-stage/logs/dmd",
+      "current": "/tmp/rtdmd-v31-last-16gpu-20261021/source/logs/rtdmd-v31-last"
+    }
+  },
+  "method_parameters": {
+    "path_is.bank_policy": "last",
+    "path_is.base_scale": 0.05,
+    "path_is.block_size": 16,
+    "path_is.enabled": true,
+    "path_is.field_microbatch": 1,
+    "path_is.high_noise_block_size": 4096,
+    "path_is.high_noise_threshold": 0.9,
+    "path_is.initialization": "Paired Student reference with conditional Teacher-innovation lift",
+    "path_is.max_innovation_radius": 0.5,
+    "path_is.num_particles": 8,
+    "path_is.num_sweeps": 2,
+    "path_is.numerical_scope": "Gaussian rounding-cell model; finite RNG and source FP32 multiply/add remain numerical approximations",
+    "path_is.particle_kernel": "Symmetric conditional i-SIR on last positive innovation block; no change to Teacher path fields or Student/Teacher ratios",
+    "path_is.prefix_cache": "Exact field reuse only after unchanged-parent tensor equality checks",
+    "path_is.proposal_cfg": 1.0,
+    "path_is.proposal_innovation_dtype": "float64; BF16 network and latent states unchanged",
+    "path_is.target": "Same Student random-stop posterior; pure Teacher CPS mapping and shared Student readout",
+    "path_is.weighting": "Exact Student/Teacher path ratio times observation likelihood times Gaussian innovation prior correction phi(E)/phi(E_reference)",
+    "posterior_consistency.enabled": true,
+    "posterior_consistency.role": "Independent-development regularization ablation; unchanged path sampler",
+    "posterior_consistency.schedule": "constant",
+    "posterior_consistency.weight": 0.1,
+    "posterior_time_weight.calibration": "Training gradient norms only; k/sigma predicts 9/12% clipping for seeds42/43 at frozen previous states",
+    "posterior_time_weight.mode": "none",
+    "posterior_time_weight.scale": 0.3
+  },
+  "data_checks": {
+    "train.txt": {
+      "records": 25432,
+      "sha256": "2f425adcbb9a6d0feee7c6c448e1cb83a1f71deca9434b803907e2578eca837f"
+    },
+    "test.txt": {
+      "records": 2048,
+      "sha256": "d75c025fa451866e70f7e36243f7cdd93095523cb51f5f9651f2ce3236d20262"
+    }
+  },
+  "drawbench_sha256": "9006b98feabb94b28a2bc0c88de42fd4f31a9ec3c2a19e308a02c5385b7172f0",
+  "checks": {
+    "mathematical_tests": 68,
+    "cpu_distributed_global_batch_gradient_adamw_ema": "passed"
+  },
+  "algorithm_changes": [
+    "replace trained fake score by v31 last conditional particle posterior mean",
+    "query-point Student Jacobian; consistency lambda=.10; FP32 observation; FP64 particle proposals",
+    "keep per-rank batch1; DDP gradient averaging before clipping; no fake optimizer updates"
+  ],
+  "cadence": {
+    "outer_steps": 10000,
+    "generator_update_every": 10,
+    "generator_updates": 1000,
+    "ema_every_outer_step": 1
+  }
+}
