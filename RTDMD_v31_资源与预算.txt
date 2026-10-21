@@ -3,8 +3,8 @@
 单张A100-SXM4 80GB；训练及评测采用独立进程并发，不改变每项实验batch1。
 CPU统计按实际获配13核；保活CPU为nice19，GPU占位在正式CUDA进程存在时让出GPU。
 保活只到本轮截止，不能算作算法训练成果或效率提升。
-已记录3914个约5秒样本；时间范围 2026-10-20T17:52:41.336730+00:00 至 2026-10-20T23:24:41.273805+00:00。
-CPU_percent_of_allocated13：{"mean": 66.99162866200138, "median": 64.52888389022047, "minimum": 19.25087925582435, "maximum": 94.65951454775669, "fraction_samples_at_least50": 0.9795605518650996}
-GPU_utilization_percent：{"mean": 82.73224322943281, "median": 100.0, "minimum": 0.0, "maximum": 100.0, "fraction_samples_at_least50": 0.7989269289729177}
-rolling12_CPU：{"mean": 67.0296659219102, "median": 64.51806435352785, "minimum": 57.26596658303617, "maximum": 93.34157678031988, "fraction_samples_at_least50": 1.0}
-rolling12_GPU：{"mean": 82.72029409726139, "median": 98.0, "minimum": 0.0, "maximum": 100.0, "fraction_samples_at_least50": 0.8349514563106796}
+已记录4477个约5秒样本；时间范围 2026-10-20T17:52:41.336730+00:00 至 2026-10-21T00:12:02.239228+00:00。
+CPU_percent_of_allocated13：{"mean": 66.70544450743392, "median": 64.52416438949894, "minimum": 19.25087925582435, "maximum": 94.65951454775669, "fraction_samples_at_least50": 0.9819075273620728}
+GPU_utilization_percent：{"mean": 82.19119946392674, "median": 100.0, "minimum": 0.0, "maximum": 100.0, "fraction_samples_at_least50": 0.7967388876479785}
+rolling12_CPU：{"mean": 66.73960450770436, "median": 64.5163942166492, "minimum": 57.26596658303617, "maximum": 93.34157678031988, "fraction_samples_at_least50": 1.0}
+rolling12_GPU：{"mean": 82.17412651999429, "median": 96.41666666666667, "minimum": 0.0, "maximum": 100.0, "fraction_samples_at_least50": 0.8382845655572928}

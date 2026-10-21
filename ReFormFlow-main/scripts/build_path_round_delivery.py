@@ -91,6 +91,14 @@ def main():
         pure_teacher_alternative=dict(**faithful, comparisons=faithful_pairs),
         statistical_scope='Every available matched trained seed is retained, including negative replications. No reliable training-seed CI is claimed from two or three seeds. Prompt bootstrap reports are conditional on the saved trained models.',
         incomplete_groups='Individual completed rows remain in CSV; pair means use every seed with both reports, with seed sets explicitly listed. Historical nondeterministic and deterministic cohorts are never averaged together.')
+    long_path=R/'optional-faithful-long-progress.json'
+    long_status=json.loads(long_path.read_text()) if long_path.exists() else {'status':'NOT_PLANNED'}
+    summary['optional_long_confirmation']=long_status
+    prefix_path=R/'deterministic-full-prefix-reproduction.json'
+    prefix=json.loads(prefix_path.read_text()) if prefix_path.exists() else None
+    summary['optional_long_prefix_reproduction']=prefix
+    third=R/'optional-seed44-progress.json'
+    summary['optional_third_seed_status']=json.loads(third.read_text()) if third.exists() else {'status':'NOT_LAUNCHED'}
     (R/'multiseed-validation-summary.json').write_text(json.dumps(summary, indent=2, ensure_ascii=False))
     lines = [
         'RTDMD v31：本轮修改与结果说明',
@@ -134,6 +142,20 @@ def main():
             if pair['matched_training_seeds']:
                 lines.append(case+' 减 '+comparator+'：'+json.dumps(
                     {k:v['mean_delta'] for k,v in pair['statistics'].items()},ensure_ascii=False))
+    lines += ['', '附加固定3000轮确认：'+long_status.get('status','UNKNOWN')]
+    for training in long_status.get('training',[]):
+        name=training+'-pick2048-exact'
+        if name in reports:lines.append(name+'：'+json.dumps(reports[name]['table'],ensure_ascii=False))
+    if long_status.get('status')=='OPTIONAL_FAITHFUL_LONG_CHECK_COMPLETE':
+        for name in long_status.get('reports',[]):
+            if name in reports and name not in [n+'-pick2048-exact' for n in long_status.get('training',[])]:
+                lines.append(name+'：'+json.dumps(reports[name]['table'],ensure_ascii=False))
+    else:
+        lines.append('未完成双方完整2048评分时，不把训练结束或单方评分视为新的长程质量结论。')
+    if prefix is not None:
+        lines.append('1000轮原生EMA与本次从头训练前缀比较：'+json.dumps(
+            [{k:x[k] for k in ['case','equal_tensors','tensor_count','all_bit_exact','max_abs_difference']} for x in prefix],ensure_ascii=False))
+    lines.append('第三种子时间门槛状态：'+summary['optional_third_seed_status'].get('status','UNKNOWN'))
     lines += [
         '', '三、公平性与结论边界',
         '共同配置审计覆盖模型、512分辨率、BF16、TF32、种子、CPS、随机停止、batch1、LoRA32/alpha64、优化器、LR3e-5、EMA.99及训练轮次。',
