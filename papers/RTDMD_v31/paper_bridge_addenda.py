@@ -223,17 +223,19 @@ NFE & Post-Train & CLIP$\uparrow$ & Aesthetic$\uparrow$ & Pick$\uparrow$ & HPS$\
                   [(LABELS.get(c, c), name) for c, name in zip(
                       ['dmd', longer['faithful_case']], longer['reports'])],
                   r'预先固定的3000轮端点，不按中间评分选checkpoint；同生成器更新次数。双查询若启用有额外计算，本组没有3000轮FP32与无粒子控制。')
-            prefix = root/'deterministic-full-prefix-reproduction.json'
-            if prefix.exists():
-                checks = json.loads(prefix.read_text())
-                message = '；'.join(x['case'].replace('_', r'\_')+': '+str(x['equal_tensors'])+'/'+str(x['tensor_count']) for x in checks)
-                tex += r'''\begin{frame}{完整训练前缀的重复性复核}
+    prefix = root/'deterministic-full-prefix-reproduction.json'
+    live_prefix=root/'deterministic-dmd1000-prefix-live-audit.json'
+    if prefix.exists() or live_prefix.exists():
+        checks = json.loads(prefix.read_text()) if prefix.exists() else [json.loads(live_prefix.read_text())]
+        message = '；'.join(x['case'].replace('_', r'\_')+': '+str(x['equal_tensors'])+'/'+str(x['tensor_count']) for x in checks)
+        tex += r'''\begin{frame}{完整训练前缀的重复性复核}
 \small
-两条新3000轮训练在1000轮处，与此前保存的原生FP32 EMA逐张量比较：\par
+新3000轮训练在1000轮处，与此前原生FP32 EMA逐张量比较；本页只列已完成的比较：\par
 '''+message+r'''
 \begin{itemize}\itemsep5pt
 \item 此处报告实际一致数；不把40轮冒烟的重复性推广为完整训练已逐位复现。
 \item CPU加载线程数由96限制为1；LoRA形状uniform、训练randperm及normal抽样的单独检查一致，但仍以这里的完整权重比较为准。
+\item 纯Teacher入口还跳过无更新轮次的未用文本编码；40轮日志全等，完整权重比较以本表为准。
 \item 只保存推理EMA，无完整优化器/RNG状态；3000轮实验从初始化重新训练。
 \end{itemize}
 \end{frame}

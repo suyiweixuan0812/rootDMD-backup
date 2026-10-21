@@ -69,6 +69,7 @@ def main():
             continue
         reports[folder.name] = report
         cohort = ('DEPRECATED_EXTRA_EMA_BASELINE' if folder.name == 'dmd-ema-dev64' else
+                  'NUMERIC_PARITY_ONLY' if folder.name == 'sd3-unused-online-skip-parity8' else
                   'DETERMINISTIC_COHORT' if folder.name.startswith('sd3-det-') else 'EARLIER_NONDETERMINISTIC_COHORT')
         role = {64:'DrawBench development', 138:'Reserved unique holdout', 2048:'PickScore full test', 8:'Inference smoke'}.get(report['num_images'], 'Other')
         row = dict(run=folder.name, cohort=cohort, dataset_role=role, num_prompts=report['num_images'], **report['table'])
@@ -110,10 +111,10 @@ def main():
         '3. 条件参考：从本次 Student 成对源构造正确后验参考，以条件 i-SIR 和 Rao-Blackwell 均值替代独立高维 SNIS；仍属相关 MCMC。',
         '4. BF16 状态按 Gaussian 舍入单元质量计算比，提议创新用 FP64，并逐次检查共同读出重放。有限 RNG/算术仍是理想核的近似。',
         '5. 新增 lambda=.10 的一致性细节改变期望更新；可选 .30/sigma 时间权重改变 surrogate 时间加权，不能说原目标完全未改。',
-        '7. 最后正方差块使用物理 Gaussian 坐标和直接 BF16 舍入，修复极小单元逆变换与两次舍入问题；通用创新实现配套正确的后验保护分区。',
-        '9. 纯Teacher入口跳过9/10无更新轮次中未使用的冻结文本编码；数据位置、逐轮种子、EMA及有效更新不变，40轮真实训练的全部更新日志一致。完整1000轮权重比较另存，不能仅凭4次更新声称已验证全程。',
-        '8. 双查询选项固定源与时间，对两个独立观测的梯度取平均后只裁剪/更新一次；查询计算约加倍，有相同计算量无粒子对照。',
         '6. 同查询 Jacobian 避免与成对参考相关的源 Jacobian 问题；它是本文明确的 surrogate，不宣称等价于原 DMD 源梯度的完整 KL。',
+        '7. 最后正方差块使用物理 Gaussian 坐标和直接 BF16 舍入，修复极小单元逆变换与两次舍入问题；通用创新实现配套正确的后验保护分区。',
+        '8. 双查询选项固定源与时间，对两个独立观测的梯度取平均后只裁剪/更新一次；查询计算约加倍，有相同计算量无粒子对照。',
+        '9. 纯Teacher入口跳过9/10无更新轮次中未使用的冻结文本编码；数据位置、逐轮种子、EMA及有效更新不变，40轮真实训练的全部更新日志一致。完整1000轮权重比较另存，不能仅凭4次更新声称已验证全程。',
         '', '本轮固定开发候选：'+best+'；开发守门状态：'+selection['status'],
     ]
     if best.startswith('last'):

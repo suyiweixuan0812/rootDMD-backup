@@ -28,6 +28,15 @@
     "sd3-det-bridge-seed42-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json",
     "sd3-det-paired-seed42-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-paired-seed42-pick2048-exact/final-metrics.json",
     "sd3-det-last-seed42-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-pick2048-exact/final-metrics.json",
+    "sd3-det-dmd-seed42-holdout138-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-holdout138-exact/final-metrics.json",
+    "sd3-det-dmd_fp32-seed42-holdout138-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-holdout138-exact/final-metrics.json",
+    "sd3-det-bridge-seed42-holdout138-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-holdout138-exact/final-metrics.json",
+    "sd3-det-paired-seed42-holdout138-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-paired-seed42-holdout138-exact/final-metrics.json",
+    "sd3-det-last-seed42-holdout138-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-last-seed42-holdout138-exact/final-metrics.json",
+    "sd3-det-dmd-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+    "sd3-det-dmd_fp32-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+    "sd3-det-bridge-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed43-pick2048-exact/final-metrics.json",
+    "sd3-det-paired-seed43-pick2048-exact": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-paired-seed43-pick2048-exact/final-metrics.json",
     "dmd-seed42-10000-pick2048": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/dmd-seed42-10000-pick2048/final-metrics.json",
     "path-is-seed42-10000-pick2048": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/path-is-seed42-10000-pick2048/final-metrics.json"
   },
@@ -60,6 +69,15 @@
     "sd3-det-bridge-seed42-pick2048-exact": "d192623d5e54dab70b6c0261127f6cd1fcaf0caf16114d8193426c73e0215e99",
     "sd3-det-paired-seed42-pick2048-exact": "d0431a0dc8fbf2b80a58a4b6b455fadfc6fc424e010ee5d09533365de0d83e3d",
     "sd3-det-last-seed42-pick2048-exact": "4f19b5c357dcc54acbf750eb6abc7b04fc4c3febaaca46aa62809783e33a63e1",
+    "sd3-det-dmd-seed42-holdout138-exact": "fdc5af3d222ffa9d751598a5c3dc2b826c57819fefc8931546d363608fc41507",
+    "sd3-det-dmd_fp32-seed42-holdout138-exact": "ad3a1cea398a21fd8558f25fbb268ab23bf0657cfc6525a13cd52ad1ad8611bf",
+    "sd3-det-bridge-seed42-holdout138-exact": "8a8e0569abe9b2afa8dd5929c42501336432ebe13365fab6ecbd872e684d0e9e",
+    "sd3-det-paired-seed42-holdout138-exact": "cf3017ed1dbb057f44c3e838c01db5105eab42afecf6db58825617b21640dbf0",
+    "sd3-det-last-seed42-holdout138-exact": "677cd3c465abff44d45ae33fde22c65d340fcb25d1589f9ec7e3701ffc0f5333",
+    "sd3-det-dmd-seed43-pick2048-exact": "72830797c1e028bcef48f37bb440e994f0e020e090e942e71527853323cd12e5",
+    "sd3-det-dmd_fp32-seed43-pick2048-exact": "76e0c4b43cf03d4b4cbd2177c639c20dc7386bef6a7281eef18491a0f05c272e",
+    "sd3-det-bridge-seed43-pick2048-exact": "5b3eec8734f1355111728d3e73759942e0fe66bd8d9ec6e0ab3d6fc628dc7b15",
+    "sd3-det-paired-seed43-pick2048-exact": "c3f840c5c8213f45be7fd1cd5ad9057a8347c80b3438d8fdafea440e3d8ff5c2",
     "dmd-seed42-10000-pick2048": "96c2a58cd9cb3ae6f25aa68ceb380feedbb7b05ad89d376b5d960d21a622470a",
     "path-is-seed42-10000-pick2048": "29fc3b983afc649a9f47fa9b88a6a2a76492d6ebf6f403c060e0029c94154020"
   },
@@ -130,6 +148,25 @@
       ]
     },
     {
+      "title_contains": "保留提示词验证：138条唯一提示词",
+      "names": [
+        "sd3-det-dmd-seed42-holdout138-exact",
+        "sd3-det-dmd_fp32-seed42-holdout138-exact",
+        "sd3-det-bridge-seed42-holdout138-exact",
+        "sd3-det-paired-seed42-holdout138-exact",
+        "sd3-det-last-seed42-holdout138-exact"
+      ]
+    },
+    {
+      "title_contains": "确定性训练种子复核：seed43",
+      "names": [
+        "sd3-det-dmd-seed43-pick2048-exact",
+        "sd3-det-dmd_fp32-seed43-pick2048-exact",
+        "sd3-det-bridge-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ]
+    },
+    {
       "title_contains": "原路径版长训练确认：10000轮",
       "names": [
         "dmd-seed42-10000-pick2048",
@@ -141,7 +178,10 @@
       "names": [
         "sd3-det-dmd-seed42-pick2048-exact",
         "sd3-det-dmd_fp32-seed42-pick2048-exact",
-        "sd3-det-bridge-seed42-pick2048-exact"
+        "sd3-det-bridge-seed42-pick2048-exact",
+        "sd3-det-dmd-seed43-pick2048-exact",
+        "sd3-det-dmd_fp32-seed43-pick2048-exact",
+        "sd3-det-bridge-seed43-pick2048-exact"
       ]
     },
     {
@@ -227,7 +267,7 @@
       1500
     ]
   },
-  "source_sha256": "9cc6d47257fc0d158d89fac16f9d48c9a3502aabdfdbb3cc79d50b66eff22127",
+  "source_sha256": "7866fe5de0de6ae31da173f36f727772d37c314ce92fa60f00a7570307d156a6",
   "selection_role": "Legacy first-phase choice for older tables; new cohort selection is separately stored",
   "deterministic_selection": {
     "frozen_utc": "2026-10-20T22:56:38.501425+00:00",
@@ -841,41 +881,53 @@
     },
     {
       "title_contains": "本轮完整测试结论：与两种 DMD 对照",
-      "value": "+0.4009",
+      "value": "+0.1005",
       "sources": [
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
-        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json"
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed43-pick2048-exact/final-metrics.json"
       ],
       "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
     },
     {
       "title_contains": "本轮完整测试结论：与两种 DMD 对照",
-      "value": "+0.0912",
+      "value": "-0.0371",
       "sources": [
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
-        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json"
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed43-pick2048-exact/final-metrics.json"
       ],
       "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
     },
     {
       "title_contains": "本轮完整测试结论：与两种 DMD 对照",
-      "value": "+0.4313",
+      "value": "+0.1463",
       "sources": [
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
-        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json"
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed43-pick2048-exact/final-metrics.json"
       ],
       "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
     },
     {
       "title_contains": "本轮完整测试结论：与两种 DMD 对照",
-      "value": "+1.1034",
+      "value": "+0.3516",
       "sources": [
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed42-pick2048-exact/final-metrics.json",
         "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed42-pick2048-exact/final-metrics.json",
-        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json"
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed42-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-dmd_fp32-seed43-pick2048-exact/final-metrics.json",
+        "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/evidence/sd3-det-bridge-seed43-pick2048-exact/final-metrics.json"
       ],
       "formula": "Mean across the completed paired training seeds: candidate score minus original DMD score"
     },
@@ -957,6 +1009,42 @@
     },
     {
       "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "-0.0554",
+      "sources": [
+        "sd3-det-bridge-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0030",
+      "sources": [
+        "sd3-det-bridge-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0041",
+      "sources": [
+        "sd3-det-bridge-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
+      "value": "+0.0050",
+      "sources": [
+        "sd3-det-bridge-seed43-pick2048-exact",
+        "sd3-det-paired-seed43-pick2048-exact"
+      ],
+      "formula": "Particle method minus its matched paired-source control, same trained seed and full2048 prompts"
+    },
+    {
+      "title_contains": "粒子平均的额外收益：匹配无粒子对照",
       "value": "+0.0341",
       "sources": [
         "sd3-det-last-seed42-pick2048-exact",
@@ -1011,6 +1099,9 @@
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-dmd10000.json": "2968933826131d47cb831519b6fbd9493d1176bc0da8b78d950d0476781dd432",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-oldpath10000.json": "f3509ed8af5851240b5c2fe38d91fb335c367e644bacf8fd36d8e1c3c2c661fa",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/teacher-cfg-drift-conditioning-revision.json": "ac2e71555e3abad257b49ef9cae4204c3039518eafcfbe107617a611368f6ccd",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/research-stop-rb-oracle.json": "d9f8536760ad9471e84cc1cf1d8eb0b561db6cc09bdc2bb9771ed358c533ff66",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-dmd1000-prefix-live-audit.json": "469ae768790d64deef59b63d01dfa0295b3bf6b7102d479baaf74692ced05919",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/unused-text-encoding-optimization-audit.json": "4711dc245256a8f49a787f6c7cbc34817c95bd98c42d253248802c6c48aa3e34",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/failed-attempts/last-inverse-bounds-20261020T220837Z/failure-numeric-state.json": "f72bd5a4cd5250def4ab4d54118d8f4dbaebcd9c4d23f0bb6b5f14c517904177",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/scoring-numeric-source-audit-v31.json": "b9766440cb846fa1a827e7d0ea59a58539bce93a621287aad6c6c0eae4ddf310",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-inverse-repair-record.json": "989fe66ba571454b51a5b8ce2da256989fa37a637f848da792cf3a8d3e2eaa8c"

@@ -638,6 +638,8 @@ artifacts=['bridged-exact-geometry-diagnostics/diagnostics.json',
            'physical-gaussian-gpu-replay-audit.json','old-inverse-prefix-metric-check.json',
            'teacher-cfg-drift-dmd10000.json','teacher-cfg-drift-oldpath10000.json',
            'teacher-cfg-drift-conditioning-revision.json','research-stop-rb-oracle.json',
+           'deterministic-dmd1000-prefix-live-audit.json','deterministic-full-prefix-reproduction.json',
+           'unused-text-encoding-optimization-audit.json',
            'failed-attempts/last-inverse-bounds-20261020T220837Z/failure-numeric-state.json',
            'scoring-numeric-source-audit-v31.json','last-inverse-repair-record.json']
 manifest['source_artifacts']={str(ROUND/name):hashlib.sha256((ROUND/name).read_bytes()).hexdigest()
