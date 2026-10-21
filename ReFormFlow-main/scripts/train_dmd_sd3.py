@@ -74,7 +74,7 @@ def pair_reward_loss(pipeline, x0, prompts, config, device):
     from research.rtdmd_reward.differentiable_pickscore import DifferentiablePickScore
     scorer = getattr(pipeline, "_pair_reward_scorer", None)
     if scorer is None:
-        scorer = DifferentiablePickScore(device=str(device), dtype=torch.float32)
+        scorer = DifferentiablePickScore(device=str(device), dtype=torch.float16)
         pipeline._pair_reward_scorer = scorer
     vae_latents = x0.float() / pipeline.vae.config.scaling_factor + pipeline.vae.config.shift_factor
     images = (pipeline.vae.decode(vae_latents, return_dict=False)[0] / 2 + 0.5).clamp(0, 1)
@@ -394,7 +394,15 @@ def main(_):
                 int(synchronize(torch.randint(1, count + 1, (1,), device=device)).item())
                 if config.sample.random_stop_idx else count
             )
-            initial = torch.randn(shape, device=device, dtype=embeds.dtype)
+            pair_enabled = bool(getattr(config, "pair_reward", {}).get("enabled", False))
+            if role == "generator" and pair_enabled:
+                if shape[0] % 2:
+                    raise ValueError("pair reward requires an even train.batch_size")
+                # Common initial noise is part of the paper's paired protocol.
+                initial = torch.randn((shape[0] // 2, *shape[1:]), device=device, dtype=embeds.dtype)
+                initial = initial.repeat_interleave(2, dim=0)
+            else:
+                initial = torch.randn(shape, device=device, dtype=embeds.dtype)
             transformer.set_adapter("generator")
             x0, x_s = generate_latents(
                 transformer_ddp if role == "generator" else transformer,
@@ -627,6 +635,10 @@ def main(_):
                 # Checkpoint recomputation must see the adapter used for the differentiable generation.
                 transformer.set_adapter("generator")
                 loss = dmd_loss(boundary, fake, real, config.dmd.gradient_normalization)
+                if pair_enabled:
+                    reward_term = pair_reward_loss(pipeline, x0, prompts, config, device)
+                    loss = loss + reward_term
+                    metrics["generator/loss_pair_reward"].append(float(reward_term.detach()))
                 metrics["generator/loss_dm"].append(float(loss.detach()))
             metrics[f"{role}/gen_steps"].append(stop)
 

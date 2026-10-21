@@ -16,7 +16,10 @@ class DifferentiablePickScore(torch.nn.Module):
     def __init__(self, device: str = "cuda", dtype: torch.dtype = torch.float32):
         super().__init__()
         model_path = "yuvalkirstain/PickScore_v1"
-        self.processor = AutoProcessor.from_pretrained(model_path, local_files_only=True)
+        # PickScore's model cache on this machine lacks only its processor
+        # metadata; the compatible LAION CLIP processor is cached completely.
+        processor_path = "laion/CLIP-ViT-H-14-laion2B-s32B-b79K"
+        self.processor = AutoProcessor.from_pretrained(processor_path, local_files_only=True)
         self.model = AutoModel.from_pretrained(model_path, local_files_only=True).to(device=device, dtype=dtype).eval()
         for parameter in self.model.parameters():
             parameter.requires_grad_(False)
