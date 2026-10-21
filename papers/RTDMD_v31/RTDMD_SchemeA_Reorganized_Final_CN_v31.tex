@@ -706,6 +706,25 @@ K_J=\sum_{k<J}\bar K_k,\\
 \item 历史代理有滞后，且提示词变化；$.25$ 不是当前真实路径/后验 KL 的保证。
 \end{itemize}
 \end{frame}
+\begin{frame}{纯教师版真实训练：低噪声仍会退化}
+\scriptsize\centering
+仅统计 $J>1$ 的真实生成器更新；每次8候选、2次条件更新，均值取自训练日志。
+\begin{tabular}{ccrrrr}\toprule
+Seed & $\sigma$ & 更新数 & ESS & 参考移动率 & RB方差迹/坐标\\\midrule
+42 & $<.3$ & 6 & 1.000 & 0.000 & 0.000000 \\
+42 & $[.3,.9)$ & 51 & 3.269 & 0.451 & 0.000094 \\
+42 & $\geq.9$ & 21 & 6.125 & 0.833 & 0.000268 \\
+43 & $<.3$ & 10 & 1.000 & 0.000 & 0.000000 \\
+43 & $[.3,.9)$ & 48 & 3.689 & 0.562 & 0.000178 \\
+43 & $\geq.9$ & 19 & 6.105 & 0.895 & 0.000194 \\
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+\begin{itemize}\itemsep4pt
+\item 低噪声的观测似然仍可使候选退化，纯Teacher细节修订没有彻底解决此问题。
+\item 高噪声时 ESS 约6，但读出加权方差仍小；权重均匀不等于显著消除训练噪声。
+\item $J=1$ 无路径转移，另存统计；不把它混入正方差路径比的改善结论。
+\item 这些为有限训练样本的描述统计；不同噪声组不能直接作因果比较，RB迹也不是梯度方差。
+\end{itemize}
+\end{frame}
 \begin{frame}{长路径采样诊断：改善 ESS，不替代质量实验}
 \footnotesize\centering
 同一保存的 Student、固定开发提示词、$J=4$、8候选；表中为候选池权重 ESS。
@@ -737,6 +756,23 @@ C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
 \end{equation}
 两个对称辅助 Gaussian 密度相消；\textbf{标准 Gaussian 先验不能再省略}。
 包含正确条件参考的 i-SIR 保持原后验；没有桥接场、MH 接受率或新的末端噪声。
+\end{frame}
+
+\begin{frame}{最后块版本究竟保留了多少路径作用}
+\small
+固定更早父状态 $h$ 后，前缀比是所有候选的共同常数，只剩最后随机核的校正。
+连续理想模型在物理坐标 $u$ 下满足
+\begin{equation}
+q_T(u\mid h)\frac{M_S(u\mid h)}{M_T(u\mid h)}
+L_\sigma(y\mid D_\theta(u))
+=M_S(u\mid h)L_\sigma(y\mid D_\theta(u)).
+\end{equation}
+\begin{itemize}\itemsep5pt
+\item Teacher 路径比的作用是校正提议；它不会给 Student 后验额外增加一个教师目标。
+\item 该局部版保留比值与条件平均框架，却没有跨整条路径利用教师候选的全部探索能力。
+\item BF16 下实现保留单元质量比和单元内 Gaussian 提升密度；不能按连续式直接删除这些项。
+\item Teacher CFG4.5 仍是训练 score 的参考；此作用与条件采样提议的作用不同。
+\end{itemize}
 \end{frame}
 
 \begin{frame}{最后正方差块：收益、局限与精确缓存}

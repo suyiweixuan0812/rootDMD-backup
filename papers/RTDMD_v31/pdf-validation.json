@@ -1,5 +1,5 @@
 {
-  "page_count": 65,
+  "page_count": 67,
   "all_pages_rendered": true,
   "numeric_values_verified": [
     {
@@ -1006,8 +1006,8 @@
   "source_complete": true,
   "outside_page_text": [],
   "replacement_character_pages": [],
-  "pdf_sha256": "53dfd0da5a1495f5341a43f6fa033ed959aa5b750e33c354e0e6f6e223ab3861",
-  "tex_sha256": "7866fe5de0de6ae31da173f36f727772d37c314ce92fa60f00a7570307d156a6",
+  "pdf_sha256": "14f3fb95831ab1456a9427fd8d71c7f2f08ed8c0f8485d009981e2f38df15400",
+  "tex_sha256": "f95e4e2f6c705fd1ee64b573313c586b80d2b8fa149a493232a09dc6c4f92a73",
   "preview_directory": "/dev/shm/rtdmd-v31-pdf-preview",
   "visual_review": "Pending review of rendered pages"
 }

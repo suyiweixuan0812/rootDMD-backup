@@ -267,7 +267,7 @@
       1500
     ]
   },
-  "source_sha256": "7866fe5de0de6ae31da173f36f727772d37c314ce92fa60f00a7570307d156a6",
+  "source_sha256": "f95e4e2f6c705fd1ee64b573313c586b80d2b8fa149a493232a09dc6c4f92a73",
   "selection_role": "Legacy first-phase choice for older tables; new cohort selection is separately stored",
   "deterministic_selection": {
     "frozen_utc": "2026-10-20T22:56:38.501425+00:00",
@@ -663,6 +663,126 @@
       "title_contains": "两组训练种子",
       "value": "+0.2109",
       "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/comparison-two-seeds/comparison.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "6",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "1.000",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.000",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.000000",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "51",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "3.269",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.451",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.000094",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "21",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "6.125",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.833",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.000268",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "10",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "1.000",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.000",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.000000",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "48",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "3.689",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.562",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.000178",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "19",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "6.105",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.895",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
+    },
+    {
+      "title_contains": "纯教师版真实训练：低噪声仍会退化",
+      "value": "0.000194",
+      "source": "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json"
     },
     {
       "title_contains": "长路径采样诊断",
@@ -1102,6 +1222,7 @@
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/research-stop-rb-oracle.json": "d9f8536760ad9471e84cc1cf1d8eb0b561db6cc09bdc2bb9771ed358c533ff66",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/deterministic-dmd1000-prefix-live-audit.json": "469ae768790d64deef59b63d01dfa0295b3bf6b7102d479baaf74692ced05919",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/unused-text-encoding-optimization-audit.json": "4711dc245256a8f49a787f6c7cbc34817c95bd98c42d253248802c6c48aa3e34",
+    "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/selected-training-diagnostics.json": "f87811c19710355f975fa89cd24065f23c83b8acaec8c123fef2e141fc925945",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/failed-attempts/last-inverse-bounds-20261020T220837Z/failure-numeric-state.json": "f72bd5a4cd5250def4ab4d54118d8f4dbaebcd9c4d23f0bb6b5f14c517904177",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/scoring-numeric-source-audit-v31.json": "b9766440cb846fa1a827e7d0ea59a58539bce93a621287aad6c6c0eae4ddf310",
     "/rootDMD/ReFormFlow-main/logs/path-ratio-round1/last-inverse-repair-record.json": "989fe66ba571454b51a5b8ce2da256989fa37a637f848da792cf3a8d3e2eaa8c"

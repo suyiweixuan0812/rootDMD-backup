@@ -97,6 +97,70 @@ K_J=\sum_{k<J}\bar K_k,\\
 \end{itemize}
 \end{frame}
 '''
+    training_diagnostics = root / 'selected-training-diagnostics.json'
+    if training_diagnostics.exists():
+        actual = json.loads(training_diagnostics.read_text())['runs']
+        lines = []
+        title = '纯教师版真实训练：低噪声仍会退化'
+        labels = [('positive_prefix_low_noise', r'$<.3$'),
+                  ('positive_prefix_medium_noise', r'$[.3,.9)$'),
+                  ('positive_prefix_high_noise', r'$\geq.9$')]
+        for seed in [42, 43]:
+            selected = [x for x in actual if x['run'] == f'sd3-det-last-seed{seed}']
+            if not selected:
+                continue
+            groups_by_name = {x['label']: x for x in selected[0]['groups']}
+            for key, label in labels:
+                if key not in groups_by_name:
+                    continue
+                row = groups_by_name[key]
+                values = [str(seed), label, str(row['count']),
+                    f"{row['ess']['mean']:.3f}",
+                    f"{row['actual_move_rate']['mean']:.3f}",
+                    f"{row['rb_removed_variance_trace_per_coordinate']['mean']:.6f}"]
+                lines.append(' & '.join(values) + r' \\')
+                computed.extend(dict(title_contains=title, value=v, source=str(training_diagnostics))
+                    for v in values[2:])
+        tex += r'\begin{frame}{' + title + r'''}
+\scriptsize\centering
+仅统计 $J>1$ 的真实生成器更新；每次8候选、2次条件更新，均值取自训练日志。
+\begin{tabular}{ccrrrr}\toprule
+Seed & $\sigma$ & 更新数 & ESS & 参考移动率 & RB方差迹/坐标\\\midrule
+''' + '\n'.join(lines) + r'''
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+\begin{itemize}\itemsep4pt
+\item 低噪声的观测似然仍可使候选退化，纯Teacher细节修订没有彻底解决此问题。
+\item 高噪声时 ESS 约6，但读出加权方差仍小；权重均匀不等于显著消除训练噪声。
+\item $J=1$ 无路径转移，另存统计；不把它混入正方差路径比的改善结论。
+\item 这些为有限训练样本的描述统计；不同噪声组不能直接作因果比较，RB迹也不是梯度方差。
+\end{itemize}
+\end{frame}
+'''
+        clip_title = '粒子以外的瓶颈：优化接口与梯度裁剪'
+        clip_lines = []
+        for seed in [42, 43]:
+            for case in ['dmd', 'dmd_fp32', 'paired', 'last']:
+                rows = [x for x in actual if x['run'] == f'sd3-det-{case}-seed{seed}']
+                if not rows:
+                    continue
+                row = rows[0]
+                value = f"{100 * row['gradient_clip_fraction']:.1f}"
+                clip_lines.append(f"{seed} & {LABELS[case]} & {row['generator_updates']} & {value}" + r' \\')
+                computed.append(dict(title_contains=clip_title, value=value, source=str(training_diagnostics)))
+        tex += r'\begin{frame}{' + clip_title + r'''}
+\scriptsize\centering
+\begin{tabular}{clrr}\toprule
+Seed & 训练版本 & 生成器更新数 & 裁剪率\%\\\midrule
+''' + '\n'.join(clip_lines) + r'''
+\bottomrule\end{tabular}\par\raggedright\vspace{6pt}
+裁剪率按裁剪前梯度范数 $>1$ 的实际更新占比计算，不含未更新轮次。
+\begin{itemize}\itemsep4pt
+\item 同查询 Jacobian 与一致性正则改变更新；即使无粒子控制也明显更常触发裁剪。
+\item 这是优化差异的证据，尚不能单独确定哪一项导致质量波动。
+\item 正确后验均值、较高 ESS 或较小估计方差，均不能推出完整 DMD KL 梯度或 Adam 后质量改善。
+\end{itemize}
+\end{frame}
+'''
     diagnostics = root / 'bridged-exact-geometry-diagnostics/diagnostics.json'
     teacher = root / 'teacher-capped-geometry-diagnostics/diagnostics.json'
     if diagnostics.exists() and teacher.exists():
@@ -145,6 +209,23 @@ C_B\mid E_B&\sim\N(E_B,\delta^2 I),\quad E'_B\mid C_B\sim\N(C_B,\delta^2 I).
 \end{equation}
 两个对称辅助 Gaussian 密度相消；\textbf{标准 Gaussian 先验不能再省略}。
 包含正确条件参考的 i-SIR 保持原后验；没有桥接场、MH 接受率或新的末端噪声。
+\end{frame}
+
+\begin{frame}{最后块版本究竟保留了多少路径作用}
+\small
+固定更早父状态 $h$ 后，前缀比是所有候选的共同常数，只剩最后随机核的校正。
+连续理想模型在物理坐标 $u$ 下满足
+\begin{equation}
+q_T(u\mid h)\frac{M_S(u\mid h)}{M_T(u\mid h)}
+L_\sigma(y\mid D_\theta(u))
+=M_S(u\mid h)L_\sigma(y\mid D_\theta(u)).
+\end{equation}
+\begin{itemize}\itemsep5pt
+\item Teacher 路径比的作用是校正提议；它不会给 Student 后验额外增加一个教师目标。
+\item 该局部版保留比值与条件平均框架，却没有跨整条路径利用教师候选的全部探索能力。
+\item BF16 下实现保留单元质量比和单元内 Gaussian 提升密度；不能按连续式直接删除这些项。
+\item Teacher CFG4.5 仍是训练 score 的参考；此作用与条件采样提议的作用不同。
+\end{itemize}
 \end{frame}
 
 \begin{frame}{最后正方差块：收益、局限与精确缓存}
