@@ -1,0 +1,13 @@
+{
+  "status": "user_selected_endpoint_proposal",
+  "target": "original Version C single diagonal Gaussian",
+  "new_teacher_variance_calibration": false,
+  "new_mixture_head": false,
+  "original_C_covariance_mechanism": "preserved, unchanged",
+  "teacher_proposal_variance": "same as target",
+  "kappa": 0.5,
+  "particles": 32,
+  "baseline": "new supplied train_dmd_sd3.py",
+  "cancelled_revision": "a6fd2b438a2b",
+  "cancelled_C_gpu_training_started": false
+}

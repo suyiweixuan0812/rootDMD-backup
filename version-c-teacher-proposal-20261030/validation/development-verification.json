@@ -1,0 +1,150 @@
+{
+  "status": "passed",
+  "baseline_bitwise_equivalence": false,
+  "numerical_repeatability": {
+    "generator": {
+      "repeat": {
+        "max_abs": 6.8576800913433544e-06,
+        "rms": 2.849587872333359e-07,
+        "exact": false
+      },
+      "instrumented": {
+        "max_abs": 6.857157131889835e-06,
+        "rms": 2.7640120947580726e-07,
+        "exact": false
+      }
+    },
+    "fake_score": {
+      "repeat": {
+        "max_abs": 0.0004565355775412172,
+        "rms": 2.949415829789359e-05,
+        "exact": false
+      },
+      "instrumented": {
+        "max_abs": 0.0005066528683528304,
+        "rms": 4.043135777465068e-05,
+        "exact": false
+      }
+    }
+  },
+  "statement": "Unmodified DMD itself is not bitwise repeatable on this GPU backend. Instrumented discrepancies are of the same observed order; this does not prove bitwise or statistical equivalence.",
+  "baseline_initial_loss_and_stop_lr_cfg_sequence_identical": true,
+  "initial_20_images_and_complete_states_paired": true,
+  "formulas": {
+    "status": "passed",
+    "density_vs_independent_oracle_max_abs_error": 8.446532611117163e-07,
+    "uniform_equal_distributions_kappas": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "high_dimensional_coverage": [
+      {
+        "teacher_proposal/kappa": 0.25,
+        "teacher_proposal/teacher_draw_fraction": 0.75,
+        "teacher_proposal/teacher_weight_mass": 0.0,
+        "teacher_proposal/student_draw_count": 8,
+        "teacher_proposal/teacher_draw_count": 24,
+        "teacher_proposal/unnormalized_mass_estimate": 1.000000000000345,
+        "teacher_proposal/target_teacher_rms": 0.5,
+        "teacher_proposal/normalized_mean_error": 0.3536879202421495,
+        "teacher_proposal/ess": 8.0,
+        "teacher_proposal/ess_fraction": 0.25,
+        "teacher_proposal/max_weight": 0.125,
+        "teacher_proposal/log_weight_std": 35470.58143130478,
+        "teacher_proposal/bridge_identity_error": 1.4901161193847656e-07,
+        "teacher_proposal/weighted_endpoint_rms": 0.11184595067423256,
+        "teacher_proposal/student_target_mean_rms": 0.0,
+        "teacher_proposal/mc_vs_target_mean_rms": 0.11184595067423256,
+        "teacher_proposal/ref_variance_mean": 0.10000001639127731
+      },
+      {
+        "teacher_proposal/kappa": 0.5,
+        "teacher_proposal/teacher_draw_fraction": 0.46875,
+        "teacher_proposal/teacher_weight_mass": 0.0,
+        "teacher_proposal/student_draw_count": 17,
+        "teacher_proposal/teacher_draw_count": 15,
+        "teacher_proposal/unnormalized_mass_estimate": 1.0624999999982505,
+        "teacher_proposal/target_teacher_rms": 0.5,
+        "teacher_proposal/normalized_mean_error": 0.24285123830173,
+        "teacher_proposal/ess": 16.999999999999996,
+        "teacher_proposal/ess_fraction": 0.5312499999999999,
+        "teacher_proposal/max_weight": 0.058823529411764705,
+        "teacher_proposal/log_weight_std": 40789.688563110205,
+        "teacher_proposal/bridge_identity_error": 1.1920928955078125e-07,
+        "teacher_proposal/weighted_endpoint_rms": 0.0767963112839008,
+        "teacher_proposal/student_target_mean_rms": 0.0,
+        "teacher_proposal/mc_vs_target_mean_rms": 0.0767963112839008,
+        "teacher_proposal/ref_variance_mean": 0.10000001639127731
+      },
+      {
+        "teacher_proposal/kappa": 0.75,
+        "teacher_proposal/teacher_draw_fraction": 0.15625,
+        "teacher_proposal/teacher_weight_mass": 0.0,
+        "teacher_proposal/student_draw_count": 27,
+        "teacher_proposal/teacher_draw_count": 5,
+        "teacher_proposal/unnormalized_mass_estimate": 1.1250000000005824,
+        "teacher_proposal/target_teacher_rms": 0.5,
+        "teacher_proposal/normalized_mean_error": 0.1922960280762144,
+        "teacher_proposal/ess": 27.0,
+        "teacher_proposal/ess_fraction": 0.84375,
+        "teacher_proposal/max_weight": 0.037037037037037035,
+        "teacher_proposal/log_weight_std": 29718.673879700902,
+        "teacher_proposal/bridge_identity_error": 1.4901161193847656e-07,
+        "teacher_proposal/weighted_endpoint_rms": 0.06080934869457278,
+        "teacher_proposal/student_target_mean_rms": 0.0,
+        "teacher_proposal/mc_vs_target_mean_rms": 0.06080934869457278,
+        "teacher_proposal/ref_variance_mean": 0.10000001639127731
+      },
+      {
+        "teacher_proposal/kappa": 1.0,
+        "teacher_proposal/teacher_draw_fraction": 0.0,
+        "teacher_proposal/teacher_weight_mass": 0.0,
+        "teacher_proposal/student_draw_count": 32,
+        "teacher_proposal/teacher_draw_count": 0,
+        "teacher_proposal/unnormalized_mass_estimate": 1.0,
+        "teacher_proposal/target_teacher_rms": 0.5,
+        "teacher_proposal/normalized_mean_error": 0.1767542225050859,
+        "teacher_proposal/ess": 32.0,
+        "teacher_proposal/ess_fraction": 1.0,
+        "teacher_proposal/max_weight": 0.03125,
+        "teacher_proposal/log_weight_std": 0.0,
+        "teacher_proposal/bridge_identity_error": 8.940696716308594e-08,
+        "teacher_proposal/weighted_endpoint_rms": 0.05589459780880081,
+        "teacher_proposal/student_target_mean_rms": 0.0,
+        "teacher_proposal/mc_vs_target_mean_rms": 0.05589459780880081,
+        "teacher_proposal/ref_variance_mean": 0.10000001639127731
+      }
+    ],
+    "low_dimension_known_mean": 1.25,
+    "low_dimension_snis": 1.2531285285949707,
+    "baseline_loss_and_save_functions_AST_identical": true,
+    "single_gaussian_target_no_head": true,
+    "scope": "CPU formula checks only; not real SD3 or multi-GPU validation"
+  },
+  "arms": {
+    "smoke_dmd": {
+      "status": "completed",
+      "outer_step": 20,
+      "generator_step": 2,
+      "training_seconds": 6.1563870748505,
+      "previous_update_boundary_seconds": 3.0393312708474696,
+      "target_training_seconds": null,
+      "time_budget_events": [],
+      "final_checkpoint": "/project_c20250506/250404014/version-c-teacher-proposal-20261030/development/b023bbf35a13/paired/smoke_dmd/checkpoints/checkpoint-20"
+    },
+    "smoke_teacher_c": {
+      "status": "completed",
+      "outer_step": 20,
+      "generator_step": 2,
+      "training_seconds": 4.587663913611323,
+      "previous_update_boundary_seconds": 3.8290361426770687,
+      "target_training_seconds": null,
+      "time_budget_events": [],
+      "final_checkpoint": "/project_c20250506/250404014/version-c-teacher-proposal-20261030/development/b023bbf35a13/paired/smoke_teacher_c/checkpoints/checkpoint-20"
+    }
+  },
+  "original_failed_assertion_preserved": true
+}

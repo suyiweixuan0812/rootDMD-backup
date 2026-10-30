@@ -1,0 +1,44 @@
+# Python and build outputs
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage*
+.ruff_cache/
+
+# Local configuration and credentials
+.env
+.env.*
+.venv/
+venv/
+*.pem
+*.key
+.netrc
+.claude/
+.idea/
+.vscode/
+.DS_Store
+*~
+
+# Models, logs and generated samples
+models/
+checkpoints/
+reward_ckpts/
+logs/
+wandb/
+swanlog/
+.swanlab/
+evaluation_output/
+inference_output/
+*.pt
+*.pth
+*.safetensors
+*.log
+*.mp4
+mmcv/
+mmdetection/
+HPSv2/
+jobs/
+tests/
