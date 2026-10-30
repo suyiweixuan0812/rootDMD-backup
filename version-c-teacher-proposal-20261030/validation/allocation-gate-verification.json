@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "checks": [
+    "run",
+    "cancel",
+    "wrong-region-rejected",
+    "duplicate-start-rejected"
+  ],
+  "scope": "CPU startup decision tests; no GPU work"
+}

@@ -12,6 +12,8 @@ def write(name,data):
     t.write_text(json.dumps(data,indent=2));t.replace(p)
 
 def main():
+    from allocation_gate import wait_for_allocation
+    if not wait_for_allocation(ROOT,10):return
     spec=json.loads((ROOT/'formal-spec.json').read_text());src=Path(spec['source'])
     for name,h in spec['source_files'].items():
         assert hashlib.sha256((src/name).read_bytes()).hexdigest()==h,name

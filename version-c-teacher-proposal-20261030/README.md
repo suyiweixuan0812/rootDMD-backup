@@ -38,3 +38,9 @@ The development comparison includes two runs of the untouched supplied trainer a
 The installed HPSv2 package contains an unused `from turtle import forward`, which requires an unavailable GUI library. `headless_hps.py` removes only that unused import in memory, validates that the imported name is not read, and logs the original file hash. It does not edit shared packages or change any score computation.
 
 Model weights, generated data, credentials and SSH keys are not included. Set deployment paths for your environment before launching. GPU runs are only intended for an allocated experimental node. Results are single-seed exploratory comparisons, not a proof of an exact SD3 posterior.
+
+## Region selection (2026-10-30)
+
+At the user's request, one eight-GPU candidate is submitted in region 10 (PRO6000) and one in region 5 (A100). Only the first candidate reaching the CPU startup gate is released; the other receives a cancel decision and its platform submission is cancelled. Both DMD and C run sequentially on the selected allocation. Source revision b023bbf35a13 and all 60 training-source hashes remain unchanged. No cross-region training curves are combined.
+
+The launchers use allocation_gate.py before any GPU work. The gate records readiness, validates a region-specific decision, and exits without training when cancelled. It times out after 30 minutes if no decision arrives. Region 5 uses an experiment-local portable Python and its pre-existing mounted model/scorer/environment files; CPU imports, asset checks and numerical checks passed. GPU execution is checked by the existing two-arm eight-GPU preflight after selection.
